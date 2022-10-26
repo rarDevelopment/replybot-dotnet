@@ -40,12 +40,9 @@ builder.ConfigureServices((host, services) =>
             LogGatewayIntentWarnings = false
         }));
 
-    var isDevelopment = host.HostingEnvironment.IsDevelopment();
     var discordSettings = new DiscordSettings
     {
-        BotToken = isDevelopment
-            ? host.Configuration["Discord:BotToken"]
-            : Environment.GetEnvironmentVariable("BOT_TOKEN")
+        BotToken = host.Configuration["Discord:BotToken"]
     };
 
     services.AddSingleton(discordSettings);

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Replybot", "Replybot\Replybot.csproj", "{D6855E19-8027-4E7A-BD42-EB1339EE3A17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Replybot", "Replybot\Replybot.csproj", "{F9DBF884-24ED-4A14-BD47-33D9AD7ECD7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D6855E19-8027-4E7A-BD42-EB1339EE3A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6855E19-8027-4E7A-BD42-EB1339EE3A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6855E19-8027-4E7A-BD42-EB1339EE3A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6855E19-8027-4E7A-BD42-EB1339EE3A17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9DBF884-24ED-4A14-BD47-33D9AD7ECD7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9DBF884-24ED-4A14-BD47-33D9AD7ECD7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9DBF884-24ED-4A14-BD47-33D9AD7ECD7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9DBF884-24ED-4A14-BD47-33D9AD7ECD7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {65021C95-0B14-4884-815B-334D7B39839A}
+		SolutionGuid = {D289717B-ED61-4472-A217-D4F8D4516622}
 	EndGlobalSection
 EndGlobal
