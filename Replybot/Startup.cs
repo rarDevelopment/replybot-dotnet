@@ -10,6 +10,10 @@ using Microsoft.Extensions.Hosting;
 using Replybot;
 using Serilog;
 using System.Reflection;
+using Replybot.BusinessLayer;
+using Replybot.DataLayer;
+using Replybot.Events;
+using Replybot.Models;
 
 
 var builder = new HostBuilder();
@@ -45,13 +49,25 @@ builder.ConfigureServices((host, services) =>
         BotToken = host.Configuration["Discord:BotToken"]
     };
 
+    var databaseSettings = new DatabaseSettings
+    {
+        Cluster = host.Configuration["Database:Cluster"],
+        User = host.Configuration["Database:User"],
+        Password = host.Configuration["Database:Password"],
+        Name = host.Configuration["Database:Name"],
+    };
+
     services.AddSingleton(discordSettings);
+    services.AddSingleton(databaseSettings);
+
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
+    services.AddScoped<IResponseBusinessLayer, ResponseBusinessLayer>();
+    services.AddScoped<IResponseDataLayer, ResponseDataLayer>();
 
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
-
     services.AddSingleton<InteractionHandler>();
-
+    services.AddSingleton<KeywordHandler>();
+    services.AddSingleton<MessageReceivedEventHandler>();
     services.AddHostedService<DiscordBot>();
 });
 

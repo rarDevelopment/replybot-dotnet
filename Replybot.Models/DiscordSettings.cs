@@ -1,4 +1,4 @@
-﻿namespace Replybot
+﻿namespace Replybot.Models
 {
     public class DiscordSettings
     {

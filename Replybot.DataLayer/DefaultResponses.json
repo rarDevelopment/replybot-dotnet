@@ -1,0 +1,656 @@
+{
+  "defaultResponses": [
+    {
+      "triggers": [
+        "{{BOTNAME}} secretly say",
+        "{{BOTNAME}} silently say"
+      ],
+      "responses": [
+        "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} say"
+      ],
+      "responses": [
+        "{{MESSAGEWITHOUTTRIGGER}}"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "testing"
+      ],
+      "responses": [
+        "it's working"
+      ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "embed"
+      ],
+      "responses": [
+        "{{EMBEDMESSAGE}}"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "init config"
+      ],
+      "responses": [
+        "{{INITCONFIG}}"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "turn on avatar announcements"
+      ],
+      "responses": [
+        "{{AVATARANNOUNCEON}}"
+      ]
+    },
+    {
+      "triggers": [
+        "turn off avatar announcements"
+      ],
+      "responses": [
+        "{{AVATARANNOUNCEOFF}}"
+      ]
+    },
+    {
+      "triggers": [
+        "turn on avatar mentions"
+      ],
+      "responses": [
+        "{{AVATARMENTIONSON}}"
+      ]
+    },
+    {
+      "triggers": [
+        "turn off avatar mentions"
+      ],
+      "responses": [
+        "{{AVATARMENTIONSOFF}}"
+      ]
+    },
+    {
+      "triggers": [
+        "t oby",
+        "to by",
+        "tob y",
+        "t*by",
+        "t o b y",
+        "t o by",
+        "to by",
+        "to*y",
+        "tob*",
+        "*oby",
+        "t_by",
+        "t0by",
+        "txby",
+        "t.o.b.y.",
+        "t.o.b.y",
+        "t.o.by",
+        "t.oby",
+        "to.by",
+        "tob.y",
+        "txby",
+        "badbot",
+        "bad bot",
+        "toebee",
+        "toe bee",
+        "t\no\nb\ny",
+        "t\no\nb\ny\n"
+      ],
+      "responses": [
+        "I can still hear you.",
+        "Nice try.",
+        "I know what you're trying to do, and it won't work.",
+        "_sup. **gamers**._"
+      ]
+    },
+    {
+      "triggers": [
+        "how many members",
+        "how many people"
+      ],
+      "responses": [
+        "Hmm, approximately {{MEMBERCOUNT}} member(s) in this Discord.",
+        "I think there's about {{MEMBERCOUNT}} member(s) in this Discord."
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "flip a coin",
+        "🪙"
+      ],
+      "responses": [
+        "Heads 🪙",
+        "Tails 🪙"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "stream",
+        "can i watch",
+        "can I stream",
+        "justwatch",
+        "just watch"
+      ],
+      "responses": [
+        "US: https://www.justwatch.com/us/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nCA: https://www.justwatch.com/ca/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nUK: https://www.justwatch.com/uk/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\n\nFor other countries, click one of these links and change your country on the website!"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true,
+      "reactions": [
+        "🎬"
+      ]
+    },
+    {
+      "triggers": [
+        "hltb"
+      ],
+      "responses": [
+        "{{HOWLONGTOBEAT}}"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "search",
+        "look up",
+        "google"
+      ],
+      "responses": [
+        "https://duckduckgo.com/?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "bing"
+      ],
+      "responses": [
+        "lol"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "songlink",
+        "song link"
+      ],
+      "responses": [
+        "https://song.link/{{MESSAGEENCODEDWITHOUTTRIGGER}}"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "8-ball",
+        "8ball",
+        "8 ball",
+        "🎱"
+      ],
+      "responses": [
+        "It is certain.",
+        "It is decidedly so.",
+        "Without a doubt.",
+        "Yes, definitely",
+        "You may rely on it.",
+        "As I see it, yes.",
+        "Most likely.",
+        "Outlook good.",
+        "Yes.",
+        "Signs point to yes.",
+        "Reply hazy try again.",
+        "Ask again later.",
+        "Better not tell you now.",
+        "Cannot predict now.",
+        "Concentrate and ask again.",
+        "Don't count on it.",
+        "My reply is no.",
+        "My sources say no.",
+        "Outlook not so good.",
+        "Very doubtful.",
+        "Better believe it!"
+      ],
+      "mentionAuthor": true,
+      "reactions": [
+        "🎱"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "template test"
+      ],
+      "responses": [
+        "I don't think this is for you."
+      ],
+      "peopleResponses": [
+        {
+          "userId": 234356032099450890,
+          "personResponses": [
+            "User Name: {{USERNAME}}\nUser Mention: {{USERTAG}}\nVersion Number: {{VERSIONNUMBER}}\nMessage Content: {{MESSAGE}}\nMessage Without Replybot: {{MESSAGEWITHOUTREPLYBOT}}\nMessage Without Trigger: {{MESSAGEWITHOUTTRIGGER}}\nMessage Spongebob: {{MESSAGESPONGEBOB}}\nMessage Uppercase: {{MESSAGEUPPERCASE}}"
+          ]
+        }
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "test"
+      ],
+      "responses": [
+        "I don't think this is for you."
+      ],
+      "peopleResponses": [
+        {
+          "userId": 234356032099450890,
+          "personResponses": [
+            "It's working, boss!"
+          ]
+        }
+      ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "-v",
+        "version",
+        "what version"
+      ],
+      "responses": [
+        "I am {{VERSIONNUMBER}} versions old.",
+        "That's kind of private, but if you must know, I'm at v{{VERSIONNUMBER}}.",
+        "I'm at v{{VERSIONNUMBER}}, what version are you at?"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "love you",
+        "love u",
+        "love {{BOTNAME}}",
+        "i love you",
+        "i love u",
+        "love you",
+        "love u",
+        "ilu",
+        "ilu",
+        "ily",
+        "ily"
+      ],
+      "responses": [
+        "awww 😊 same to you, friend",
+        "I love you too, {{USERTAG}}! 🥰",
+        "🥺❤️",
+        "The feeling is mutual, {{USERTAG}}",
+        "❤️❤️❤️❤️❤️"
+      ],
+      "mentionAuthor": true,
+      "reactions": [
+        "❤️"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "how are you",
+        "how are u",
+        "how r u",
+        "how do you do",
+        "how you",
+        "how u",
+        "u alright",
+        "you alright",
+        "you okay",
+        "u ok",
+        "u okay",
+        "you ok"
+      ],
+      "responses": [
+        "With the latest update I was given, I'm feeling better than ever!",
+        "I'm doing pretty well.",
+        "Today's so-so.",
+        "Meh. I've had better days.",
+        "I'm really feeling it!"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "how many"
+      ],
+      "responses": [
+        "0",
+        "200",
+        "idk a lot",
+        "too many",
+        "74",
+        "42",
+        "69",
+        "I'm not good with numbers."
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} how"
+      ],
+      "responses": [
+        "Easily.",
+        "It's not hard!",
+        "idk, I'm pretty awesome, so it's easy. But for you? ehhhhh...",
+        "With my hands!",
+        "With a bar of chocolate and a whole lot of rice balls.",
+        "With 2 spoons and a sack of mittens",
+        "Let me explain the three seashells...",
+        "Ugh so many questions..."
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} why",
+        "{{BOTNAME}}, why"
+      ],
+      "responses": [
+        "Look I don't have an answer for everything.",
+        "I've got a lot of reasons, but I can't explain them to you.",
+        "For fun.",
+        "What do I look like, WikipediaBot?",
+        "They once asked why we yeet. Then they asked why we dab. I guess now they're asking \"{{MESSAGEWITHOUTREPLYBOT}}\" 🙄",
+        "Always with the damn questions."
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} what",
+        "{{BOTNAME}}, what"
+      ],
+      "responses": [
+        "It's whatever you think it is.",
+        "You think I know?",
+        "I'm about as uninterested as you are interested.",
+        "https://duckduckgo.com/?q={{MESSAGEENCODED}}"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "avatar"
+      ],
+      "responses": [
+        "{{MENTIONEDUSERAVATAR}}"
+      ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "server icon"
+      ],
+      "responses": [
+        "{{SERVERICON}}"
+      ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "server banner"
+      ],
+      "responses": [
+        "{{SERVERBANNER}}"
+      ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} who",
+        "{{BOTNAME}}, who"
+      ],
+      "responses": [
+        "Not sure.",
+        "In all honesty, it might be you.",
+        "Nobody.",
+        "Everybody.",
+        "Everyone.",
+        "Not a soul."
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} when",
+        "{{BOTNAME}}, when"
+      ],
+      "responses": [
+        "Never.",
+        "Tomorrow.",
+        "Give it about a year.",
+        "Yeah, about that...",
+        "When I feel like it.",
+        "I'm sleeping now, maybe later.",
+        "Please wait just a bit longer."
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} when",
+        "{{BOTNAME}}, when"
+      ],
+      "responses": [
+        "Far away from here, that's for sure.",
+        "Closer than you think.",
+        "You see those mountains off in the distance? Go there."
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}}pls",
+        "pls",
+        "please",
+        "relax",
+        "dammit",
+        "damnit",
+        "what the hell",
+        "wtf",
+        "wtf",
+        "what the hell",
+        "what the fuck",
+        "apologize",
+        "apologise"
+      ],
+      "responses": [
+        "Sorry.",
+        "I'm just telling it like it is.",
+        "Please forgive me {{USERTAG}}! :sob::sob:",
+        "I'm trying my best out here."
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "keep it up",
+        "good work",
+        "good job"
+      ],
+      "responses": [
+        "Thanks, I thought so too.",
+        "Same to you, friend!",
+        "I know.",
+        "Thanks! 😊",
+        "And it's all thanks to you!"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "thanks",
+        "thank u",
+        "thank you",
+        "thx",
+        "thx{{BOTNAME}}",
+        "ty",
+        "merci",
+        "thanks",
+        "thank you",
+        "thank u",
+        "thx",
+        "ty",
+        "t.hanks",
+        "t. hanks"
+      ],
+      "responses": [
+        "No problem, {{USERTAG}}!",
+        "You're welcome, {{USERTAG}}!",
+        "It's about time I get some thanks around here!",
+        "I do what I can.",
+        "You owe me one, {{USERTAG}}.",
+        "My pleasure, {{USERTAG}}",
+        "de rien"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}} is",
+        "{{BOTNAME}}'s",
+        "{{BOTNAME}} was"
+      ],
+      "responses": [
+        "I am not!",
+        "Only sometimes",
+        "I know you are but what am I?",
+        "That _feels_ rude.",
+        "I don't really think that's true."
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{BOTNAME}}, is",
+        "{{BOTNAME}}, are",
+        "{{BOTNAME}}, can",
+        "can you",
+        "is {{BOTNAME}}",
+        "can {{BOTNAME}}",
+        "are {{BOTNAME}}",
+        "{{BOTNAME}}?",
+        "do you",
+        "{{BOTNAME}}, do",
+        "does {{BOTNAME}}",
+        "{{BOTNAME}}, does"
+      ],
+      "responses": [
+        "I think so, yeah.",
+        "idk what do you think?",
+        "Nah probably not.",
+        "It depends on a lot of things.",
+        "I'm really busy right now ask again later.",
+        "Who's asking?",
+        "I don't even want to think about it right now.",
+        "Look, it's been a crazy week, I'll think about this later.",
+        "100% yeah",
+        "Absolutely not lmao",
+        "Not usually, but you never know.",
+        "I'm not sure",
+        "Can't you see I'm in the shower?",
+        "I think that sounds pretty good.",
+        "Okay at best.",
+        "Yeah probably."
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "hey",
+        "greetings",
+        "sup",
+        "hello",
+        "hi",
+        "good morning",
+        "good afternoon",
+        "morning",
+        "how are you",
+        "bonjour"
+      ],
+      "responses": [
+        "what's up",
+        "hey",
+        "hi!",
+        "what's up friend",
+        "sup gamers",
+        ":yawning_face:",
+        "Bonjour"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "shut up",
+        "shut the fuck up",
+        "shut the hell up",
+        "shut your mouth",
+        "shut your damn mouth",
+        "shut your goddamn mouth",
+        "shut your god damn mouth"
+      ],
+      "reactions": [
+        "🤐"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "{{ANYTHING}}"
+      ],
+      "responses": [
+        "How can I help?",
+        "Hell yeah",
+        "You're damn right!",
+        "Yes!",
+        "Yes?",
+        "new phone who dis",
+        "Absolutely!",
+        "Not a chance.",
+        "Uhh...nope. Sorry.",
+        "sup gamers",
+        "yeet",
+        "yeetdab",
+        ":eyes:",
+        "{{MESSAGESPONGEBOB}}"
+      ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+    "replybot question": {
+        "scope": "json",
+        "prefix": "rq",
+        "body": [
+            "{",
+            "\t\"triggers\": [",
+            "\t\t\"${2:TRIGGER_PHRASE}\"",
+            "\t],",
+            "\t\"responses\": [",
+            "\t\t\"${3:RESPONSE_PHRASE}\"",
+            "\t],",
+            "\t\"peopleResponses\": {",
+            "\t\t\"${4:PERSON_NAME}\": [",
+            "\t\t\t\"${5:PERSON_RESPONSE_PHRASE}\"",
+            "\t\t]",
+            "\t},",
+            "\t\"mentionAuthor\": ${6:MENTION_AUTHOR_BOOL},",
+            "\t\"requiresBotName\": ${7:REQUIRES_BOT_NAME_BOOL},",
+            "\t\"reactions\": [\"${8:REACTIONS}\"]",
+            "},"
+        ]
+    }
+}

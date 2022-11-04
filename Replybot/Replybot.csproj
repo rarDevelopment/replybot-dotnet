@@ -37,6 +37,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Replybot.BusinessLayer\Replybot.BusinessLayer.csproj" />
+    <ProjectReference Include="..\Replybot.DataLayer\Replybot.DataLayer.csproj" />
+    <ProjectReference Include="..\Replybot.Models\Replybot.Models.csproj" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>
