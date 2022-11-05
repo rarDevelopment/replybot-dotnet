@@ -46,6 +46,11 @@ builder.ConfigureServices((host, services) =>
             LogGatewayIntentWarnings = false
         }));
 
+    var versionSettings = new VersionSettings
+    {
+        VersionNumber = host.Configuration["Version:VersionNumber"]
+    };
+
     var discordSettings = new DiscordSettings
     {
         BotToken = host.Configuration["Discord:BotToken"],
@@ -66,6 +71,7 @@ builder.ConfigureServices((host, services) =>
         Referer = host.Configuration["HowLongToBeat:Referer"]
     };
 
+    services.AddSingleton(versionSettings);
     services.AddSingleton(discordSettings);
     services.AddSingleton(databaseSettings);
     services.AddSingleton(howLongToBeatSettings);
