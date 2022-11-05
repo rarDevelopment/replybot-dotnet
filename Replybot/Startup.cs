@@ -72,6 +72,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IResponseBusinessLayer, ResponseBusinessLayer>();
+    services.AddScoped<IGuildConfigurationBusinessLayer, GuildConfigurationBusinessLayer>();
     services.AddScoped<IResponseDataLayer, ResponseDataLayer>();
 
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
