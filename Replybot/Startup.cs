@@ -75,8 +75,11 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
     services.AddSingleton<InteractionHandler>();
+    
     services.AddSingleton<KeywordHandler>();
+
     services.AddSingleton<MessageReceivedEventHandler>();
+    services.AddSingleton<UserUpdatedEventHandler>();
 
     services.AddSingleton<HowLongToBeatCommand>();
     services.AddSingleton<HowLongToBeatApi>();

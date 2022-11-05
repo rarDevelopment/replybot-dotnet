@@ -7,21 +7,28 @@ namespace Replybot;
 public class DiscordBot : IHostedService
 {
     private readonly DiscordSocketClient _client;
-    private readonly InteractionService _interactions;
+    private readonly InteractionService _interactionService;
     private readonly ILogger _logger;
     private readonly InteractionHandler _interactionHandler;
     private readonly DiscordSettings _discordSettings;
     private readonly MessageReceivedEventHandler _messageReceivedEventHandler;
+    private readonly UserUpdatedEventHandler _userUpdatedEventHandler;
 
-    public DiscordBot(DiscordSocketClient client, InteractionService interactions, ILogger<DiscordBot> logger,
-        InteractionHandler interactionHandler, DiscordSettings discordSettings, MessageReceivedEventHandler messageReceivedEventHandler)
+    public DiscordBot(DiscordSocketClient client, 
+        InteractionService interactionService,
+        ILogger<DiscordBot> logger,
+        InteractionHandler interactionHandler,
+        DiscordSettings discordSettings,
+        MessageReceivedEventHandler messageReceivedEventHandler,
+        UserUpdatedEventHandler userUpdatedEventHandler)
     {
         _client = client;
-        _interactions = interactions;
+        _interactionService = interactionService;
         _logger = logger;
         _interactionHandler = interactionHandler;
         _discordSettings = discordSettings;
         _messageReceivedEventHandler = messageReceivedEventHandler;
+        _userUpdatedEventHandler = userUpdatedEventHandler;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -29,7 +36,7 @@ public class DiscordBot : IHostedService
         _client.Ready += ClientReady;
 
         _client.Log += LogAsync;
-        _interactions.Log += LogAsync;
+        _interactionService.Log += LogAsync;
 
         await _interactionHandler.InitializeAsync();
 
@@ -51,12 +58,13 @@ public class DiscordBot : IHostedService
     {
         _logger.LogInformation($"Logged as {_client.CurrentUser}");
 
-        await _interactions.RegisterCommandsGloballyAsync();
+        await _interactionService.RegisterCommandsGloballyAsync();
     }
 
     public void SetEvents()
     {
         _client.MessageReceived += _messageReceivedEventHandler.HandleEvent;
+        _client.UserUpdated += _userUpdatedEventHandler.HandleEvent;
     }
 
     public async Task LogAsync(LogMessage msg)
