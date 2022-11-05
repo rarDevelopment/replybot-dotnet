@@ -46,6 +46,11 @@ builder.ConfigureServices((host, services) =>
             LogGatewayIntentWarnings = false
         }));
 
+    var versionSettings = new VersionSettings
+    {
+        VersionNumber = host.Configuration["Version:VersionNumber"]
+    };
+
     var discordSettings = new DiscordSettings
     {
         BotToken = host.Configuration["Discord:BotToken"],
@@ -66,12 +71,14 @@ builder.ConfigureServices((host, services) =>
         Referer = host.Configuration["HowLongToBeat:Referer"]
     };
 
+    services.AddSingleton(versionSettings);
     services.AddSingleton(discordSettings);
     services.AddSingleton(databaseSettings);
     services.AddSingleton(howLongToBeatSettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IResponseBusinessLayer, ResponseBusinessLayer>();
+    services.AddScoped<IGuildConfigurationBusinessLayer, GuildConfigurationBusinessLayer>();
     services.AddScoped<IResponseDataLayer, ResponseDataLayer>();
 
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
@@ -82,6 +89,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<MessageReceivedEventHandler>();
     services.AddSingleton<UserUpdatedEventHandler>();
     services.AddSingleton<GuildMemberUpdatedEventHandler>();
+    services.AddSingleton<GuildUpdatedEventHandler>();
 
     services.AddSingleton<HowLongToBeatCommand>();
     services.AddSingleton<HowLongToBeatApi>();

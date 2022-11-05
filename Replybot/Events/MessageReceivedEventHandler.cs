@@ -1,4 +1,5 @@
-﻿using Replybot.BusinessLayer;
+﻿using System.Reflection;
+using Replybot.BusinessLayer;
 using Replybot.Commands;
 using Replybot.Models;
 
@@ -9,16 +10,19 @@ namespace Replybot.Events
         private readonly IResponseBusinessLayer _responseBusinessLayer;
         private readonly KeywordHandler _keywordHandler;
         private readonly HowLongToBeatCommand _howLongToBeatCommand;
+        private readonly VersionSettings _versionSettings;
         private readonly ILogger<DiscordBot> _logger;
 
         public MessageReceivedEventHandler(IResponseBusinessLayer responseBusinessLayer,
             KeywordHandler keywordHandler,
             HowLongToBeatCommand howLongToBeatCommand,
+            VersionSettings versionSettings,
             ILogger<DiscordBot> logger)
         {
             _responseBusinessLayer = responseBusinessLayer;
             _keywordHandler = keywordHandler;
             _howLongToBeatCommand = howLongToBeatCommand;
+            _versionSettings = versionSettings;
             _logger = logger;
         }
 
@@ -65,7 +69,7 @@ namespace Replybot.Events
                             var wasDeleted = await HandleDelete(message, response);
                             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
-                            // TODO: handle commands here
+                            // handle commands
                             if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
                             {
                                 var howLongToBeatEmbed = await _howLongToBeatCommand.ExecuteHowLongToBeatCommand(message);
@@ -79,7 +83,7 @@ namespace Replybot.Events
                             var messageText = _keywordHandler.ReplaceKeywords(response,
                                 message.Author.Username,
                                 message.Author.Id,
-                                "0.0.0",
+                                _versionSettings.VersionNumber,
                                 message.Content,
                                 triggerResponse,
                                 message.MentionedUsers.ToList(),

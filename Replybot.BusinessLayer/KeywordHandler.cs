@@ -19,7 +19,7 @@ public class KeywordHandler
     public string ReplaceKeywords(string responseText,
         string username,
         ulong userId,
-        string versionNumber,
+        string? versionNumber,
         string messageContent,
         TriggerResponse triggerResponse,
         IReadOnlyList<SocketUser> mentionedUsers,
@@ -31,7 +31,7 @@ public class KeywordHandler
 
         return responseText
             .Replace(BuildKeyword(TriggerKeyword.Username), username).Replace(BuildKeyword(TriggerKeyword.UserTag), userTag)
-            .Replace(BuildKeyword(TriggerKeyword.VersionNumber), versionNumber)
+            .Replace(BuildKeyword(TriggerKeyword.VersionNumber), versionNumber ?? "[unavailable]")
             .Replace(BuildKeyword(TriggerKeyword.Message), messageContent).Replace(BuildKeyword(TriggerKeyword.MessageWithoutReplybot), messageWithoutReplybot).Replace((string)BuildKeyword(TriggerKeyword.MessageWithoutTrigger), messageWithoutTrigger).Replace((string)BuildKeyword(TriggerKeyword.MessageSpongebob), Spongebobify(messageContent))
             .Replace(BuildKeyword(TriggerKeyword.MessageEncoded), HttpUtility.UrlPathEncode(messageWithoutReplybot))
             .Replace(BuildKeyword(TriggerKeyword.MessageEncodedWithoutTrigger), HttpUtility.UrlPathEncode(messageWithoutTrigger), StringComparison.InvariantCultureIgnoreCase)
