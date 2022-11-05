@@ -93,6 +93,7 @@ namespace Replybot.Commands
             }
             catch (Exception ex)
             {
+                // TODO: log here
                 return _discordFormatter.BuildErrorEmbed("How Long To Beat",
                     $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}");
             }

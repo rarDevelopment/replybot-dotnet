@@ -56,12 +56,6 @@ namespace Replybot.ServiceLayer
                 }
             };
 
-            //var data = JsonSerializer.Serialize(request);
-            //var buffer = System.Text.Encoding.UTF8.GetBytes(data);
-            //var byteContent = new ByteArrayContent(buffer);
-            //byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            //var content = new StringContent("{\"searchType\": \"games\",\"searchTerms\": [\"mario\"],\"searchPage\": 1,\"size\": 20,\"searchOptions\": {\"games\": {\"userId\": 0,\"platform\": \"\", \"sortCategory\": \"popular\",\"rangeCategory\": \"main\",\"rangeTime\": {\"min\": 0,\"max\": 0},\"gameplay\": {\"perspective\": \"\", \"flow\": \"\", \"genre\": \"\" }, \"modifier\": \"\" }, \"users\": {\"sortCategory\": \"postcount\"},\"filter\": \"\", \"sort\": 0,\"randomizer\": 0}}"); 
             var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
@@ -71,18 +65,9 @@ namespace Replybot.ServiceLayer
             };
 
             var response = await client.SendAsync(httpRequest);
-
-            //var response = await client.PostAsJsonAsync("api/search", request, new JsonSerializerOptions
-            //{
-            //    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            //});
-
             if (response.IsSuccessStatusCode)
             {
                 var hltbResponse = await response.Content.ReadFromJsonAsync<HowLongToBeatResponse>();
-                //    ReadAsStringAsync();
-                //var jsonStr = Encoding.UTF8.GetBytes(hltbResponse);
-                //var json = JsonSerializer.Deserialize<HowLongToBeatResponse>(jsonStr);
                 return hltbResponse;
             }
 

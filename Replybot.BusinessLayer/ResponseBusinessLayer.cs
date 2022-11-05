@@ -72,10 +72,4 @@ namespace Replybot.BusinessLayer
             return message.MentionedUsers.Any(u => u.Id == botUserId) || !string.IsNullOrEmpty(botNameInMessage);
         }
     }
-
-    public interface IResponseBusinessLayer
-    {
-        Task<TriggerResponse?> GetTriggerResponse(string message, IGuildChannel? guildId);
-        Task<bool> IsBotNameMentioned(SocketMessage message, IGuild? guild, ulong botUserId);
-    }
 }
