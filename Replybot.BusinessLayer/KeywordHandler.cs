@@ -23,16 +23,16 @@ public class KeywordHandler
         string messageContent,
         TriggerResponse triggerResponse,
         IReadOnlyList<SocketUser> mentionedUsers,
-        IGuild guild)
+        IGuild? guild)
     {
         var userTag = BuildUserTag(userId);
         var messageWithoutReplybot = RemoveBotName(messageContent);
         var messageWithoutTrigger = RemoveTriggerFromMessage(messageContent, triggerResponse);
 
         return responseText
-            .Replace(BuildKeyword(TriggerKeyword.Username), username).Replace((string)BuildKeyword(TriggerKeyword.UserTag), userTag)
+            .Replace(BuildKeyword(TriggerKeyword.Username), username).Replace(BuildKeyword(TriggerKeyword.UserTag), userTag)
             .Replace(BuildKeyword(TriggerKeyword.VersionNumber), versionNumber)
-            .Replace(BuildKeyword(TriggerKeyword.Message), messageContent).Replace((string)BuildKeyword(TriggerKeyword.MessageWithoutReplybot), messageWithoutReplybot).Replace((string)BuildKeyword(TriggerKeyword.MessageWithoutTrigger), messageWithoutTrigger).Replace((string)BuildKeyword(TriggerKeyword.MessageSpongebob), Spongebobify(messageContent))
+            .Replace(BuildKeyword(TriggerKeyword.Message), messageContent).Replace(BuildKeyword(TriggerKeyword.MessageWithoutReplybot), messageWithoutReplybot).Replace((string)BuildKeyword(TriggerKeyword.MessageWithoutTrigger), messageWithoutTrigger).Replace((string)BuildKeyword(TriggerKeyword.MessageSpongebob), Spongebobify(messageContent))
             .Replace(BuildKeyword(TriggerKeyword.MessageEncoded), HttpUtility.UrlPathEncode(messageWithoutReplybot))
             .Replace(BuildKeyword(TriggerKeyword.MessageEncodedWithoutTrigger), HttpUtility.UrlPathEncode(messageWithoutTrigger), StringComparison.InvariantCultureIgnoreCase)
             .Replace(BuildKeyword(TriggerKeyword.MessageUpperCase),
@@ -99,7 +99,7 @@ public class KeywordHandler
         return botNameFound;
     }
 
-    private string? RemoveBotName(string messageContent)
+    private string RemoveBotName(string messageContent)
     {
         var messageWithoutBotName = messageContent;
         foreach (var botName in BotNames.Names)
@@ -116,19 +116,19 @@ public class KeywordHandler
         return $"<@!{userId}>";
     }
 
-    private int? GetGuildMemberCount(IGuild guild)
+    private int? GetGuildMemberCount(IGuild? guild)
     {
-        return guild.ApproximateMemberCount;
+        return guild?.ApproximateMemberCount;
     }
 
-    private string? GetGuildBanner(IGuild guild)
+    private string? GetGuildBanner(IGuild? guild)
     {
-        return string.IsNullOrEmpty(guild.BannerUrl) ? "No banner." : guild.BannerUrl;
+        return string.IsNullOrEmpty(guild?.BannerUrl) ? "No banner." : guild.BannerUrl;
     }
 
-    private string? GetGuildIcon(IGuild guild)
+    private string? GetGuildIcon(IGuild? guild)
     {
-        return string.IsNullOrEmpty(guild.IconUrl) ? "No icon." : guild.IconUrl;
+        return string.IsNullOrEmpty(guild?.IconUrl) ? "No icon." : guild.IconUrl;
     }
 
     private string? GetAvatarsFromUsersAsString(IReadOnlyList<SocketUser> mentionedUsers)

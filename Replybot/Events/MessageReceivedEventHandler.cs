@@ -9,9 +9,6 @@ namespace Replybot.Events
         private readonly KeywordHandler _keywordHandler;
         private readonly ILogger<DiscordBot> _logger;
 
-        private const ulong AllowedChannelId = 123; //TODO: set these
-        private const ulong BotId = 123;
-
         public MessageReceivedEventHandler(IResponseBusinessLayer responseBusinessLayer,
             KeywordHandler keywordHandler,
             ILogger<DiscordBot> logger)
@@ -25,23 +22,18 @@ namespace Replybot.Events
         {
             if (!message.Author.IsBot)
             {
-                if(message.Channel.Id == AllowedChannelId)
                 {
-                    var channel = (message.Channel as IGuildChannel)!;
-                    var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel.GuildId);
+                    var channel = message.Channel as IGuildChannel;
+                    var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
                     if (triggerResponse == null)
                     {
                         return;
                     }
-
-                    var isBotMentioned = await _responseBusinessLayer.IsBotNameMentioned(message, channel.Guild, BotId);
-
-                    if (triggerResponse.RequiresBotName)
+                    
+                    var isBotMentioned = await IsBotMentioned(message, channel);
+                    if (triggerResponse.RequiresBotName && !isBotMentioned)
                     {
-                        if (!isBotMentioned)
-                        {
-                            return;
-                        }
+                        return;
                     }
 
                     if (triggerResponse.Reactions != null)
@@ -64,17 +56,9 @@ namespace Replybot.Events
                     {
                         var response = ChooseResponse(triggerResponse, message.Author);
 
-                        var wasDeleted = false;
                         if (!string.IsNullOrEmpty(response))
                         {
-                            if (response.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
-                            {
-                                await message.DeleteAsync(new RequestOptions
-                                {
-                                    AuditLogReason = "Deleted by replybot."
-                                });
-                                wasDeleted = true;
-                            }
+                            var wasDeleted = await HandleDelete(message, response);
 
                             // TODO: handle commands here
 
@@ -85,7 +69,7 @@ namespace Replybot.Events
                                 message.Content,
                                 triggerResponse,
                                 message.MentionedUsers.ToList(),
-                                channel.Guild);
+                                channel?.Guild);
 
                             await message.Channel.SendMessageAsync(
                                 messageText,
@@ -95,6 +79,47 @@ namespace Replybot.Events
                     }
                 }
             }
+        }
+
+        private async Task<bool> IsBotMentioned(SocketMessage message, IGuildChannel? channel)
+        {
+            var isBotMentioned = false;
+
+            var botUserInGuild = (message.Author as SocketGuildUser)?.Guild.CurrentUser;
+            var isDm = message.Channel is SocketDMChannel;
+
+            if (botUserInGuild != null)
+            {
+                isBotMentioned = await _responseBusinessLayer.IsBotNameMentioned(message, channel?.Guild, botUserInGuild.Id);
+            }
+            else if (isDm)
+            {
+                isBotMentioned = true;
+            }
+
+            return isBotMentioned;
+        }
+
+        private async Task<bool> HandleDelete(SocketMessage message, string response)
+        {
+            var wasDeleted = false;
+            if (response.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
+            {
+                try
+                {
+                    await message.DeleteAsync(new RequestOptions
+                    {
+                        AuditLogReason = "Deleted by replybot."
+                    });
+                    wasDeleted = true;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, $"Failed to delete message: {ex.Message}", ex);
+                }
+            }
+
+            return wasDeleted;
         }
 
         private string? ChooseResponse(TriggerResponse triggerResponse, SocketUser author)

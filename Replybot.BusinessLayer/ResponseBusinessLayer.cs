@@ -18,10 +18,12 @@ namespace Replybot.BusinessLayer
             _keywordHandler = keywordHandler;
         }
         
-        public async Task<TriggerResponse?> GetTriggerResponse(string message, ulong guildId)
+        public async Task<TriggerResponse?> GetTriggerResponse(string message, IGuildChannel? channel)
         {
             var defaultResponses = _responseDataLayer.GetDefaultResponses();
-            var guildResponses = await _responseDataLayer.GetResponsesForGuild(guildId);
+            var guildResponses = channel != null
+                ? await _responseDataLayer.GetResponsesForGuild(channel.GuildId)
+                : new List<TriggerResponse>();
 
             var defaultResponse = FindResponseFromData(defaultResponses, message);
             var guildResponse = FindResponseFromData(guildResponses, message);
@@ -57,7 +59,7 @@ namespace Replybot.BusinessLayer
             return regex.IsMatch(input.ToLower());
         }
 
-        public async Task<bool> IsBotNameMentioned(SocketMessage message, IGuild guild, ulong botUserId)
+        public async Task<bool> IsBotNameMentioned(SocketMessage message, IGuild? guild, ulong botUserId)
         {
             var guildUsers = await guild.GetUsersAsync();
             var botUser = guildUsers.First(x => x.Id == botUserId);
@@ -69,7 +71,7 @@ namespace Replybot.BusinessLayer
 
     public interface IResponseBusinessLayer
     {
-        Task<TriggerResponse?> GetTriggerResponse(string message, ulong guildId);
-        Task<bool> IsBotNameMentioned(SocketMessage message, IGuild guild, ulong botUserId);
+        Task<TriggerResponse?> GetTriggerResponse(string message, IGuildChannel? guildId);
+        Task<bool> IsBotNameMentioned(SocketMessage message, IGuild? guild, ulong botUserId);
     }
 }
