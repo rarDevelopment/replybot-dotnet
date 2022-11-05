@@ -63,6 +63,7 @@ namespace Replybot.Events
                         if (!string.IsNullOrEmpty(response))
                         {
                             var wasDeleted = await HandleDelete(message, response);
+                            var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
                             // TODO: handle commands here
                             if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
@@ -70,7 +71,7 @@ namespace Replybot.Events
                                 var howLongToBeatEmbed = await _howLongToBeatCommand.ExecuteHowLongToBeatCommand(message);
                                 if (howLongToBeatEmbed != null)
                                 {
-                                    await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed);
+                                    await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed, messageReference: messageReference);
                                     return;
                                 }
                             }
@@ -86,7 +87,7 @@ namespace Replybot.Events
 
                             await message.Channel.SendMessageAsync(
                                 messageText,
-                                messageReference: wasDeleted ? null : new MessageReference(message.Id)
+                                messageReference: messageReference
                             );
                         }
                     }
