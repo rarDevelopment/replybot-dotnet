@@ -83,6 +83,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<MessageReceivedEventHandler>();
     services.AddSingleton<UserUpdatedEventHandler>();
     services.AddSingleton<GuildMemberUpdatedEventHandler>();
+    services.AddSingleton<GuildUpdatedEventHandler>();
 
     services.AddSingleton<HowLongToBeatCommand>();
     services.AddSingleton<HowLongToBeatApi>();

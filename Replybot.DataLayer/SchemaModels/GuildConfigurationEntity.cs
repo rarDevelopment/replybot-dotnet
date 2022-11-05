@@ -10,10 +10,10 @@ namespace Replybot.DataLayer.SchemaModels
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
         [BsonElement("guildId")]
-        public ulong GuildId { get; set; }
+        public string GuildId { get; set; }
         [BsonElement("guildName")]
         public string? GuildName { get; set; }
-        [BsonElement("enableAvatarAnnouncements")]
+        [BsonElement("enableAvatarAnnounce")]
         public bool EnableAvatarAnnouncements { get; set; }
         [BsonElement("enableAvatarMentions")]
         public bool EnableAvatarMentions { get; set; }
@@ -22,7 +22,7 @@ namespace Replybot.DataLayer.SchemaModels
         {
             return new GuildConfiguration
             {
-                GuildId = GuildId,
+                GuildId = (ulong)Convert.ToInt64(GuildId),
                 GuildName = GuildName,
                 EnableAvatarAnnouncements = EnableAvatarAnnouncements,
                 EnableAvatarMentions = EnableAvatarMentions

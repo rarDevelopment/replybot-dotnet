@@ -32,7 +32,7 @@ public class ResponseDataLayer : IResponseDataLayer
 
     public async Task<IList<TriggerResponse>> GetResponsesForGuild(ulong guildId)
     {
-        var filter = Builders<GuildResponseEntity>.Filter.Eq(gr => gr.GuildId, guildId);
+        var filter = Builders<GuildResponseEntity>.Filter.Eq("guildId", guildId.ToString());
         var guildResponses = await _guildResponsesCollection.Find(filter).FirstOrDefaultAsync();
         var triggerResponses = guildResponses.Responses;
         return triggerResponses.Select(tr => tr.ToDomain()).ToList();
@@ -40,7 +40,7 @@ public class ResponseDataLayer : IResponseDataLayer
 
     public async Task<GuildConfiguration> GetConfigurationForGuild(ulong guildId, string guildName)
     {
-        var filter = Builders<GuildConfigurationEntity>.Filter.Eq(gc => gc.GuildId, guildId);
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
         var guildConfig = await _guildConfigurationsCollection.Find(filter).FirstOrDefaultAsync();
         if (guildConfig != null)
         {
@@ -57,26 +57,34 @@ public class ResponseDataLayer : IResponseDataLayer
     {
         await _guildConfigurationsCollection.InsertOneAsync(new GuildConfigurationEntity
         {
-            GuildId = guildId,
+            GuildId = guildId.ToString(),
             GuildName = guildName,
             EnableAvatarAnnouncements = true,
             EnableAvatarMentions = true
         });
     }
 
+    public async Task<bool> UpdateGuildConfiguration(ulong guildId, string guildName)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.GuildName, guildName);
+        var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
+        return updateResult.MatchedCount == 1;
+    }
+
     public async Task<bool> SetEnableAvatarAnnouncements(ulong guildId, bool isEnabled)
     {
-        var filter = Builders<GuildConfigurationEntity>.Filter.Eq(config => config.GuildId, guildId);
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableAvatarAnnouncements, isEnabled);
         var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
-        return updateResult.MatchedCount == 1 && updateResult.ModifiedCount == 1;
+        return updateResult.MatchedCount == 1;
     }
 
     public async Task<bool> SetEnableAvatarMentions(ulong guildId, bool isEnabled)
     {
-        var filter = Builders<GuildConfigurationEntity>.Filter.Eq(config => config.GuildId, guildId);
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableAvatarMentions, isEnabled);
         var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
-        return updateResult.MatchedCount == 1 && updateResult.ModifiedCount == 1;
+        return updateResult.MatchedCount == 1;
     }
 }

@@ -26,11 +26,12 @@ namespace Replybot.Commands
                 var success = await _guildConfigurationBusinessLayer.SetAvatarAnnouncementEnabled(Context.Guild, isEnabled);
                 if (success)
                 {
-                    await RespondAsync("Consider it done!");
+                    await RespondAsync($"Consider it done! Avatar announcements are now {(isEnabled ? "ON" : "OFF")}.");
                     return;
                 }
 
                 await RespondAsync("Hmm, I wasn't able to do that. There was an issue, sorry.");
+                return;
             }
 
             await RespondAsync("You aren't allowed to do that!");

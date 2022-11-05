@@ -1,47 +1,60 @@
 ﻿using Discord;
 using Replybot.DataLayer;
+using Replybot.Models;
 
-namespace Replybot.BusinessLayer
+namespace Replybot.BusinessLayer;
+
+public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 {
-    public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
+    private readonly IResponseDataLayer _responseDataLayer;
+
+    public GuildConfigurationBusinessLayer(IResponseDataLayer responseDataLayer)
     {
-        private readonly IResponseDataLayer _responseDataLayer;
+        _responseDataLayer = responseDataLayer;
+    }
 
-        public GuildConfigurationBusinessLayer(IResponseDataLayer responseDataLayer)
+    public async Task<bool> IsAvatarAnnouncementEnabled(IGuild guild)
+    {
+        var guildConfig = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        return guildConfig.EnableAvatarAnnouncements;
+    }
+
+    public async Task<bool> IsAvatarMentionEnabled(IGuild guild)
+    {
+        var guildConfig = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        return guildConfig.EnableAvatarMentions;
+    }
+
+    public async Task<bool> UpdateGuildConfiguration(IGuild guild)
+    {
+        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        if (config != null)
         {
-            _responseDataLayer = responseDataLayer;
+            return await _responseDataLayer.UpdateGuildConfiguration(guild.Id, guild.Name);
         }
 
-        public async Task<bool> IsAvatarAnnouncementEnabled(IGuild guild)
+        return false;
+    }
+
+    public async Task<bool> SetAvatarAnnouncementEnabled(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        if (config != null)
         {
-            var guildConfig = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
-            return guildConfig.EnableAvatarAnnouncements;
+            return await _responseDataLayer.SetEnableAvatarAnnouncements(guild.Id, isEnabled);
         }
 
-        public async Task<bool> IsAvatarMentionEnabled(IGuild guild)
-        {
-            var guildConfig = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
-            return guildConfig.EnableAvatarMentions;
-        }
+        return false;
+    }
 
-        public async Task<bool> SetAvatarAnnouncementEnabled(IGuild guild, bool isEnabled)
-        {
-            try
-            {
-                var config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
-                return await _responseDataLayer.SetEnableAvatarAnnouncements(guild.Id, isEnabled);
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return false;
-        }
-
-        public async Task<bool> SetAvatarMentionEnabled(IGuild guild, bool isEnabled)
+    public async Task<bool> SetAvatarMentionEnabled(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        if (config != null)
         {
             return await _responseDataLayer.SetEnableAvatarMentions(guild.Id, isEnabled);
         }
+
+        return false;
     }
 }

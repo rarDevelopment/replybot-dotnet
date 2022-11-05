@@ -14,15 +14,17 @@ public class DiscordBot : IHostedService
     private readonly MessageReceivedEventHandler _messageReceivedEventHandler;
     private readonly UserUpdatedEventHandler _userUpdatedEventHandler;
     private readonly GuildMemberUpdatedEventHandler _guildMemberUpdatedEventHandler;
+    private readonly GuildUpdatedEventHandler _guildUpdatedEventHandler;
 
-    public DiscordBot(DiscordSocketClient client, 
+    public DiscordBot(DiscordSocketClient client,
         InteractionService interactionService,
         ILogger<DiscordBot> logger,
         InteractionHandler interactionHandler,
         DiscordSettings discordSettings,
         MessageReceivedEventHandler messageReceivedEventHandler,
         UserUpdatedEventHandler userUpdatedEventHandler,
-        GuildMemberUpdatedEventHandler guildMemberUpdatedEventHandler)
+        GuildMemberUpdatedEventHandler guildMemberUpdatedEventHandler,
+        GuildUpdatedEventHandler guildUpdatedEventHandler)
     {
         _client = client;
         _interactionService = interactionService;
@@ -32,6 +34,7 @@ public class DiscordBot : IHostedService
         _messageReceivedEventHandler = messageReceivedEventHandler;
         _userUpdatedEventHandler = userUpdatedEventHandler;
         _guildMemberUpdatedEventHandler = guildMemberUpdatedEventHandler;
+        _guildUpdatedEventHandler = guildUpdatedEventHandler;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -69,6 +72,7 @@ public class DiscordBot : IHostedService
         _client.MessageReceived += _messageReceivedEventHandler.HandleEvent;
         _client.UserUpdated += _userUpdatedEventHandler.HandleEvent;
         _client.GuildMemberUpdated += _guildMemberUpdatedEventHandler.HandleEvent;
+        _client.GuildUpdated += _guildUpdatedEventHandler.HandleEvent;
     }
 
     public async Task LogAsync(LogMessage msg)
