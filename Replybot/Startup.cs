@@ -48,7 +48,8 @@ builder.ConfigureServices((host, services) =>
 
     var discordSettings = new DiscordSettings
     {
-        BotToken = host.Configuration["Discord:BotToken"]
+        BotToken = host.Configuration["Discord:BotToken"],
+        AvatarBaseUrl = host.Configuration["Discord:AvatarBaseUrl"]
     };
 
     var databaseSettings = new DatabaseSettings
@@ -80,6 +81,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton<MessageReceivedEventHandler>();
     services.AddSingleton<UserUpdatedEventHandler>();
+    services.AddSingleton<GuildMemberUpdatedEventHandler>();
 
     services.AddSingleton<HowLongToBeatCommand>();
     services.AddSingleton<HowLongToBeatApi>();

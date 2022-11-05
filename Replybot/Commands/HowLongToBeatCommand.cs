@@ -11,6 +11,7 @@ namespace Replybot.Commands
         private readonly HowLongToBeatApi _howLongToBeatApi;
         private readonly KeywordHandler _keywordHandler;
         private readonly IDiscordFormatter _discordFormatter;
+        private readonly ILogger<DiscordBot> _logger;
         private const string UrlKeyword = "{{URL}}";
         private const string QueryKeyword = "{{QUERY}}";
         private const string GameIdKeyword = "{{GAME_ID}}";
@@ -20,12 +21,14 @@ namespace Replybot.Commands
         public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
             HowLongToBeatApi howLongToBeatApi,
             KeywordHandler keywordHandler,
-            IDiscordFormatter discordFormatter)
+            IDiscordFormatter discordFormatter,
+            ILogger<DiscordBot> logger)
         {
             _howLongToBeatSettings = howLongToBeatSettings;
             _howLongToBeatApi = howLongToBeatApi;
             _keywordHandler = keywordHandler;
             _discordFormatter = discordFormatter;
+            _logger = logger;
         }
 
         public async Task<Embed?> ExecuteHowLongToBeatCommand(SocketMessage message)
@@ -93,7 +96,7 @@ namespace Replybot.Commands
             }
             catch (Exception ex)
             {
-                // TODO: log here
+                _logger.Log(LogLevel.Error, "Error in HowLongToBeat command - {0}", ex.Message);
                 return _discordFormatter.BuildErrorEmbed("How Long To Beat",
                     $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}");
             }

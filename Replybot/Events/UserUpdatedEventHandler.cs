@@ -25,7 +25,7 @@
                     if (guild.CurrentUser.Id == newUser.Id)
                     {
                         await guild.SystemChannel.SendMessageAsync(
-                            $"Hey everyone! Check out my new look: ${newUser.GetAvatarUrl(ImageFormat.Png)}");
+                            $"Hey everyone! Check out my new look: ${newUser.GetAvatarUrl(ImageFormat.Jpeg)}");
                     }
                     else
                     {
