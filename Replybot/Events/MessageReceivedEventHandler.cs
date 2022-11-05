@@ -1,4 +1,5 @@
 ﻿using Replybot.BusinessLayer;
+using Replybot.Commands;
 using Replybot.Models;
 
 namespace Replybot.Events
@@ -7,14 +8,17 @@ namespace Replybot.Events
     {
         private readonly IResponseBusinessLayer _responseBusinessLayer;
         private readonly KeywordHandler _keywordHandler;
+        private readonly HowLongToBeatCommand _howLongToBeatCommand;
         private readonly ILogger<DiscordBot> _logger;
 
         public MessageReceivedEventHandler(IResponseBusinessLayer responseBusinessLayer,
             KeywordHandler keywordHandler,
+            HowLongToBeatCommand howLongToBeatCommand,
             ILogger<DiscordBot> logger)
         {
             _responseBusinessLayer = responseBusinessLayer;
             _keywordHandler = keywordHandler;
+            _howLongToBeatCommand = howLongToBeatCommand;
             _logger = logger;
         }
 
@@ -29,7 +33,7 @@ namespace Replybot.Events
                     {
                         return;
                     }
-                    
+
                     var isBotMentioned = await IsBotMentioned(message, channel);
                     if (triggerResponse.RequiresBotName && !isBotMentioned)
                     {
@@ -61,6 +65,15 @@ namespace Replybot.Events
                             var wasDeleted = await HandleDelete(message, response);
 
                             // TODO: handle commands here
+                            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
+                            {
+                                var howLongToBeatEmbed = await _howLongToBeatCommand.ExecuteHowLongToBeatCommand(message);
+                                if (howLongToBeatEmbed != null)
+                                {
+                                    await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed);
+                                    return;
+                                }
+                            }
 
                             var messageText = _keywordHandler.ReplaceKeywords(response,
                                 message.Author.Username,

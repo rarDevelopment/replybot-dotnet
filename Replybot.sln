@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Replybot.DataLayer", "Reply
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Replybot.Models", "Replybot.Models\Replybot.Models.csproj", "{98FA5A01-CAD9-470D-884C-BBE8FA3FB7FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Replybot.BusinessLayer", "Replybot.BusinessLayer\Replybot.BusinessLayer.csproj", "{D62A917F-6DD3-4A56-A1FE-9F7F253FDB6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Replybot.BusinessLayer", "Replybot.BusinessLayer\Replybot.BusinessLayer.csproj", "{D62A917F-6DD3-4A56-A1FE-9F7F253FDB6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Replybot.ServiceLayer", "Replybot.ServiceLayer\Replybot.ServiceLayer.csproj", "{4F09D040-BA0C-48FA-B009-41E9862B58CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{D62A917F-6DD3-4A56-A1FE-9F7F253FDB6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D62A917F-6DD3-4A56-A1FE-9F7F253FDB6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D62A917F-6DD3-4A56-A1FE-9F7F253FDB6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F09D040-BA0C-48FA-B009-41E9862B58CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F09D040-BA0C-48FA-B009-41E9862B58CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F09D040-BA0C-48FA-B009-41E9862B58CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F09D040-BA0C-48FA-B009-41E9862B58CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

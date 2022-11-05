@@ -17,7 +17,7 @@ namespace Replybot.BusinessLayer
             _responseDataLayer = responseDataLayer;
             _keywordHandler = keywordHandler;
         }
-        
+
         public async Task<TriggerResponse?> GetTriggerResponse(string message, IGuildChannel? channel)
         {
             var defaultResponses = _responseDataLayer.GetDefaultResponses();
@@ -61,6 +61,10 @@ namespace Replybot.BusinessLayer
 
         public async Task<bool> IsBotNameMentioned(SocketMessage message, IGuild? guild, ulong botUserId)
         {
+            if (guild == null)
+            {
+                return true; // if not in a guild, this should be a DM directly to the bot, so return true
+            }
             var guildUsers = await guild.GetUsersAsync();
             var botUser = guildUsers.First(x => x.Id == botUserId);
             var botNickname = botUser.Nickname;

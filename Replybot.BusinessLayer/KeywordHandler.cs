@@ -99,7 +99,7 @@ public class KeywordHandler
         return botNameFound;
     }
 
-    private string RemoveBotName(string messageContent)
+    public string RemoveBotName(string messageContent)
     {
         var messageWithoutBotName = messageContent;
         foreach (var botName in BotNames.Names)
