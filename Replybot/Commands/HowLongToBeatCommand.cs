@@ -31,7 +31,7 @@ namespace Replybot.Commands
             _logger = logger;
         }
 
-        public async Task<Embed?> ExecuteHowLongToBeatCommand(SocketMessage message)
+        public async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
         {
             var messageContent = message.Content;
 

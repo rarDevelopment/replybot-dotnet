@@ -27,6 +27,7 @@
         InitConfig,
         EmbedMessage,
         HowLongToBeat,
+        DefineWord,
 
         UserMetadata,
         GlobalMetadata

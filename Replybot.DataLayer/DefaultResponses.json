@@ -169,6 +169,16 @@
     },
     {
       "triggers": [
+        "define"
+      ],
+      "responses": [
+        "{{DEFINEWORD}}"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
         "search",
         "look up",
         "google"

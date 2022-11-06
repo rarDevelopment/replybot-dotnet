@@ -17,7 +17,6 @@ using Replybot.Events;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-
 var builder = new HostBuilder();
 
 builder.ConfigureAppConfiguration(options
@@ -71,6 +70,11 @@ builder.ConfigureServices((host, services) =>
         Referer = host.Configuration["HowLongToBeat:Referer"]
     };
 
+    var dictionarySettings = new DictionarySettings
+    {
+        BaseUrl = host.Configuration["FreeDictionary:BaseUrl"]
+    };
+
     services.AddSingleton(versionSettings);
     services.AddSingleton(discordSettings);
     services.AddSingleton(databaseSettings);
@@ -94,6 +98,9 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<HowLongToBeatCommand>();
     services.AddSingleton<HowLongToBeatApi>();
 
+    services.AddSingleton<DefineWordCommand>();
+    services.AddSingleton<FreeDictionaryApi>();
+
     services.AddHostedService<DiscordBot>();
 
     services.AddHttpClient(HttpClients.HowLongToBeat.ToString(), config =>
@@ -103,6 +110,15 @@ builder.ConfigureServices((host, services) =>
         config.DefaultRequestHeaders.Add("Connection", "keep-alive");
         config.DefaultRequestHeaders.Add("Accept", "*/*");
         config.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.29.2");
+    });
+
+    services.AddHttpClient(HttpClients.Dictionary.ToString(), config =>
+    {
+        config.BaseAddress = new Uri(dictionarySettings.BaseUrl);
+        //config.DefaultRequestHeaders.Add("Referer", howLongToBeatSettings.Referer);
+        //config.DefaultRequestHeaders.Add("Connection", "keep-alive");
+        //config.DefaultRequestHeaders.Add("Accept", "*/*");
+        //config.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.29.2");
     });
 });
 
