@@ -13,16 +13,9 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         _responseDataLayer = responseDataLayer;
     }
 
-    public async Task<bool> IsAvatarAnnouncementEnabled(IGuild guild)
+    public async Task<GuildConfiguration> GetGuildConfiguration(IGuild guild)
     {
-        var guildConfig = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
-        return guildConfig.EnableAvatarAnnouncements;
-    }
-
-    public async Task<bool> IsAvatarMentionEnabled(IGuild guild)
-    {
-        var guildConfig = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
-        return guildConfig.EnableAvatarMentions;
+        return await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
     }
 
     public async Task<bool> UpdateGuildConfiguration(IGuild guild)
