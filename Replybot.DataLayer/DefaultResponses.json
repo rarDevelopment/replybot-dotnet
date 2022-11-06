@@ -112,7 +112,8 @@
         "I can still hear you.",
         "Nice try.",
         "I know what you're trying to do, and it won't work.",
-        "_sup. **gamers**._"
+        "You can't hide from me!",
+        "That's a clever trick, but it won't work."
       ]
     },
     {
@@ -211,13 +212,13 @@
         "It is decidedly so.",
         "Without a doubt.",
         "Yes, definitely",
-        "You may rely on it.",
+        "You can count on it.",
         "As I see it, yes.",
         "Most likely.",
         "Outlook good.",
         "Yes.",
         "Signs point to yes.",
-        "Reply hazy try again.",
+        "Reply hazy, try again.",
         "Ask again later.",
         "Better not tell you now.",
         "Cannot predict now.",
@@ -328,7 +329,10 @@
       "responses": [
         "With the latest update I was given, I'm feeling better than ever!",
         "I'm doing pretty well.",
+        "I'm doing swell, how about you?",
         "Today's so-so.",
+        "You know how it is, just another day.",
+        "Everything's going according to plan today! 😌",
         "Meh. I've had better days.",
         "I'm really feeling it!"
       ],
@@ -436,7 +440,8 @@
         "Nobody.",
         "Everybody.",
         "Everyone.",
-        "Not a soul."
+        "Not a soul.",
+        "All of us."
       ],
       "mentionAuthor": true,
       "requiresBotName": true
@@ -459,8 +464,8 @@
     },
     {
       "triggers": [
-        "{{BOTNAME}} when",
-        "{{BOTNAME}}, when"
+        "{{BOTNAME}} where",
+        "{{BOTNAME}}, where"
       ],
       "responses": [
         "Far away from here, that's for sure.",
