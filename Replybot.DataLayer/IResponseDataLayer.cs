@@ -1,5 +1,4 @@
-﻿using Replybot.DataLayer.SchemaModels;
-using Replybot.Models;
+﻿using Replybot.Models;
 
 namespace Replybot.DataLayer
 {

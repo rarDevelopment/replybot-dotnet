@@ -9,18 +9,21 @@ namespace Replybot.Events
         private readonly IResponseBusinessLayer _responseBusinessLayer;
         private readonly KeywordHandler _keywordHandler;
         private readonly HowLongToBeatCommand _howLongToBeatCommand;
+        private readonly DefineWordCommand _defineWordCommand;
         private readonly VersionSettings _versionSettings;
         private readonly ILogger<DiscordBot> _logger;
 
         public MessageReceivedEventHandler(IResponseBusinessLayer responseBusinessLayer,
             KeywordHandler keywordHandler,
             HowLongToBeatCommand howLongToBeatCommand,
+            DefineWordCommand defineWordCommand,
             VersionSettings versionSettings,
             ILogger<DiscordBot> logger)
         {
             _responseBusinessLayer = responseBusinessLayer;
             _keywordHandler = keywordHandler;
             _howLongToBeatCommand = howLongToBeatCommand;
+            _defineWordCommand = defineWordCommand;
             _versionSettings = versionSettings;
             _logger = logger;
         }
@@ -42,20 +45,7 @@ namespace Replybot.Events
                     return;
                 }
 
-                if (triggerResponse.Reactions != null)
-                {
-                    foreach (var triggerResponseReaction in triggerResponse.Reactions)
-                    {
-                        try
-                        {
-                            await message.AddReactionAsync(new Emoji(triggerResponseReaction));
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.Log(LogLevel.Error, $"Failed to add reaction {triggerResponseReaction}", ex);
-                        }
-                    }
-                }
+                await HandleReactions(message, triggerResponse);
 
                 if (triggerResponse.Responses != null && triggerResponse.Responses.Any()
                     || triggerResponse.PeopleResponses != null && triggerResponse.PeopleResponses.Any())
@@ -70,12 +60,23 @@ namespace Replybot.Events
                         // handle commands
                         if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
                         {
-                            var howLongToBeatEmbed = await _howLongToBeatCommand.ExecuteHowLongToBeatCommand(message);
+                            var howLongToBeatEmbed = await _howLongToBeatCommand.GetHowLongToBeatEmbed(message);
                             if (howLongToBeatEmbed != null)
                             {
                                 await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed, messageReference: messageReference);
-                                return;
                             }
+                            return;
+                        }
+
+                        if (response == _keywordHandler.BuildKeyword(TriggerKeyword.DefineWord))
+                        {
+                            var defineWordEmbed = await _defineWordCommand.GetWordDefinitionEmbed(message);
+                            if (defineWordEmbed != null)
+                            {
+                                await message.Channel.SendMessageAsync(embed: defineWordEmbed,
+                                    messageReference: messageReference);
+                            }
+                            return;
                         }
 
                         var messageText = _keywordHandler.ReplaceKeywords(response,
@@ -91,6 +92,24 @@ namespace Replybot.Events
                             messageText,
                             messageReference: messageReference
                         );
+                    }
+                }
+            }
+        }
+
+        private async Task HandleReactions(IMessage message, TriggerResponse triggerResponse)
+        {
+            if (triggerResponse.Reactions != null)
+            {
+                foreach (var triggerResponseReaction in triggerResponse.Reactions)
+                {
+                    try
+                    {
+                        await message.AddReactionAsync(new Emoji(triggerResponseReaction));
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log(LogLevel.Error, $"Failed to add reaction {triggerResponseReaction}", ex);
                     }
                 }
             }
