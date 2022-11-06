@@ -1,7 +1,16 @@
-﻿namespace Replybot.Events;
+﻿using Replybot.BusinessLayer;
+
+namespace Replybot.Events;
 
 public class GuildMemberUpdatedEventHandler
 {
+    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
+
+    public GuildMemberUpdatedEventHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
+    {
+        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
+    }
+
     public async Task HandleEvent(Cacheable<SocketGuildUser, ulong> cachedOldUser, SocketGuildUser newUser)
     {
         if (!cachedOldUser.HasValue)
@@ -11,8 +20,9 @@ public class GuildMemberUpdatedEventHandler
 
         var oldUser = cachedOldUser.Value;
 
-        var announceChange = true; // TODO: get from db
-        var tagUserInChange = true; // TODO: get from db
+        var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
+        var announceChange = guildConfig.EnableAvatarAnnouncements;
+        var tagUserInChange = guildConfig.EnableAvatarMentions;
 
         if (!announceChange)
         {

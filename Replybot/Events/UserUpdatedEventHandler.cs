@@ -1,13 +1,23 @@
-﻿namespace Replybot.Events
+﻿using Replybot.BusinessLayer;
+
+namespace Replybot.Events
 {
     public class UserUpdatedEventHandler
     {
+        private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
+
+        public UserUpdatedEventHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
+        {
+            _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
+        }
+
         public async Task HandleEvent(SocketUser oldUser, SocketUser newUser)
         {
             foreach (var guild in newUser.MutualGuilds)
             {
-                var announceChange = true; // TODO: get from db
-                var tagUserInChange = true; // TODO: get from db
+                var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guild);
+                var announceChange = guildConfig.EnableAvatarAnnouncements;
+                var tagUserInChange = guildConfig.EnableAvatarMentions;
 
                 if (!announceChange)
                 {
