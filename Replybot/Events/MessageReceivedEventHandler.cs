@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Replybot.BusinessLayer;
+﻿using Replybot.BusinessLayer;
 using Replybot.Commands;
 using Replybot.Models;
 
@@ -30,70 +29,68 @@ namespace Replybot.Events
         {
             if (!message.Author.IsBot)
             {
+                var channel = message.Channel as IGuildChannel;
+                var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
+                if (triggerResponse == null)
                 {
-                    var channel = message.Channel as IGuildChannel;
-                    var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
-                    if (triggerResponse == null)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    var isBotMentioned = await IsBotMentioned(message, channel);
-                    if (triggerResponse.RequiresBotName && !isBotMentioned)
-                    {
-                        return;
-                    }
+                var isBotMentioned = await IsBotMentioned(message, channel);
+                if (triggerResponse.RequiresBotName && !isBotMentioned)
+                {
+                    return;
+                }
 
-                    if (triggerResponse.Reactions != null)
+                if (triggerResponse.Reactions != null)
+                {
+                    foreach (var triggerResponseReaction in triggerResponse.Reactions)
                     {
-                        foreach (var triggerResponseReaction in triggerResponse.Reactions)
+                        try
                         {
-                            try
-                            {
-                                await message.AddReactionAsync(new Emoji(triggerResponseReaction));
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.Log(LogLevel.Error, $"Failed to add reaction {triggerResponseReaction}", ex);
-                            }
+                            await message.AddReactionAsync(new Emoji(triggerResponseReaction));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log(LogLevel.Error, $"Failed to add reaction {triggerResponseReaction}", ex);
                         }
                     }
+                }
 
-                    if (triggerResponse.Responses != null && triggerResponse.Responses.Any()
-                        || triggerResponse.PeopleResponses != null && triggerResponse.PeopleResponses.Any())
+                if (triggerResponse.Responses != null && triggerResponse.Responses.Any()
+                    || triggerResponse.PeopleResponses != null && triggerResponse.PeopleResponses.Any())
+                {
+                    var response = ChooseResponse(triggerResponse, message.Author);
+
+                    if (!string.IsNullOrEmpty(response))
                     {
-                        var response = ChooseResponse(triggerResponse, message.Author);
+                        var wasDeleted = await HandleDelete(message, response);
+                        var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
-                        if (!string.IsNullOrEmpty(response))
+                        // handle commands
+                        if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
                         {
-                            var wasDeleted = await HandleDelete(message, response);
-                            var messageReference = wasDeleted ? null : new MessageReference(message.Id);
-
-                            // handle commands
-                            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
+                            var howLongToBeatEmbed = await _howLongToBeatCommand.ExecuteHowLongToBeatCommand(message);
+                            if (howLongToBeatEmbed != null)
                             {
-                                var howLongToBeatEmbed = await _howLongToBeatCommand.ExecuteHowLongToBeatCommand(message);
-                                if (howLongToBeatEmbed != null)
-                                {
-                                    await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed, messageReference: messageReference);
-                                    return;
-                                }
+                                await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed, messageReference: messageReference);
+                                return;
                             }
-
-                            var messageText = _keywordHandler.ReplaceKeywords(response,
-                                message.Author.Username,
-                                message.Author.Id,
-                                _versionSettings.VersionNumber,
-                                message.Content,
-                                triggerResponse,
-                                message.MentionedUsers.ToList(),
-                                channel?.Guild);
-
-                            await message.Channel.SendMessageAsync(
-                                messageText,
-                                messageReference: messageReference
-                            );
                         }
+
+                        var messageText = _keywordHandler.ReplaceKeywords(response,
+                            message.Author.Username,
+                            message.Author.Id,
+                            _versionSettings.VersionNumber,
+                            message.Content,
+                            triggerResponse,
+                            message.MentionedUsers.ToList(),
+                            channel?.Guild);
+
+                        await message.Channel.SendMessageAsync(
+                            messageText,
+                            messageReference: messageReference
+                        );
                     }
                 }
             }
