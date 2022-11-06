@@ -10,7 +10,7 @@ public class DefineWordCommand
     private readonly FreeDictionaryApi _freeDictionaryApi;
     private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
-    private readonly string[] _triggers = { "define", "definition" };
+    private readonly string[] _triggers = { "define" };
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
         KeywordHandler keywordHandler,
@@ -25,7 +25,7 @@ public class DefineWordCommand
     {
         var messageContent = message.Content;
         var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
-        
+
         var messageWithoutTrigger = ReplaceTriggerInMessage(messageWithoutBotName);
 
         var splitWords = messageWithoutTrigger.Trim().Split(' ').Where(w => !string.IsNullOrEmpty(w)).ToList();
