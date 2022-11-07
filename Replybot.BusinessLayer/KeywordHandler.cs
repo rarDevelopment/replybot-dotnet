@@ -173,7 +173,7 @@ public class KeywordHandler
         string cleanedMessage = message.Replace(BuildKeyword(TriggerKeyword.BotName), "", StringComparison.InvariantCultureIgnoreCase);
         foreach (var botName in BotNames.Names)
         {
-            cleanedMessage = cleanedMessage.Replace(botName, BuildKeyword(TriggerKeyword.BotName));
+            cleanedMessage = cleanedMessage.Replace(botName, BuildKeyword(TriggerKeyword.BotName), StringComparison.InvariantCultureIgnoreCase);
         }
         // TODO: replace accented characters here
         return cleanedMessage;
