@@ -10,15 +10,18 @@ public class DefineWordCommand
     private readonly FreeDictionaryApi _freeDictionaryApi;
     private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
+    private readonly ILogger<DiscordBot> _logger;
     private readonly string[] _triggers = { "define" };
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
         KeywordHandler keywordHandler,
-        IDiscordFormatter discordFormatter)
+        IDiscordFormatter discordFormatter,
+        ILogger<DiscordBot> logger)
     {
         _freeDictionaryApi = freeDictionaryApi;
         _keywordHandler = keywordHandler;
         _discordFormatter = discordFormatter;
+        _logger = logger;
     }
 
     public async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
@@ -37,23 +40,34 @@ public class DefineWordCommand
                 message.Author);
         }
 
-        var definition = await _freeDictionaryApi.GetDefinition(splitWords[0]);
-        if (definition == null)
+        try
         {
-            return _discordFormatter.BuildErrorEmbed("No Definition Found",
-                "I couldn't find a definition for that word.",
+
+            var definition = await _freeDictionaryApi.GetDefinition(splitWords[0]);
+            if (definition == null)
+            {
+                return _discordFormatter.BuildErrorEmbed("No Definition Found",
+                    "I couldn't find a definition for that word.",
+                    message.Author);
+            }
+
+            var origin = !string.IsNullOrEmpty(definition.Origin) ? $"Origin: {definition.Origin}" : "";
+
+            var embedFieldBuilders = BuildDefinitionFields(definition);
+
+            return _discordFormatter.BuildRegularEmbed(
+                definition.Word,
+                origin,
+                message.Author,
+                embedFieldBuilders);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.Log(LogLevel.Error, "Error in DefineWordCommand: {0}", ex.Message);
+            return _discordFormatter.BuildErrorEmbed("Error Defining Word",
+                "There was an error retrieving that definition, please try again later.",
                 message.Author);
         }
-
-        var origin = !string.IsNullOrEmpty(definition.Origin) ? $"Origin: {definition.Origin}" : "";
-
-        var embedFieldBuilders = BuildDefinitionFields(definition);
-
-        return _discordFormatter.BuildRegularEmbed(
-            definition.Word,
-            origin,
-            message.Author,
-            embedFieldBuilders);
     }
 
     private string ReplaceTriggerInMessage(string text)

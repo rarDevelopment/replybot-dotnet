@@ -28,6 +28,7 @@
         EmbedMessage,
         HowLongToBeat,
         DefineWord,
+        FortniteShopInfo,
 
         UserMetadata,
         GlobalMetadata

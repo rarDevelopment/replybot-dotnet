@@ -10,6 +10,7 @@ namespace Replybot.Events
         private readonly KeywordHandler _keywordHandler;
         private readonly HowLongToBeatCommand _howLongToBeatCommand;
         private readonly DefineWordCommand _defineWordCommand;
+        private readonly GetFortniteShopInformationCommand _fortniteShopInformationCommand;
         private readonly VersionSettings _versionSettings;
         private readonly ILogger<DiscordBot> _logger;
 
@@ -17,6 +18,7 @@ namespace Replybot.Events
             KeywordHandler keywordHandler,
             HowLongToBeatCommand howLongToBeatCommand,
             DefineWordCommand defineWordCommand,
+            GetFortniteShopInformationCommand fortniteShopInformationCommand,
             VersionSettings versionSettings,
             ILogger<DiscordBot> logger)
         {
@@ -24,6 +26,7 @@ namespace Replybot.Events
             _keywordHandler = keywordHandler;
             _howLongToBeatCommand = howLongToBeatCommand;
             _defineWordCommand = defineWordCommand;
+            _fortniteShopInformationCommand = fortniteShopInformationCommand;
             _versionSettings = versionSettings;
             _logger = logger;
         }
@@ -74,6 +77,18 @@ namespace Replybot.Events
                             if (defineWordEmbed != null)
                             {
                                 await message.Channel.SendMessageAsync(embed: defineWordEmbed,
+                                    messageReference: messageReference);
+                            }
+                            return;
+                        }
+
+                        if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FortniteShopInfo))
+                        {
+                            var fortniteShopInfoEmbed =
+                                await _fortniteShopInformationCommand.GetFortniteShopInformationEmbed(message);
+                            if (fortniteShopInfoEmbed != null)
+                            {
+                                await message.Channel.SendMessageAsync(embed: fortniteShopInfoEmbed,
                                     messageReference: messageReference);
                             }
                             return;

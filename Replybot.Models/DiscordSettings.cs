@@ -4,5 +4,6 @@
     {
         public string? BotToken { get; set; }
         public string? AvatarBaseUrl { get; set; }
+        public int? MaxCharacters { get; set; }
     }
 }

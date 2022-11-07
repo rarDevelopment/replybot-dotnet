@@ -179,6 +179,16 @@
     },
     {
       "triggers": [
+        "fortnite shop"
+      ],
+      "responses": [
+        "{{FORTNITESHOPINFO}}"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
         "search",
         "look up",
         "google"

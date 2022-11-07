@@ -10,12 +10,14 @@ using Microsoft.Extensions.Hosting;
 using Replybot;
 using Serilog;
 using System.Reflection;
+using Fortnite_API;
 using Replybot.BusinessLayer;
 using Replybot.Commands;
 using Replybot.DataLayer;
 using Replybot.Events;
 using Replybot.Models;
 using Replybot.ServiceLayer;
+using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();
 
@@ -53,7 +55,8 @@ builder.ConfigureServices((host, services) =>
     var discordSettings = new DiscordSettings
     {
         BotToken = host.Configuration["Discord:BotToken"],
-        AvatarBaseUrl = host.Configuration["Discord:AvatarBaseUrl"]
+        AvatarBaseUrl = host.Configuration["Discord:AvatarBaseUrl"],
+        MaxCharacters = Convert.ToInt32(host.Configuration["Discord:MaxCharacters"])
     };
 
     var databaseSettings = new DatabaseSettings
@@ -87,7 +90,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
     services.AddSingleton<InteractionHandler>();
-    
+
     services.AddSingleton<KeywordHandler>();
 
     services.AddSingleton<MessageReceivedEventHandler>();
@@ -100,6 +103,10 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton<DefineWordCommand>();
     services.AddSingleton<FreeDictionaryApi>();
+
+    services.AddSingleton<GetFortniteShopInformationCommand>();
+    services.AddSingleton<FortniteApi>();
+    services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
 
     services.AddHostedService<DiscordBot>();
 
