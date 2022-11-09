@@ -23,10 +23,10 @@ namespace Replybot.BusinessLayer
             var defaultResponses = _responseDataLayer.GetDefaultResponses();
             var guildResponses = channel != null
                 ? await _responseDataLayer.GetResponsesForGuild(channel.GuildId)
-                : new List<TriggerResponse>();
+                : null;
 
             var defaultResponse = FindResponseFromData(defaultResponses, message);
-            var guildResponse = FindResponseFromData(guildResponses, message);
+            var guildResponse = guildResponses != null ? FindResponseFromData(guildResponses, message) : null;
 
             return guildResponse ?? defaultResponse;
         }
