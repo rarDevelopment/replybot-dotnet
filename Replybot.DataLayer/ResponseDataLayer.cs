@@ -30,12 +30,12 @@ public class ResponseDataLayer : IResponseDataLayer
         return defaultResponseData?.DefaultResponses.Select(tr => tr.ToDomain()).ToList();
     }
 
-    public async Task<IList<TriggerResponse>> GetResponsesForGuild(ulong guildId)
+    public async Task<IList<TriggerResponse>?> GetResponsesForGuild(ulong guildId)
     {
         var filter = Builders<GuildResponseEntity>.Filter.Eq("guildId", guildId.ToString());
         var guildResponses = await _guildResponsesCollection.Find(filter).FirstOrDefaultAsync();
-        var triggerResponses = guildResponses.Responses;
-        return triggerResponses.Select(tr => tr.ToDomain()).ToList();
+        var triggerResponses = guildResponses?.Responses;
+        return triggerResponses?.Select(tr => tr.ToDomain()).ToList();
     }
 
     public async Task<GuildConfiguration> GetConfigurationForGuild(ulong guildId, string guildName)
