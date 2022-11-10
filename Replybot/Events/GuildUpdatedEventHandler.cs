@@ -20,7 +20,7 @@ public class GuildUpdatedEventHandler
             await _systemChannelPoster.PostToGuildSystemChannel(
                 newGuild,
                 $"Wow, a server name change! This server has been renamed from **{oldGuild.Name}** to **{newGuild.Name}**.",
-                $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(SystemChannelPoster));
+                $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedEventHandler));
             await _guildConfigurationBusinessLayer.UpdateGuildConfiguration(newGuild);
         }
 
@@ -29,7 +29,7 @@ public class GuildUpdatedEventHandler
             await _systemChannelPoster.PostToGuildSystemChannel(
                 newGuild,
                 $"Hey look! A new server icon! {newGuild.IconUrl}",
-                $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(SystemChannelPoster));
+                $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedEventHandler));
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Replybot.Events
                         guild,
                         $"WOWIE! For your awareness, {oldUser.Username} is now {newUser.Username}! {newUser.Mention}`",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
-                        typeof(SystemChannelPoster));
+                        typeof(UserUpdatedEventHandler));
                 }
 
                 if (newUser.AvatarId != oldUser.AvatarId)
@@ -44,7 +44,7 @@ namespace Replybot.Events
                             guild,
                             $"Hey everyone! Check out my new look: ${newUser.GetAvatarUrl(ImageFormat.Jpeg)}",
                             $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
-                            typeof(SystemChannelPoster));
+                            typeof(UserUpdatedEventHandler));
                     }
                     else
                     {
@@ -52,7 +52,7 @@ namespace Replybot.Events
                             guild,
                             $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look! Check it out: {newUser.GetAvatarUrl(ImageFormat.Jpeg)}",
                             $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
-                            typeof(SystemChannelPoster));
+                            typeof(UserUpdatedEventHandler));
                     }
                 }
             }
