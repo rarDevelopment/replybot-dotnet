@@ -92,6 +92,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<InteractionHandler>();
 
     services.AddSingleton<KeywordHandler>();
+    services.AddSingleton<SystemChannelPoster>();
 
     services.AddSingleton<MessageReceivedEventHandler>();
     services.AddSingleton<UserUpdatedEventHandler>();
