@@ -41,7 +41,10 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(new DiscordSocketClient(
         new DiscordSocketConfig
         {
-            GatewayIntents = GatewayIntents.All,
+            GatewayIntents = GatewayIntents.Guilds |
+                             GatewayIntents.GuildMembers |
+                             GatewayIntents.GuildMessages |
+                             GatewayIntents.GuildMessageReactions,
             FormatUsersInBidirectionalUnicode = false,
             AlwaysDownloadUsers = true,
             LogGatewayIntentWarnings = false
@@ -123,10 +126,6 @@ builder.ConfigureServices((host, services) =>
     services.AddHttpClient(HttpClients.Dictionary.ToString(), config =>
     {
         config.BaseAddress = new Uri(dictionarySettings.BaseUrl);
-        //config.DefaultRequestHeaders.Add("Referer", howLongToBeatSettings.Referer);
-        //config.DefaultRequestHeaders.Add("Connection", "keep-alive");
-        //config.DefaultRequestHeaders.Add("Accept", "*/*");
-        //config.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.29.2");
     });
 });
 
