@@ -5,10 +5,12 @@ namespace Replybot.Events;
 public class GuildMemberUpdatedEventHandler
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
+    private readonly ILogger<DiscordBot> _logger;
 
-    public GuildMemberUpdatedEventHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
+    public GuildMemberUpdatedEventHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, ILogger<DiscordBot> logger)
     {
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
+        _logger = logger;
     }
 
     public async Task HandleEvent(Cacheable<SocketGuildUser, ulong> cachedOldUser, SocketGuildUser newUser)
@@ -35,8 +37,16 @@ public class GuildMemberUpdatedEventHandler
             {
                 avatarUrl = newUser.GetDisplayAvatarUrl(ImageFormat.Jpeg);
             }
-            await newUser.Guild.SystemChannel.SendMessageAsync(
-                $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look! Check it out: {avatarUrl}");
+
+            try
+            {
+                await newUser.Guild.SystemChannel.SendMessageAsync(
+                    $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look! Check it out: {avatarUrl}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, "Error Sending User ({0}:{1}) Guild-Specific Avatar Change Alert to Guild {2} (id: {3}): {4}", newUser.Username, newUser.Id, newUser.Guild.Name, newUser.Guild.Id, ex.Message);
+            }
         }
     }
 }
