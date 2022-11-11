@@ -44,7 +44,8 @@ builder.ConfigureServices((host, services) =>
             GatewayIntents = GatewayIntents.Guilds |
                              GatewayIntents.GuildMembers |
                              GatewayIntents.GuildMessages |
-                             GatewayIntents.GuildMessageReactions,
+                             GatewayIntents.GuildMessageReactions |
+                             GatewayIntents.MessageContent,
             FormatUsersInBidirectionalUnicode = false,
             AlwaysDownloadUsers = true,
             LogGatewayIntentWarnings = false
