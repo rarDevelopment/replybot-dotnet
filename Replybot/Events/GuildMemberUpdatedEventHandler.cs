@@ -40,7 +40,7 @@ public class GuildMemberUpdatedEventHandler
             }
 
             await _systemChannelPoster.PostToGuildSystemChannel(newUser.Guild,
-                $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look! Check it out: {avatarUrl}",
+                $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look in this server! Check it out: {avatarUrl}",
                 $"Guild: {newUser.Guild.Name} ({newUser.Guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                 typeof(GuildMemberUpdatedEventHandler));
         }
