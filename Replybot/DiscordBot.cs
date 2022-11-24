@@ -4,7 +4,7 @@ using Replybot.Models;
 
 namespace Replybot;
 
-public class DiscordBot : IHostedService
+public class DiscordBot : BackgroundService
 {
     private readonly DiscordSocketClient _client;
     private readonly InteractionService _interactionService;
@@ -15,6 +15,7 @@ public class DiscordBot : IHostedService
     private readonly UserUpdatedEventHandler _userUpdatedEventHandler;
     private readonly GuildMemberUpdatedEventHandler _guildMemberUpdatedEventHandler;
     private readonly GuildUpdatedEventHandler _guildUpdatedEventHandler;
+    private const int LoopWaitTime = 15000;
 
     public DiscordBot(DiscordSocketClient client,
         InteractionService interactionService,
@@ -37,7 +38,7 @@ public class DiscordBot : IHostedService
         _guildUpdatedEventHandler = guildUpdatedEventHandler;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _client.Ready += ClientReady;
 
@@ -53,11 +54,24 @@ public class DiscordBot : IHostedService
         await _client.SetActivityAsync(new Game("everything you say", ActivityType.Watching));
 
         await _client.StartAsync();
-    }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await _client.StopAsync();
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await Task.Delay(LoopWaitTime, stoppingToken);
+            if (_client.ConnectionState == ConnectionState.Disconnected)
+            {
+                await LogAsync(new LogMessage(LogSeverity.Error, "ExecuteAsync", "Attempting to restart bot"));
+                await _client.StopAsync();
+                try
+                {
+                    await _client.StartAsync();
+                }
+                catch (Exception ex)
+                {
+                    await LogAsync(new LogMessage(LogSeverity.Critical, "ExecuteAsync", "Could not restart bot", ex));
+                }
+            }
+        }
     }
 
     private async Task ClientReady()
