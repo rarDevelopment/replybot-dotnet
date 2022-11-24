@@ -1,8 +1,9 @@
-﻿using Replybot.BusinessLayer;
+﻿using MediatR;
+using Replybot.BusinessLayer;
+using Replybot.Notifications;
 
 namespace Replybot.Events;
-
-public class GuildUpdatedEventHandler
+public class GuildUpdatedEventHandler : INotificationHandler<GuildUpdatedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly SystemChannelPoster _systemChannelPoster;
@@ -14,10 +15,13 @@ public class GuildUpdatedEventHandler
         _systemChannelPoster = systemChannelPoster;
     }
 
-    public Task HandleEvent(SocketGuild oldGuild, SocketGuild newGuild)
+    public Task Handle(GuildUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {
+            var oldGuild = notification.OldGuild;
+            var newGuild = notification.NewGuild;
+
             if (newGuild.Name != oldGuild.Name)
             {
                 await _systemChannelPoster.PostToGuildSystemChannel(
@@ -34,7 +38,7 @@ public class GuildUpdatedEventHandler
                     $"Hey look! A new server icon! {newGuild.IconUrl}",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedEventHandler));
             }
-        });
+        }, cancellationToken);
         return Task.CompletedTask;
     }
 }

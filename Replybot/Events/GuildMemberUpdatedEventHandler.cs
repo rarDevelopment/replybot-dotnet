@@ -1,8 +1,9 @@
-﻿using Replybot.BusinessLayer;
+﻿using MediatR;
+using Replybot.BusinessLayer;
+using Replybot.Notifications;
 
 namespace Replybot.Events;
-
-public class GuildMemberUpdatedEventHandler
+public class GuildMemberUpdatedEventHandler : INotificationHandler<GuildMemberUpdatedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly SystemChannelPoster _systemChannelPoster;
@@ -14,10 +15,13 @@ public class GuildMemberUpdatedEventHandler
         _systemChannelPoster = systemChannelPoster;
     }
 
-    public Task HandleEvent(Cacheable<SocketGuildUser, ulong> cachedOldUser, SocketGuildUser newUser)
+    public Task Handle(GuildMemberUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {
+            var cachedOldUser = notification.CachedOldUser;
+            var newUser = notification.NewUser;
+
             if (!cachedOldUser.HasValue)
             {
                 return Task.CompletedTask;
@@ -50,7 +54,7 @@ public class GuildMemberUpdatedEventHandler
                 typeof(GuildMemberUpdatedEventHandler));
 
             return Task.CompletedTask;
-        });
+        }, cancellationToken);
         return Task.CompletedTask;
     }
 }

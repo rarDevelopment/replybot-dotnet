@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Replybot.Events;
 using Replybot.Models;
+using Replybot.Notifications;
 
 namespace Replybot;
 
@@ -15,10 +18,13 @@ public class DiscordBot : BackgroundService
     private readonly UserUpdatedEventHandler _userUpdatedEventHandler;
     private readonly GuildMemberUpdatedEventHandler _guildMemberUpdatedEventHandler;
     private readonly GuildUpdatedEventHandler _guildUpdatedEventHandler;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly TimeSpan _loopWaitTime = TimeSpan.FromSeconds(15);
+    private readonly CancellationToken _cancellationToken;
 
     public DiscordBot(DiscordSocketClient client,
         InteractionService interactionService,
+        IServiceScopeFactory serviceScopeFactory,
         ILogger<DiscordBot> logger,
         InteractionHandler interactionHandler,
         DiscordSettings discordSettings,
@@ -36,6 +42,17 @@ public class DiscordBot : BackgroundService
         _userUpdatedEventHandler = userUpdatedEventHandler;
         _guildMemberUpdatedEventHandler = guildMemberUpdatedEventHandler;
         _guildUpdatedEventHandler = guildUpdatedEventHandler;
+        _serviceScopeFactory = serviceScopeFactory;
+        _cancellationToken = new CancellationTokenSource().Token;
+    }
+
+    private IMediator Mediator
+    {
+        get
+        {
+            var scope = _serviceScopeFactory.CreateScope();
+            return scope.ServiceProvider.GetRequiredService<IMediator>();
+        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -83,10 +100,26 @@ public class DiscordBot : BackgroundService
 
     public void SetEvents()
     {
-        _client.MessageReceived += _messageReceivedEventHandler.HandleEvent;
-        _client.UserUpdated += _userUpdatedEventHandler.HandleEvent;
-        _client.GuildMemberUpdated += _guildMemberUpdatedEventHandler.HandleEvent;
-        _client.GuildUpdated += _guildUpdatedEventHandler.HandleEvent;
+        _client.MessageReceived += OnMessageReceivedEvent;
+        _client.GuildMemberUpdated += OnGuildMemberUpdatedEvent;
+        _client.GuildUpdated += OnGuildUpdatedEvent;
+        _client.UserUpdated += OnUserUpdatedEvent;
+    }
+    private Task OnMessageReceivedEvent(SocketMessage msg)
+    {
+        return Mediator.Publish(new MessageReceivedNotification(msg), _cancellationToken);
+    }
+    private Task OnGuildMemberUpdatedEvent(Cacheable<SocketGuildUser, ulong> cachedOldUser, SocketGuildUser newUser)
+    {
+        return Mediator.Publish(new GuildMemberUpdatedNotification(cachedOldUser, newUser), _cancellationToken);
+    }
+    private Task OnGuildUpdatedEvent(SocketGuild oldGuild, SocketGuild newGuild)
+    {
+        return Mediator.Publish(new GuildUpdatedNotification(oldGuild, newGuild), _cancellationToken);
+    }
+    private Task OnUserUpdatedEvent(SocketUser oldUser, SocketUser newUser)
+    {
+        return Mediator.Publish(new UserUpdatedNotification(oldUser, newUser), _cancellationToken);
     }
 
     public async Task LogAsync(LogMessage msg)
