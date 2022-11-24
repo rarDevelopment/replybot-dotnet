@@ -31,85 +31,98 @@ namespace Replybot.Events
             _logger = logger;
         }
 
-        public async Task HandleEvent(SocketMessage message)
+        public Task HandleEvent(SocketMessage message)
         {
-            if (!message.Author.IsBot)
+            _ = Task.Run(async () =>
             {
+                if (message.Author.IsBot)
+                {
+                    return Task.CompletedTask;
+                }
                 var channel = message.Channel as IGuildChannel;
                 var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
                 if (triggerResponse == null)
                 {
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 var isBotMentioned = await IsBotMentioned(message, channel);
                 if (triggerResponse.RequiresBotName && !isBotMentioned)
                 {
-                    return;
+                    return Task.CompletedTask;
                 }
 
                 await HandleReactions(message, triggerResponse);
 
-                if (triggerResponse.Responses != null && triggerResponse.Responses.Any()
-                    || triggerResponse.PeopleResponses != null && triggerResponse.PeopleResponses.Any())
+                if ((triggerResponse.Responses == null || !triggerResponse.Responses.Any()) &&
+                    (triggerResponse.PeopleResponses == null || !triggerResponse.PeopleResponses.Any()))
                 {
-                    var response = ChooseResponse(triggerResponse, message.Author);
-
-                    if (!string.IsNullOrEmpty(response))
-                    {
-                        var wasDeleted = await HandleDelete(message, response);
-                        var messageReference = wasDeleted ? null : new MessageReference(message.Id);
-
-                        // handle commands
-                        if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
-                        {
-                            var howLongToBeatEmbed = await _howLongToBeatCommand.GetHowLongToBeatEmbed(message);
-                            if (howLongToBeatEmbed != null)
-                            {
-                                await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed, messageReference: messageReference);
-                            }
-                            return;
-                        }
-
-                        if (response == _keywordHandler.BuildKeyword(TriggerKeyword.DefineWord))
-                        {
-                            var defineWordEmbed = await _defineWordCommand.GetWordDefinitionEmbed(message);
-                            if (defineWordEmbed != null)
-                            {
-                                await message.Channel.SendMessageAsync(embed: defineWordEmbed,
-                                    messageReference: messageReference);
-                            }
-                            return;
-                        }
-
-                        if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FortniteShopInfo))
-                        {
-                            var fortniteShopInfoEmbed =
-                                await _fortniteShopInformationCommand.GetFortniteShopInformationEmbed(message);
-                            if (fortniteShopInfoEmbed != null)
-                            {
-                                await message.Channel.SendMessageAsync(embed: fortniteShopInfoEmbed,
-                                    messageReference: messageReference);
-                            }
-                            return;
-                        }
-
-                        var messageText = _keywordHandler.ReplaceKeywords(response,
-                            message.Author.Username,
-                            message.Author.Id,
-                            _versionSettings.VersionNumber,
-                            message.Content,
-                            triggerResponse,
-                            message.MentionedUsers.ToList(),
-                            channel?.Guild);
-
-                        await message.Channel.SendMessageAsync(
-                            messageText,
-                            messageReference: messageReference
-                        );
-                    }
+                    return Task.CompletedTask;
                 }
-            }
+                var response = ChooseResponse(triggerResponse, message.Author);
+
+                if (string.IsNullOrEmpty(response))
+                {
+                    return Task.CompletedTask;
+                }
+                var wasDeleted = await HandleDelete(message, response);
+                var messageReference = wasDeleted ? null : new MessageReference(message.Id);
+
+                // handle commands
+                if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
+                {
+                    var howLongToBeatEmbed = await _howLongToBeatCommand.GetHowLongToBeatEmbed(message);
+                    if (howLongToBeatEmbed != null)
+                    {
+                        await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed,
+                            messageReference: messageReference);
+                    }
+
+                    return Task.CompletedTask;
+                }
+
+                if (response == _keywordHandler.BuildKeyword(TriggerKeyword.DefineWord))
+                {
+                    var defineWordEmbed = await _defineWordCommand.GetWordDefinitionEmbed(message);
+                    if (defineWordEmbed != null)
+                    {
+                        await message.Channel.SendMessageAsync(embed: defineWordEmbed,
+                            messageReference: messageReference);
+                    }
+
+                    return Task.CompletedTask;
+                }
+
+                if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FortniteShopInfo))
+                {
+                    var fortniteShopInfoEmbed =
+                        await _fortniteShopInformationCommand.GetFortniteShopInformationEmbed(message);
+                    if (fortniteShopInfoEmbed != null)
+                    {
+                        await message.Channel.SendMessageAsync(embed: fortniteShopInfoEmbed,
+                            messageReference: messageReference);
+                    }
+
+                    return Task.CompletedTask;
+                }
+
+                var messageText = _keywordHandler.ReplaceKeywords(response,
+                    message.Author.Username,
+                    message.Author.Id,
+                    _versionSettings.VersionNumber,
+                    message.Content,
+                    triggerResponse,
+                    message.MentionedUsers.ToList(),
+                    channel?.Guild);
+
+                await message.Channel.SendMessageAsync(
+                    messageText,
+                    messageReference: messageReference
+                );
+
+                return Task.CompletedTask;
+            });
+            return Task.CompletedTask;
         }
 
         private async Task HandleReactions(IMessage message, TriggerResponse triggerResponse)
@@ -149,7 +162,7 @@ namespace Replybot.Events
             return isBotMentioned;
         }
 
-        private async Task<bool> HandleDelete(SocketMessage message, string response)
+        private async Task<bool> HandleDelete(IDeletable message, string response)
         {
             var wasDeleted = false;
             if (response.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
@@ -171,7 +184,7 @@ namespace Replybot.Events
             return wasDeleted;
         }
 
-        private string? ChooseResponse(TriggerResponse triggerResponse, SocketUser author)
+        private static string? ChooseResponse(TriggerResponse triggerResponse, SocketUser author)
         {
             var responseOptions = triggerResponse.Responses;
             if (triggerResponse.PeopleResponses != null && triggerResponse.PeopleResponses.Any())

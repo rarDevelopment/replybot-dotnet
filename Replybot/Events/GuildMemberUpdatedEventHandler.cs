@@ -14,25 +14,30 @@ public class GuildMemberUpdatedEventHandler
         _systemChannelPoster = systemChannelPoster;
     }
 
-    public async Task HandleEvent(Cacheable<SocketGuildUser, ulong> cachedOldUser, SocketGuildUser newUser)
+    public Task HandleEvent(Cacheable<SocketGuildUser, ulong> cachedOldUser, SocketGuildUser newUser)
     {
-        if (!cachedOldUser.HasValue)
+        _ = Task.Run(async () =>
         {
-            return;
-        }
+            if (!cachedOldUser.HasValue)
+            {
+                return Task.CompletedTask;
+            }
 
-        var oldUser = cachedOldUser.Value;
+            var oldUser = cachedOldUser.Value;
 
-        var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
-        var announceChange = guildConfig.EnableAvatarAnnouncements;
-        var tagUserInChange = guildConfig.EnableAvatarMentions;
+            var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
+            var announceChange = guildConfig.EnableAvatarAnnouncements;
+            var tagUserInChange = guildConfig.EnableAvatarMentions;
 
-        if (!announceChange)
-        {
-            return;
-        }
-        if (newUser.GuildAvatarId != oldUser.GuildAvatarId)
-        {
+            if (!announceChange)
+            {
+                return Task.CompletedTask;
+            }
+            if (newUser.GuildAvatarId == oldUser.GuildAvatarId)
+            {
+                return Task.CompletedTask;
+            }
+
             var avatarUrl = newUser.GetGuildAvatarUrl(ImageFormat.Jpeg);
             if (string.IsNullOrEmpty(avatarUrl))
             {
@@ -43,6 +48,9 @@ public class GuildMemberUpdatedEventHandler
                 $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look in this server! Check it out: {avatarUrl}",
                 $"Guild: {newUser.Guild.Name} ({newUser.Guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                 typeof(GuildMemberUpdatedEventHandler));
-        }
+
+            return Task.CompletedTask;
+        });
+        return Task.CompletedTask;
     }
 }
