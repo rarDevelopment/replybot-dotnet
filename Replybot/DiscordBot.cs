@@ -15,7 +15,7 @@ public class DiscordBot : BackgroundService
     private readonly UserUpdatedEventHandler _userUpdatedEventHandler;
     private readonly GuildMemberUpdatedEventHandler _guildMemberUpdatedEventHandler;
     private readonly GuildUpdatedEventHandler _guildUpdatedEventHandler;
-    private const int LoopWaitTime = 15000;
+    private TimeSpan LoopWaitTime = TimeSpan.FromSeconds(15);
 
     public DiscordBot(DiscordSocketClient client,
         InteractionService interactionService,
