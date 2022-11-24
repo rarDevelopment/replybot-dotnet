@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
-using Replybot.Events;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Replybot.Models;
+using Replybot.Notifications;
 
 namespace Replybot;
 
@@ -11,31 +13,33 @@ public class DiscordBot : BackgroundService
     private readonly ILogger _logger;
     private readonly InteractionHandler _interactionHandler;
     private readonly DiscordSettings _discordSettings;
-    private readonly MessageReceivedEventHandler _messageReceivedEventHandler;
-    private readonly UserUpdatedEventHandler _userUpdatedEventHandler;
-    private readonly GuildMemberUpdatedEventHandler _guildMemberUpdatedEventHandler;
-    private readonly GuildUpdatedEventHandler _guildUpdatedEventHandler;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly TimeSpan _loopWaitTime = TimeSpan.FromSeconds(15);
+    private readonly CancellationToken _cancellationToken;
 
     public DiscordBot(DiscordSocketClient client,
         InteractionService interactionService,
+        IServiceScopeFactory serviceScopeFactory,
         ILogger<DiscordBot> logger,
         InteractionHandler interactionHandler,
-        DiscordSettings discordSettings,
-        MessageReceivedEventHandler messageReceivedEventHandler,
-        UserUpdatedEventHandler userUpdatedEventHandler,
-        GuildMemberUpdatedEventHandler guildMemberUpdatedEventHandler,
-        GuildUpdatedEventHandler guildUpdatedEventHandler)
+        DiscordSettings discordSettings)
     {
         _client = client;
         _interactionService = interactionService;
         _logger = logger;
         _interactionHandler = interactionHandler;
         _discordSettings = discordSettings;
-        _messageReceivedEventHandler = messageReceivedEventHandler;
-        _userUpdatedEventHandler = userUpdatedEventHandler;
-        _guildMemberUpdatedEventHandler = guildMemberUpdatedEventHandler;
-        _guildUpdatedEventHandler = guildUpdatedEventHandler;
+        _serviceScopeFactory = serviceScopeFactory;
+        _cancellationToken = new CancellationTokenSource().Token;
+    }
+
+    private IMediator Mediator
+    {
+        get
+        {
+            var scope = _serviceScopeFactory.CreateScope();
+            return scope.ServiceProvider.GetRequiredService<IMediator>();
+        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -58,18 +62,19 @@ public class DiscordBot : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(_loopWaitTime, stoppingToken);
-            if (_client.ConnectionState == ConnectionState.Disconnected)
+            if (_client.ConnectionState != ConnectionState.Disconnected)
             {
-                await LogAsync(new LogMessage(LogSeverity.Error, "ExecuteAsync", "Attempting to restart bot"));
-                await _client.StopAsync();
-                try
-                {
-                    await _client.StartAsync();
-                }
-                catch (Exception ex)
-                {
-                    await LogAsync(new LogMessage(LogSeverity.Critical, "ExecuteAsync", "Could not restart bot", ex));
-                }
+                continue;
+            }
+            await LogAsync(new LogMessage(LogSeverity.Error, "ExecuteAsync", "Attempting to restart bot"));
+            await _client.StopAsync();
+            try
+            {
+                await _client.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                await LogAsync(new LogMessage(LogSeverity.Critical, "ExecuteAsync", "Could not restart bot", ex));
             }
         }
     }
@@ -83,10 +88,26 @@ public class DiscordBot : BackgroundService
 
     public void SetEvents()
     {
-        _client.MessageReceived += _messageReceivedEventHandler.HandleEvent;
-        _client.UserUpdated += _userUpdatedEventHandler.HandleEvent;
-        _client.GuildMemberUpdated += _guildMemberUpdatedEventHandler.HandleEvent;
-        _client.GuildUpdated += _guildUpdatedEventHandler.HandleEvent;
+        _client.MessageReceived += msg => Publish(new MessageReceivedNotification(msg));
+        _client.GuildMemberUpdated += (cachedOldUser, newUser) => Publish(new GuildMemberUpdatedNotification(cachedOldUser, newUser));
+        _client.GuildUpdated += (oldGuild, newGuild) => Publish(new GuildUpdatedNotification(oldGuild, newGuild));
+        _client.UserUpdated += (oldUser, newUser) => Publish(new UserUpdatedNotification(oldUser, newUser));
+    }
+
+    private Task Publish<TEvent>(TEvent @event) where TEvent : INotification
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Mediator.Publish(@event, _cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception in {Event}:  {ExceptionMessage}", @event.GetType().Name, ex.Message);
+            }
+        }, _cancellationToken);
+        return Task.CompletedTask;
     }
 
     public async Task LogAsync(LogMessage msg)

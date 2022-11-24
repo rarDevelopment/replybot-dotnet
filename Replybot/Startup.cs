@@ -11,6 +11,7 @@ using Replybot;
 using Serilog;
 using System.Reflection;
 using Fortnite_API;
+using MediatR;
 using Replybot.BusinessLayer;
 using Replybot.Commands;
 using Replybot.DataLayer;
@@ -112,6 +113,8 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<GetFortniteShopInformationCommand>();
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
+
+    services.AddMediatR(typeof(DiscordBot));
 
     services.AddHostedService<DiscordBot>();
 

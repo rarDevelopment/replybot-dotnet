@@ -1,8 +1,9 @@
-﻿using Replybot.BusinessLayer;
+﻿using MediatR;
+using Replybot.BusinessLayer;
+using Replybot.Notifications;
 
 namespace Replybot.Events;
-
-public class GuildMemberUpdatedEventHandler
+public class GuildMemberUpdatedEventHandler : INotificationHandler<GuildMemberUpdatedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly SystemChannelPoster _systemChannelPoster;
@@ -14,25 +15,33 @@ public class GuildMemberUpdatedEventHandler
         _systemChannelPoster = systemChannelPoster;
     }
 
-    public async Task HandleEvent(Cacheable<SocketGuildUser, ulong> cachedOldUser, SocketGuildUser newUser)
+    public Task Handle(GuildMemberUpdatedNotification notification, CancellationToken cancellationToken)
     {
-        if (!cachedOldUser.HasValue)
+        _ = Task.Run(async () =>
         {
-            return;
-        }
+            var cachedOldUser = notification.CachedOldUser;
+            var newUser = notification.NewUser;
 
-        var oldUser = cachedOldUser.Value;
+            if (!cachedOldUser.HasValue)
+            {
+                return Task.CompletedTask;
+            }
 
-        var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
-        var announceChange = guildConfig.EnableAvatarAnnouncements;
-        var tagUserInChange = guildConfig.EnableAvatarMentions;
+            var oldUser = cachedOldUser.Value;
 
-        if (!announceChange)
-        {
-            return;
-        }
-        if (newUser.GuildAvatarId != oldUser.GuildAvatarId)
-        {
+            var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
+            var announceChange = guildConfig.EnableAvatarAnnouncements;
+            var tagUserInChange = guildConfig.EnableAvatarMentions;
+
+            if (!announceChange)
+            {
+                return Task.CompletedTask;
+            }
+            if (newUser.GuildAvatarId == oldUser.GuildAvatarId)
+            {
+                return Task.CompletedTask;
+            }
+
             var avatarUrl = newUser.GetGuildAvatarUrl(ImageFormat.Jpeg);
             if (string.IsNullOrEmpty(avatarUrl))
             {
@@ -43,6 +52,9 @@ public class GuildMemberUpdatedEventHandler
                 $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look in this server! Check it out: {avatarUrl}",
                 $"Guild: {newUser.Guild.Name} ({newUser.Guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                 typeof(GuildMemberUpdatedEventHandler));
-        }
+
+            return Task.CompletedTask;
+        }, cancellationToken);
+        return Task.CompletedTask;
     }
 }
