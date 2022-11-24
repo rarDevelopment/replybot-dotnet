@@ -15,7 +15,7 @@ public class DiscordBot : BackgroundService
     private readonly UserUpdatedEventHandler _userUpdatedEventHandler;
     private readonly GuildMemberUpdatedEventHandler _guildMemberUpdatedEventHandler;
     private readonly GuildUpdatedEventHandler _guildUpdatedEventHandler;
-    private TimeSpan LoopWaitTime = TimeSpan.FromSeconds(15);
+    private readonly TimeSpan _loopWaitTime = TimeSpan.FromSeconds(15);
 
     public DiscordBot(DiscordSocketClient client,
         InteractionService interactionService,
@@ -57,7 +57,7 @@ public class DiscordBot : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(LoopWaitTime, stoppingToken);
+            await Task.Delay(_loopWaitTime, stoppingToken);
             if (_client.ConnectionState == ConnectionState.Disconnected)
             {
                 await LogAsync(new LogMessage(LogSeverity.Error, "ExecuteAsync", "Attempting to restart bot"));
