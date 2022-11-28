@@ -189,6 +189,16 @@
     },
     {
       "triggers": [
+        "poll"
+      ],
+      "responses": [
+        "{{POLL}}"
+      ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
         "search",
         "look up",
         "google"

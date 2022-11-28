@@ -110,6 +110,8 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<DefineWordCommand>();
     services.AddSingleton<FreeDictionaryApi>();
 
+    services.AddSingleton<PollCommand>();
+
     services.AddSingleton<GetFortniteShopInformationCommand>();
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));

@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.8.1" />
-    <PackageReference Include="DiscordDotNetUtilities" Version="1.0.1" />
+    <PackageReference Include="DiscordDotNetUtilities" Version="1.2.1" />
     <PackageReference Include="Fortnite-API-Wrapper" Version="2.3.2" />
     <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
