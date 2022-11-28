@@ -12,6 +12,7 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
     private readonly HowLongToBeatCommand _howLongToBeatCommand;
     private readonly DefineWordCommand _defineWordCommand;
     private readonly GetFortniteShopInformationCommand _fortniteShopInformationCommand;
+    private readonly PollCommand _pollCommand;
     private readonly VersionSettings _versionSettings;
     private readonly ILogger<DiscordBot> _logger;
 
@@ -20,6 +21,7 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
         HowLongToBeatCommand howLongToBeatCommand,
         DefineWordCommand defineWordCommand,
         GetFortniteShopInformationCommand fortniteShopInformationCommand,
+        PollCommand pollCommand,
         VersionSettings versionSettings,
         ILogger<DiscordBot> logger)
     {
@@ -28,6 +30,7 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
         _howLongToBeatCommand = howLongToBeatCommand;
         _defineWordCommand = defineWordCommand;
         _fortniteShopInformationCommand = fortniteShopInformationCommand;
+        _pollCommand = pollCommand;
         _versionSettings = versionSettings;
         _logger = logger;
     }
@@ -103,6 +106,23 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
                 {
                     await message.Channel.SendMessageAsync(embed: fortniteShopInfoEmbed,
                         messageReference: messageReference);
+                }
+
+                return Task.CompletedTask;
+            }
+
+            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.Poll))
+            {
+                var (pollEmbed, reactionEmotes) = _pollCommand.GetPollEmbed(message);
+                if (pollEmbed == null)
+                {
+                    return Task.CompletedTask;
+                }
+                var messageSent = await message.Channel.SendMessageAsync(embed: pollEmbed,
+                    messageReference: messageReference);
+                if (messageSent != null && reactionEmotes != null)
+                {
+                    await messageSent.AddReactionsAsync(reactionEmotes);
                 }
 
                 return Task.CompletedTask;

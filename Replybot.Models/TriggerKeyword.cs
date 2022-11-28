@@ -29,8 +29,9 @@
         HowLongToBeat,
         DefineWord,
         FortniteShopInfo,
+        Poll,
 
         UserMetadata,
-        GlobalMetadata
+        GlobalMetadata,
     }
 }
