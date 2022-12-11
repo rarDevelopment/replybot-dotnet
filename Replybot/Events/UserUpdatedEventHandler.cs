@@ -36,7 +36,7 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedNotificat
                 {
                     await _systemChannelPoster.PostToGuildSystemChannel(
                         guild,
-                        $"WOWIE! For your awareness, {oldUser.Username} is now {newUser.Username}! {newUser.Mention}`",
+                        $"WOWIE! For your awareness, {oldUser.Username} is now {newUser.Username}! {newUser.Mention}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                         typeof(UserUpdatedEventHandler));
                 }
