@@ -1,4 +1,5 @@
-﻿using DiscordDotNetUtilities.Interfaces;
+﻿using System.Globalization;
+using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 
 namespace Replybot.Commands
@@ -19,10 +20,7 @@ namespace Replybot.Commands
         {
             var messageContent = message.Content;
             var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
-            var messageWithoutTrigger =
-                messageWithoutBotName
-                    .Replace("poll", "", StringComparison.InvariantCultureIgnoreCase)
-                    .Trim();
+            var messageWithoutTrigger = RemoveTriggerFromMessage(messageWithoutBotName, "poll");
 
             if (messageWithoutTrigger.Length == 0)
             {
@@ -55,6 +53,15 @@ namespace Replybot.Commands
             var reactionEmotes = reactions.Select(e => new Emoji(e)).ToList();
 
             return (pollEmbed, reactionEmotes);
+        }
+
+        private static string RemoveTriggerFromMessage(string message, string trigger)
+        {
+            var firstIndexOfTrigger = message.ToLowerInvariant()
+                .IndexOf(trigger.ToLower(CultureInfo.InvariantCulture), StringComparison.InvariantCultureIgnoreCase);
+            return firstIndexOfTrigger == -1
+                ? message
+                : $"{message[..firstIndexOfTrigger].Trim()} {message[(firstIndexOfTrigger + trigger.Length)..].Trim()}";
         }
     }
 }
