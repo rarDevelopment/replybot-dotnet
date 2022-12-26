@@ -18,6 +18,8 @@ namespace Replybot.DataLayer.SchemaModels
         [BsonElement("enableAvatarMentions")]
         public bool EnableAvatarMentions { get; set; }
 
+        public ulong? LogChannelId { get; set; }
+
         public GuildConfiguration ToDomain()
         {
             return new GuildConfiguration
@@ -25,7 +27,8 @@ namespace Replybot.DataLayer.SchemaModels
                 GuildId = (ulong)Convert.ToInt64(GuildId),
                 GuildName = GuildName,
                 EnableAvatarAnnouncements = EnableAvatarAnnouncements,
-                EnableAvatarMentions = EnableAvatarMentions
+                EnableAvatarMentions = EnableAvatarMentions,
+                LogChannelId = LogChannelId
             };
         }
     }
