@@ -3,7 +3,7 @@ using Fortnite_API.Objects.V2;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-namespace Replybot.Commands
+namespace Replybot.TextCommands
 {
     public class GetFortniteShopInformationCommand
     {

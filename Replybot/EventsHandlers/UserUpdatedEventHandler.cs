@@ -2,7 +2,7 @@
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
-namespace Replybot.Events;
+namespace Replybot.EventsHandlers;
 public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;

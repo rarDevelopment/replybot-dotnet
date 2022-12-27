@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Replybot.BusinessLayer;
-using Replybot.Commands;
 using Replybot.Models;
 using Replybot.Notifications;
+using Replybot.TextCommands;
 
-namespace Replybot.Events;
+namespace Replybot.EventsHandlers;
 public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedNotification>
 {
     private readonly IResponseBusinessLayer _responseBusinessLayer;

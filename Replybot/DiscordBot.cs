@@ -92,6 +92,12 @@ public class DiscordBot : BackgroundService
         _client.GuildMemberUpdated += (cachedOldUser, newUser) => Publish(new GuildMemberUpdatedNotification(cachedOldUser, newUser));
         _client.GuildUpdated += (oldGuild, newGuild) => Publish(new GuildUpdatedNotification(oldGuild, newGuild));
         _client.UserUpdated += (oldUser, newUser) => Publish(new UserUpdatedNotification(oldUser, newUser));
+        _client.MessageUpdated += (oldMessage, newMessage, channel) => Publish(new MessageUpdatedNotification(oldMessage, newMessage, channel));
+        _client.MessageDeleted += (message, channel) => Publish(new MessageDeletedNotification(message, channel));
+        _client.UserLeft += (guild, userWhoLeft) => Publish(new UserLeftNotification(guild, userWhoLeft));
+        _client.UserBanned += (userWhoWasBanned, guild) => Publish(new UserBannedNotification(userWhoWasBanned, guild));
+        _client.UserUnbanned += (userWhoWasUnbanned, guild) => Publish(new UserUnbannedNotification(userWhoWasUnbanned, guild));
+        _client.UserJoined += user => Publish(new UserJoinedNotification(user));
     }
 
     private Task Publish<TEvent>(TEvent @event) where TEvent : INotification

@@ -13,11 +13,11 @@ using System.Reflection;
 using Fortnite_API;
 using MediatR;
 using Replybot.BusinessLayer;
-using Replybot.Commands;
 using Replybot.DataLayer;
-using Replybot.Events;
+using Replybot.EventsHandlers;
 using Replybot.Models;
 using Replybot.ServiceLayer;
+using Replybot.TextCommands;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();

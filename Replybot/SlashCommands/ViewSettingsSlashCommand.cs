@@ -1,7 +1,7 @@
 ﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 
-namespace Replybot.Commands
+namespace Replybot.SlashCommands
 {
     public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionContext>
     {

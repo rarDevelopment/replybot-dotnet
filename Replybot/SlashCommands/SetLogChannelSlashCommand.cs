@@ -1,6 +1,6 @@
 ﻿using Replybot.BusinessLayer;
 
-namespace Replybot.Commands
+namespace Replybot.SlashCommands
 {
     public class SetLogChannelSlashCommand : InteractionModuleBase<SocketInteractionContext>
     {
