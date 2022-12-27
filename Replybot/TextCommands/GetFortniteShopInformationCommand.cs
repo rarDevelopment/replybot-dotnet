@@ -87,7 +87,7 @@ namespace Replybot.TextCommands
                     return new EmbedFieldBuilder
                     {
                         Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
-                        Value = outputString[.._discordSettings.MaxCharacters!.Value],
+                        Value = outputString[.._discordSettings.MaxCharacters],
                         IsInline = false
                     };
                 }
@@ -102,7 +102,7 @@ namespace Replybot.TextCommands
             }
         }
 
-        private static string MakeShopItemsString(HashSet<string> shopItems)
+        private static string MakeShopItemsString(IEnumerable<string> shopItems)
         {
             return string.Join(SectionSeparator, shopItems);
         }

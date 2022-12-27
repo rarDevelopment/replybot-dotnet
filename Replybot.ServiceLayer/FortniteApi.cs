@@ -16,11 +16,9 @@ namespace Replybot.ServiceLayer
         public async Task<BrShopV2Combined?> GetFortniteShopInformation()
         {
             var shopInfo = await _client.V2.Shop.GetBrCombinedAsync(GameLanguage.EN);
-            if (shopInfo == null || !shopInfo.IsSuccess)
-            {
-                return null;
-            }
-            return shopInfo.Data;
+            return shopInfo is not { IsSuccess: true }
+                ? null
+                : shopInfo.Data;
         }
     }
 }

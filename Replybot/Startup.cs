@@ -50,7 +50,8 @@ builder.ConfigureServices((host, services) =>
                              GatewayIntents.GuildBans,
             FormatUsersInBidirectionalUnicode = false,
             AlwaysDownloadUsers = true,
-            LogGatewayIntentWarnings = false
+            LogGatewayIntentWarnings = false,
+            MessageCacheSize = 50
         }));
 
     var versionSettings = new VersionSettings
@@ -58,12 +59,9 @@ builder.ConfigureServices((host, services) =>
         VersionNumber = host.Configuration["Version:VersionNumber"]
     };
 
-    var discordSettings = new DiscordSettings
-    {
-        BotToken = host.Configuration["Discord:BotToken"],
-        AvatarBaseUrl = host.Configuration["Discord:AvatarBaseUrl"],
-        MaxCharacters = Convert.ToInt32(host.Configuration["Discord:MaxCharacters"])
-    };
+    var discordSettings = new DiscordSettings(botToken: host.Configuration["Discord:BotToken"],
+        avatarBaseUrl: host.Configuration["Discord:AvatarBaseUrl"],
+        maxCharacters: Convert.ToInt32(host.Configuration["Discord:MaxCharacters"]));
 
     var databaseSettings = new DatabaseSettings
     {
@@ -100,6 +98,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<KeywordHandler>();
     services.AddSingleton<SystemChannelPoster>();
     services.AddSingleton<LogChannelPoster>();
+    services.AddSingleton<LogMessageBuilder>();
 
     services.AddSingleton<MessageReceivedEventHandler>();
     services.AddSingleton<UserUpdatedEventHandler>();
