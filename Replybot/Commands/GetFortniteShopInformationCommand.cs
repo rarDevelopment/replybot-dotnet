@@ -10,17 +10,21 @@ namespace Replybot.Commands
         private readonly FortniteApi _fortniteApi;
         private readonly DiscordSettings _discordSettings;
         private readonly IDiscordFormatter _discordFormatter;
+        private readonly ILogger<DiscordBot> _logger;
 
         private const string MoreText = "\n(see shop for more)";
+        private const string SectionSeparator = "\n";
 
         public GetFortniteShopInformationCommand(
             FortniteApi fortniteApi,
             DiscordSettings discordSettings,
-            IDiscordFormatter discordFormatter)
+            IDiscordFormatter discordFormatter,
+            ILogger<DiscordBot> logger)
         {
             _fortniteApi = fortniteApi;
             _discordSettings = discordSettings;
             _discordFormatter = discordFormatter;
+            _logger = logger;
         }
 
         public async Task<Embed?> GetFortniteShopInformationEmbed(SocketMessage message)
@@ -46,47 +50,71 @@ namespace Replybot.Commands
                 );
         }
 
-        private EmbedFieldBuilder BuildShopSection(BrShopV2StoreFront featured, string defaultSectionName)
+        private EmbedFieldBuilder BuildShopSection(BrShopV2StoreFront storeSection, string defaultSectionName)
         {
-            var featuredItems = new HashSet<string>();
-            foreach (var section in featured.Entries)
+            var storeItems = new HashSet<string>();
+            foreach (var section in storeSection.Entries)
             {
                 var sectionTextToAdd = section.IsBundle
                     ? $"{BuildBundleField(section)}"
                     : $"{BuildSectionField(section)}";
 
-                if (MakeFeaturedItemsString(featuredItems).Length + sectionTextToAdd.Length >= _discordSettings.MaxCharacters - MoreText.Length)
+                var lengthIfAdded = MakeShopItemsString(storeItems).Length + sectionTextToAdd.Length;
+                var maxAllowedCharacters = _discordSettings.MaxCharacters - (MoreText.Length + SectionSeparator.Length); //extra SectionSeparator to account for when MoreText is joined in with the others down below
+                if (lengthIfAdded >= maxAllowedCharacters)
                 {
-                    featuredItems.Add(MoreText);
+                    storeItems.Add(MoreText);
                     break;
                 }
 
-                featuredItems.Add(sectionTextToAdd);
+                storeItems.Add(sectionTextToAdd);
             }
 
-            var outputString = MakeFeaturedItemsString(featuredItems);
-
-            return new EmbedFieldBuilder
+            var outputString = MakeShopItemsString(storeItems);
+            try
             {
-                Name = featured.HasName ? featured.Name : defaultSectionName,
-                Value = outputString,
-                IsInline = false
-            };
+                return new EmbedFieldBuilder
+                {
+                    Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
+                    Value = outputString,
+                    IsInline = false
+                };
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.ToLower().Contains("field value length must be less than or equal to 1024"))
+                {
+                    return new EmbedFieldBuilder
+                    {
+                        Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
+                        Value = outputString[.._discordSettings.MaxCharacters!.Value],
+                        IsInline = false
+                    };
+                }
+
+                _logger.LogError(ex, "Error in GetFortniteShopInformationCommand");
+                return new EmbedFieldBuilder
+                {
+                    Name = "Error Loading Section",
+                    Value = "There was an error loading this section.",
+                    IsInline = false
+                };
+            }
         }
 
-        private static string MakeFeaturedItemsString(HashSet<string> featuredItems)
+        private static string MakeShopItemsString(HashSet<string> shopItems)
         {
-            return string.Join("\n", featuredItems);
+            return string.Join(SectionSeparator, shopItems);
         }
 
-        private string BuildSectionField(BrShopV2StoreFrontEntry section)
+        private static string BuildSectionField(BrShopV2StoreFrontEntry section)
         {
             var priceDisplay = BuildPriceDisplay(section.FinalPrice, section.RegularPrice);
             var itemToUse = section.Items.FirstOrDefault();
             return $"{itemToUse?.Name} ({itemToUse?.Type.DisplayValue}) - {priceDisplay}";
         }
 
-        private string BuildBundleField(BrShopV2StoreFrontEntry bundle)
+        private static string BuildBundleField(BrShopV2StoreFrontEntry bundle)
         {
             var priceDisplay = BuildPriceDisplay(bundle.FinalPrice, bundle.RegularPrice);
             return $"{bundle.Bundle.Name} - {priceDisplay}";
