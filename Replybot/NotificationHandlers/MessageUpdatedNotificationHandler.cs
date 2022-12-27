@@ -12,6 +12,7 @@ public class MessageUpdatedNotificationHandler : INotificationHandler<MessageUpd
         _logChannelPoster = logChannelPoster;
         _logMessageBuilder = logMessageBuilder;
     }
+
     public Task Handle(MessageUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
@@ -23,12 +24,8 @@ public class MessageUpdatedNotificationHandler : INotificationHandler<MessageUpd
             }
 
             var updatedMessage = notification.NewMessage;
-            var originalMessageContent = notification.OldMessage.HasValue ? notification.OldMessage.Value.Content : null;
-
-            if (originalMessageContent == null)
-            {
-                return Task.CompletedTask;
-            }
+            var originalMessageContent = (notification.OldMessage.HasValue ? notification.OldMessage.Value.Content : null)
+                                         ?? "[could not retrieve previous message from cache]";
 
             var embedBuilder = _logMessageBuilder.CreateEmbedBuilderWithFields(notification.NewMessage, originalMessageContent,
                 $"Message Updated: Message from {notification.NewMessage.Author} edited in #{updatedMessage.Channel}");
