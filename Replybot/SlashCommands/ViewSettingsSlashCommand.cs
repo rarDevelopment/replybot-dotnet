@@ -14,7 +14,8 @@ namespace Replybot.SlashCommands
             _discordFormatter = discordFormatter;
         }
 
-        [SlashCommand("view_settings", "See the current settings for the bot (admins only).")]
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
+        [SlashCommand("view-settings", "See the current settings for the bot.")]
         public async Task ViewSettings()
         {
             var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);

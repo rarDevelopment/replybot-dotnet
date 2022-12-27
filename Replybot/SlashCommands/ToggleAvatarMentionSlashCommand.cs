@@ -11,7 +11,8 @@ namespace Replybot.SlashCommands
             _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         }
 
-        [SlashCommand("set_avatar_mention", "Set avatar change mentions to on or off (true or false).")]
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
+        [SlashCommand("set-avatar-mention", "Set avatar change mentions to on or off (true or false).")]
         public async Task Toggle(
             [Summary("is_enabled", "True for Enabled, False for Disabled")] bool isEnabled)
         {
