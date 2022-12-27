@@ -38,6 +38,12 @@ public class MessageUpdatedNotificationHandler : INotificationHandler<MessageUpd
                 {"Original:", originalMessageContent},
                 {"Edited:", notification.NewMessage.Content}
             };
+
+            if (originalMessageContent == notification.NewMessage.Content)
+            {
+                return Task.CompletedTask;
+            }
+
             var embedBuilder = _logMessageBuilder.CreateEmbedBuilderWithFields("Message Updated", $"Message from {notification.NewMessage.Author.Mention} edited in {textChannel.Mention}", messages);
 
             await _logChannelPoster.SendToLogChannel(textChannel.Guild, embedBuilder.Build());
