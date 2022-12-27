@@ -12,9 +12,11 @@ namespace Replybot
             _discordSettings = discordSettings;
         }
 
-        public EmbedBuilder CreateEmbedBuilder(IMessage message, string title)
+        public EmbedBuilder CreateEmbedBuilder(string title, string description, IMessage message)
         {
-            var embedBuilder = new EmbedBuilder().WithTitle(title);
+            var embedBuilder = new EmbedBuilder()
+                .WithTitle(title)
+                .WithDescription(description);
 
             if (message.Embeds.Any())
             {
@@ -51,25 +53,19 @@ namespace Replybot
             return embedBuilder;
         }
 
-        public EmbedBuilder CreateEmbedBuilderWithFields(IMessage newMessage, string oldMessageContent, string title)
+        public EmbedBuilder CreateEmbedBuilderWithFields(string title, string description,
+            Dictionary<string, string> messagesToEmbed)
         {
-            var embedBuilder = new EmbedBuilder().WithTitle(title);
+            var embedBuilder = new EmbedBuilder()
+                .WithTitle(title)
+                .WithDescription(description);
 
-            var original = new EmbedFieldBuilder
+            embedBuilder.WithFields(messagesToEmbed.Select(m => new EmbedFieldBuilder
             {
-                Name = "Original:",
-                Value = TruncateIfLongerThanMaxCharacters(oldMessageContent, _discordSettings.MaxCharacters, TruncationString),
+                Name = m.Key,
+                Value = TruncateIfLongerThanMaxCharacters(m.Value, _discordSettings.MaxCharacters, TruncationString),
                 IsInline = false
-            };
-
-            var updated = new EmbedFieldBuilder
-            {
-                Name = "Edited:",
-                Value = TruncateIfLongerThanMaxCharacters(newMessage.Content, _discordSettings.MaxCharacters, TruncationString),
-                IsInline = false
-            };
-
-            embedBuilder.WithFields(original, updated);
+            }));
 
             return embedBuilder;
         }
