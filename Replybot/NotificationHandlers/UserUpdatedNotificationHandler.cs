@@ -2,13 +2,13 @@
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
-namespace Replybot.EventsHandlers;
-public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedNotification>
+namespace Replybot.NotificationHandlers;
+public class UserUpdatedNotificationHandler : INotificationHandler<UserUpdatedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly SystemChannelPoster _systemChannelPoster;
 
-    public UserUpdatedEventHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+    public UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         SystemChannelPoster systemChannelPoster)
     {
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
@@ -38,7 +38,7 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedNotificat
                         guild,
                         $"WOWIE! For your awareness, {oldUser.Username} is now {newUser.Username}! {newUser.Mention}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
-                        typeof(UserUpdatedEventHandler));
+                        typeof(UserUpdatedNotificationHandler));
                 }
 
                 if (newUser.AvatarId == oldUser.AvatarId)
@@ -52,7 +52,7 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedNotificat
                         guild,
                         $"Hey everyone! Check out my new look: ${newUser.GetAvatarUrl(ImageFormat.Jpeg)}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
-                        typeof(UserUpdatedEventHandler));
+                        typeof(UserUpdatedNotificationHandler));
                 }
                 else
                 {
@@ -60,7 +60,7 @@ public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedNotificat
                         guild,
                         $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look! Check it out: {newUser.GetAvatarUrl(ImageFormat.Jpeg)}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
-                        typeof(UserUpdatedEventHandler));
+                        typeof(UserUpdatedNotificationHandler));
                 }
             }
 

@@ -4,8 +4,8 @@ using Replybot.Models;
 using Replybot.Notifications;
 using Replybot.TextCommands;
 
-namespace Replybot.EventsHandlers;
-public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedNotification>
+namespace Replybot.NotificationHandlers;
+public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
 {
     private readonly IResponseBusinessLayer _responseBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
@@ -16,7 +16,7 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
     private readonly VersionSettings _versionSettings;
     private readonly ILogger<DiscordBot> _logger;
 
-    public MessageReceivedEventHandler(IResponseBusinessLayer responseBusinessLayer,
+    public MessageReceivedNotificationHandler(IResponseBusinessLayer responseBusinessLayer,
         KeywordHandler keywordHandler,
         HowLongToBeatCommand howLongToBeatCommand,
         DefineWordCommand defineWordCommand,

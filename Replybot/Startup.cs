@@ -14,8 +14,8 @@ using Fortnite_API;
 using MediatR;
 using Replybot.BusinessLayer;
 using Replybot.DataLayer;
-using Replybot.EventsHandlers;
 using Replybot.Models;
+using Replybot.NotificationHandlers;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
@@ -100,10 +100,10 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<LogChannelPoster>();
     services.AddSingleton<LogMessageBuilder>();
 
-    services.AddSingleton<MessageReceivedEventHandler>();
-    services.AddSingleton<UserUpdatedEventHandler>();
-    services.AddSingleton<GuildMemberUpdatedEventHandler>();
-    services.AddSingleton<GuildUpdatedEventHandler>();
+    services.AddSingleton<MessageReceivedNotificationHandler>();
+    services.AddSingleton<UserUpdatedNotificationHandler>();
+    services.AddSingleton<GuildMemberUpdatedNotificationHandler>();
+    services.AddSingleton<GuildUpdatedNotificationHandler>();
 
     services.AddSingleton<HowLongToBeatCommand>();
     services.AddSingleton<HowLongToBeatApi>();

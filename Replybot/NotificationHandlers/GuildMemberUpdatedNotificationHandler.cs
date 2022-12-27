@@ -2,13 +2,13 @@
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
-namespace Replybot.EventsHandlers;
-public class GuildMemberUpdatedEventHandler : INotificationHandler<GuildMemberUpdatedNotification>
+namespace Replybot.NotificationHandlers;
+public class GuildMemberUpdatedNotificationHandler : INotificationHandler<GuildMemberUpdatedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly SystemChannelPoster _systemChannelPoster;
 
-    public GuildMemberUpdatedEventHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+    public GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         SystemChannelPoster systemChannelPoster)
     {
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
@@ -51,7 +51,7 @@ public class GuildMemberUpdatedEventHandler : INotificationHandler<GuildMemberUp
             await _systemChannelPoster.PostToGuildSystemChannel(newUser.Guild,
                 $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look in this server! Check it out: {avatarUrl}",
                 $"Guild: {newUser.Guild.Name} ({newUser.Guild.Id}) - User: {newUser.Username} ({newUser.Id})",
-                typeof(GuildMemberUpdatedEventHandler));
+                typeof(GuildMemberUpdatedNotificationHandler));
 
             return Task.CompletedTask;
         }, cancellationToken);

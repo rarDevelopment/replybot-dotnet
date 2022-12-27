@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Replybot.Notifications;
 
-namespace Replybot.EventsHandlers;
+namespace Replybot.NotificationHandlers;
 public class UserUnbannedNotificationHandler : INotificationHandler<UserUnbannedNotification>
 {
     private readonly LogChannelPoster _logChannelPoster;
