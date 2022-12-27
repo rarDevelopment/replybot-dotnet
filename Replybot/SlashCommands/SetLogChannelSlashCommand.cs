@@ -29,7 +29,7 @@ namespace Replybot.SlashCommands
                     var text = "Consider it done! Activity will no longer be logged.";
                     if (channel != null)
                     {
-                        text = $"Consider it done! Activity logs will now be posted in {channel.Name}.";
+                        text = $"Consider it done! Activity logs will now be posted in <#{channel.Id}>.";
                     }
                     await RespondAsync(text);
                     return;

@@ -46,7 +46,8 @@ builder.ConfigureServices((host, services) =>
                              GatewayIntents.GuildMembers |
                              GatewayIntents.GuildMessages |
                              GatewayIntents.GuildMessageReactions |
-                             GatewayIntents.MessageContent,
+                             GatewayIntents.MessageContent |
+                             GatewayIntents.GuildBans,
             FormatUsersInBidirectionalUnicode = false,
             AlwaysDownloadUsers = true,
             LogGatewayIntentWarnings = false
@@ -98,6 +99,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton<KeywordHandler>();
     services.AddSingleton<SystemChannelPoster>();
+    services.AddSingleton<LogChannelPoster>();
 
     services.AddSingleton<MessageReceivedEventHandler>();
     services.AddSingleton<UserUpdatedEventHandler>();

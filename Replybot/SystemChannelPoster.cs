@@ -1,24 +1,23 @@
-﻿namespace Replybot
+﻿namespace Replybot;
+
+public class SystemChannelPoster
 {
-    public class SystemChannelPoster
+    private readonly ILogger<DiscordBot> _logger;
+
+    public SystemChannelPoster(ILogger<DiscordBot> logger)
     {
-        private readonly ILogger<DiscordBot> _logger;
+        _logger = logger;
+    }
 
-        public SystemChannelPoster(ILogger<DiscordBot> logger)
+    public async Task PostToGuildSystemChannel(SocketGuild guild, string message, string errorMessage, Type callerType)
+    {
+        try
         {
-            _logger = logger;
+            await guild.SystemChannel.SendMessageAsync(message);
         }
-
-        public async Task PostToGuildSystemChannel(SocketGuild guild, string message, string errorMessage, Type callerType)
+        catch (Exception ex)
         {
-            try
-            {
-                await guild.SystemChannel.SendMessageAsync(message);
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(LogLevel.Error, $"Error Posting to System Channel in {callerType}: {errorMessage} -- {ex.Message}");
-            }
+            _logger.Log(LogLevel.Error, $"Error Posting to System Channel in {callerType}: {errorMessage} -- {ex.Message}");
         }
     }
 }
