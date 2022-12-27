@@ -87,4 +87,12 @@ public class ResponseDataLayer : IResponseDataLayer
         var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
         return updateResult.MatchedCount == 1;
     }
+
+    public async Task<bool> SetLogChannel(ulong guildId, ulong? channelId)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.LogChannelId, channelId);
+        var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
+        return updateResult.MatchedCount == 1;
+    }
 }

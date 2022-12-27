@@ -1,6 +1,6 @@
 ﻿using Replybot.BusinessLayer;
 
-namespace Replybot.Commands
+namespace Replybot.SlashCommands
 {
     public class ToggleAvatarAnnounceSlashCommand : InteractionModuleBase<SocketInteractionContext>
     {
@@ -11,7 +11,8 @@ namespace Replybot.Commands
             _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         }
 
-        [SlashCommand("set_avatar_announcement", "Set avatar announcements to on or off (true or false).")]
+        [DefaultMemberPermissions(GuildPermission.Administrator)]
+        [SlashCommand("set-avatar-announcement", "Set avatar announcements to on or off (true or false).")]
         public async Task Toggle(
             [Summary("is_enabled", "True for Enabled, False for Disabled")] bool isEnabled)
         {

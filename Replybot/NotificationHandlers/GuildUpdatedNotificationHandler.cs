@@ -2,13 +2,13 @@
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
-namespace Replybot.Events;
-public class GuildUpdatedEventHandler : INotificationHandler<GuildUpdatedNotification>
+namespace Replybot.NotificationHandlers;
+public class GuildUpdatedNotificationHandler : INotificationHandler<GuildUpdatedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly SystemChannelPoster _systemChannelPoster;
 
-    public GuildUpdatedEventHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+    public GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         SystemChannelPoster systemChannelPoster)
     {
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
@@ -27,7 +27,7 @@ public class GuildUpdatedEventHandler : INotificationHandler<GuildUpdatedNotific
                 await _systemChannelPoster.PostToGuildSystemChannel(
                     newGuild,
                     $"Wow, a server name change! This server has been renamed from **{oldGuild.Name}** to **{newGuild.Name}**.",
-                    $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedEventHandler));
+                    $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
                 await _guildConfigurationBusinessLayer.UpdateGuildConfiguration(newGuild);
             }
 
@@ -36,7 +36,7 @@ public class GuildUpdatedEventHandler : INotificationHandler<GuildUpdatedNotific
                 await _systemChannelPoster.PostToGuildSystemChannel(
                     newGuild,
                     $"Hey look! A new server icon! {newGuild.IconUrl}",
-                    $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedEventHandler));
+                    $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
             }
         }, cancellationToken);
         return Task.CompletedTask;

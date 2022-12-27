@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using Replybot.BusinessLayer;
-using Replybot.Commands;
 using Replybot.Models;
 using Replybot.Notifications;
+using Replybot.TextCommands;
+using System.Text.RegularExpressions;
 
-namespace Replybot.Events;
-public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedNotification>
+namespace Replybot.NotificationHandlers;
+public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
 {
     private readonly IResponseBusinessLayer _responseBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
@@ -14,15 +15,19 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
     private readonly GetFortniteShopInformationCommand _fortniteShopInformationCommand;
     private readonly PollCommand _pollCommand;
     private readonly VersionSettings _versionSettings;
+    private readonly DiscordSocketClient _client;
+    private readonly LogMessageBuilder _logMessageBuilder;
     private readonly ILogger<DiscordBot> _logger;
 
-    public MessageReceivedEventHandler(IResponseBusinessLayer responseBusinessLayer,
+    public MessageReceivedNotificationHandler(IResponseBusinessLayer responseBusinessLayer,
         KeywordHandler keywordHandler,
         HowLongToBeatCommand howLongToBeatCommand,
         DefineWordCommand defineWordCommand,
         GetFortniteShopInformationCommand fortniteShopInformationCommand,
         PollCommand pollCommand,
         VersionSettings versionSettings,
+        DiscordSocketClient client,
+        LogMessageBuilder logMessageBuilder,
         ILogger<DiscordBot> logger)
     {
         _responseBusinessLayer = responseBusinessLayer;
@@ -32,6 +37,8 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
         _fortniteShopInformationCommand = fortniteShopInformationCommand;
         _pollCommand = pollCommand;
         _versionSettings = versionSettings;
+        _client = client;
+        _logMessageBuilder = logMessageBuilder;
         _logger = logger;
     }
 
@@ -44,7 +51,14 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
             {
                 return Task.CompletedTask;
             }
-            var channel = message.Channel as IGuildChannel;
+
+            if (message.Channel is not SocketTextChannel channel)
+            {
+                return Task.CompletedTask;
+            }
+
+            await HandleDiscordMessageLink(channel, notification.Message);
+
             var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
             if (triggerResponse == null)
             {
@@ -145,6 +159,74 @@ public class MessageReceivedEventHandler : INotificationHandler<MessageReceivedN
             return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
+    }
+
+    private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)
+    {
+        var discordLinkRegex =
+            new Regex(
+                @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        var discordLinkMatches = discordLinkRegex.Matches(messageWithLink.Content);
+        if (discordLinkMatches.Any())
+        {
+            foreach (Match match in discordLinkMatches)
+            {
+                var fullUrl = new Uri(match.Value);
+                var urlSplitOnDot = fullUrl.Host.Split('.');
+                if (!urlSplitOnDot.Contains("discord"))
+                {
+                    continue;
+                }
+
+                var segmentsJoined = string.Join("", fullUrl.Segments).Split("/");
+                if (!segmentsJoined.Contains("channels"))
+                {
+                    continue;
+                }
+
+                if (segmentsJoined.Length < 5)
+                {
+                    continue;
+                }
+
+                SocketGuild guild;
+                var guildIdFromUrl = Convert.ToUInt64(segmentsJoined[2]);
+                if (channel.Guild.Id != guildIdFromUrl)
+                {
+                    guild = _client.GetGuild(guildIdFromUrl);
+                    if (guild is null)
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    guild = channel.Guild;
+                }
+                if (guild != channel.Guild)
+                {
+                    continue;
+                }
+
+                var channelWithMessage = await ((IGuild)guild).GetTextChannelAsync(Convert.ToUInt64(segmentsJoined[3]))
+                    .ConfigureAwait(false);
+                if (channelWithMessage == null)
+                {
+                    continue;
+                }
+
+                var messageBeingLinked = await channelWithMessage.GetMessageAsync(Convert.ToUInt64(segmentsJoined[4])).ConfigureAwait(false);
+                if (messageBeingLinked is null)
+                {
+                    continue;
+                }
+
+                var embedBuilder = _logMessageBuilder.CreateEmbedBuilder("Message Linked", "", messageBeingLinked);
+                await messageWithLink.Channel.SendMessageAsync(embed: embedBuilder.Build());
+            }
+        }
     }
 
     private async Task HandleReactions(IMessage message, TriggerResponse triggerResponse)

@@ -3,7 +3,7 @@ using Fortnite_API.Objects.V2;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-namespace Replybot.Commands
+namespace Replybot.TextCommands
 {
     public class GetFortniteShopInformationCommand
     {
@@ -87,7 +87,7 @@ namespace Replybot.Commands
                     return new EmbedFieldBuilder
                     {
                         Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
-                        Value = outputString[.._discordSettings.MaxCharacters!.Value],
+                        Value = outputString[.._discordSettings.MaxCharacters],
                         IsInline = false
                     };
                 }
@@ -102,7 +102,7 @@ namespace Replybot.Commands
             }
         }
 
-        private static string MakeShopItemsString(HashSet<string> shopItems)
+        private static string MakeShopItemsString(IEnumerable<string> shopItems)
         {
             return string.Join(SectionSeparator, shopItems);
         }

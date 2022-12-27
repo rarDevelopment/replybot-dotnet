@@ -50,4 +50,15 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
         return false;
     }
+
+    public async Task<bool> SetLogChannel(IGuild guild, ulong? channelId)
+    {
+        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        if (config != null)
+        {
+            return await _responseDataLayer.SetLogChannel(guild.Id, channelId);
+        }
+
+        return false;
+    }
 }
