@@ -11,7 +11,6 @@ namespace Replybot.SlashCommands
             _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         }
 
-
         [SlashCommand("set-logs-channel", "Sets the channel to use for logging activities in this Discord.")]
         public async Task SetLogChannel(
             [Summary("channel", "The channel where you'd like logs to be stored. Leave it empty to turn off logging.")] IGuildChannel? channel = null)

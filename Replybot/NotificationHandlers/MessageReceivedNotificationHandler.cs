@@ -223,7 +223,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                     continue;
                 }
 
-                var embedBuilder = _logMessageBuilder.CreateEmbedBuilder("Message Linked", "", messageBeingLinked);
+                var embedBuilder = _logMessageBuilder.CreateEmbedBuilder("Message Linked", $"[Original Message]({messageBeingLinked.GetJumpUrl()}) by {messageBeingLinked.Author.Mention}:", messageBeingLinked);
                 await messageWithLink.Channel.SendMessageAsync(embed: embedBuilder.Build());
             }
         }
