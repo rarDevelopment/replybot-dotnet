@@ -15,8 +15,7 @@ namespace Replybot
         public EmbedBuilder CreateEmbedBuilder(string title, string description, IMessage message)
         {
             var embedBuilder = new EmbedBuilder()
-                .WithTitle(title)
-                .WithDescription(description);
+                .WithTitle(title);
 
             if (message.Embeds.Any())
             {
@@ -41,7 +40,7 @@ namespace Replybot
 
             if (string.IsNullOrEmpty(embedBuilder.Description))
             {
-                embedBuilder.WithDescription(message.Content);
+                embedBuilder.WithDescription($"{description}: {message.Content}");
             }
 
             if (embedBuilder.Description.Length > _discordSettings.MaxCharacters)
