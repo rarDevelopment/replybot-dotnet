@@ -12,10 +12,19 @@ namespace Replybot
             _discordSettings = discordSettings;
         }
 
-        public EmbedBuilder CreateEmbedBuilder(string title, string description, IMessage message)
+        public EmbedBuilder CreateEmbedBuilder(string title, string explanationMessage, IMessage message)
         {
             var embedBuilder = new EmbedBuilder()
                 .WithTitle(title);
+
+            HandleEmbeds(explanationMessage, message, embedBuilder);
+
+            return embedBuilder;
+        }
+
+        private void HandleEmbeds(string explanationMessage, IMessage message, EmbedBuilder embedBuilder)
+        {
+            var embedDescription = "";
 
             if (message.Embeds.Any())
             {
@@ -25,10 +34,7 @@ namespace Replybot
                     embedBuilder.WithImageUrl(embed.Image.Value.Url);
                 }
 
-                if (!string.IsNullOrEmpty(embed.Description))
-                {
-                    embedBuilder.WithDescription(embed.Description);
-                }
+                embedDescription = embed.Description;
             }
 
             if (message.Attachments.Any())
@@ -38,18 +44,18 @@ namespace Replybot
                         message.Attachments.Select((attachment, index) => $"[Attachment {index + 1}]({attachment.Url})")));
             }
 
-            if (string.IsNullOrEmpty(embedBuilder.Description))
-            {
-                embedBuilder.WithDescription($"{description}: {message.Content}");
-            }
+            var descriptionToUse = !string.IsNullOrEmpty(explanationMessage) ? $"**{explanationMessage}**" : "";
+            descriptionToUse += !string.IsNullOrEmpty(message.Content) ? $"\n{message.Content}" : "";
+            descriptionToUse += !string.IsNullOrEmpty(embedDescription) ? $"\n-----------\n{embedDescription}" : "";
 
-            if (embedBuilder.Description.Length > _discordSettings.MaxCharacters)
-            {
-                var maxCharacters = _discordSettings.MaxCharacters - TruncationString.Length;
-                embedBuilder.WithDescription($"{embedBuilder.Description[..maxCharacters]}{TruncationString}");
-            }
+            embedBuilder.WithDescription(descriptionToUse);
 
-            return embedBuilder;
+            if (embedBuilder.Description.Length <= _discordSettings.MaxCharacters)
+            {
+                return;
+            }
+            var maxCharacters = _discordSettings.MaxCharacters - TruncationString.Length;
+            embedBuilder.WithDescription($"{embedBuilder.Description[..maxCharacters]}{TruncationString}");
         }
 
         public EmbedBuilder CreateEmbedBuilderWithFields(string title, string description,
