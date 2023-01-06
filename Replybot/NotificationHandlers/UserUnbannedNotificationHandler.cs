@@ -14,7 +14,7 @@ public class UserUnbannedNotificationHandler : INotificationHandler<UserUnbanned
     {
         _ = Task.Run(async () =>
         {
-            await _logChannelPoster.SendToLogChannel(notification.Guild, $"Unbanned User: **{notification.UserWhoWasUnbanned.Username}** was unbanned.");
+            await _logChannelPoster.SendToLogChannel(notification.Guild, $"Unbanned User: **{notification.UserWhoWasUnbanned.Mention}** ({notification.UserWhoWasUnbanned.Username}) was unbanned.");
 
             return Task.CompletedTask;
         }, cancellationToken);
