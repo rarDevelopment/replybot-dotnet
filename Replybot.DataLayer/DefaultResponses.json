@@ -232,6 +232,20 @@
     },
     {
       "triggers": [
+        "fix twitter",
+        "fxtwitter",
+        "fixtwitter",
+        "fixtwit",
+        "fxtwit"
+      ],
+      "responses": [
+        "{{MESSAGEWITHFIXEDTWITTERURL}}"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
         "8-ball",
         "8ball",
         "8 ball",

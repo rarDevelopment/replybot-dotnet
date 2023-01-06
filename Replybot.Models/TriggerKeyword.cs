@@ -13,6 +13,7 @@
         MessageEncoded,
         MessageEncodedWithoutTrigger,
         MessageWithoutTrigger,
+        MessageWithFixedTwitterUrl,
         MentionedUserAvatar,
         ServerIcon,
         ServerBanner,
