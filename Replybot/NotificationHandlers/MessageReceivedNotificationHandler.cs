@@ -58,6 +58,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             }
 
             await HandleDiscordMessageLink(channel, notification.Message);
+            if (notification.Message.Reference != null)
+            {
+                await HandleRepliedMessageProcessing(channel, notification.Message);
+            }
 
             var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
             if (triggerResponse == null)
@@ -149,7 +153,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 message.Content,
                 triggerResponse,
                 message.MentionedUsers.ToList(),
-                channel?.Guild);
+                channel.Guild);
 
             await message.Channel.SendMessageAsync(
                 messageText,
@@ -159,6 +163,45 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
+    }
+
+    private static async Task HandleRepliedMessageProcessing(ISocketMessageChannel channel, SocketMessage message)
+    {
+        await HandleFixTwitterInReply(channel, message);
+    }
+
+    private static async Task HandleFixTwitterInReply(ISocketMessageChannel channel, SocketMessage message)
+    {
+        var messageReferenceId = message.Reference.MessageId.GetValueOrDefault(default);
+        if (messageReferenceId == default)
+        {
+            await channel.SendMessageAsync("Hmm something is wrong, did you reply to a valid message?",
+                messageReference: new MessageReference(message.Id));
+            return;
+        }
+
+        var messageReferenced = await message.Channel.GetMessageAsync(messageReferenceId);
+        if (messageReferenced == null)
+        {
+            await channel.SendMessageAsync("I couldn't get the message to fix it, sorry!",
+                messageReference: new MessageReference(message.Id));
+            return;
+        }
+
+        var requestingMessageWithoutSpacesOrI = message.Content.Replace(" ", "")
+            .Replace("i", "", StringComparison.InvariantCultureIgnoreCase);
+        if (requestingMessageWithoutSpacesOrI.Contains("fxtwt", StringComparison.InvariantCultureIgnoreCase))
+        {
+            if (!messageReferenced.Content.Contains("twitter.com", StringComparison.InvariantCultureIgnoreCase))
+            {
+                await channel.SendMessageAsync("I don't think there's a twitter link there.",
+                    messageReference: new MessageReference(message.Id));
+                return;
+            }
+
+            var fixedMessage = messageReferenced.Content.Replace("twitter.com", "fxtwitter.com");
+            await channel.SendMessageAsync(fixedMessage, messageReference: new MessageReference(messageReferenceId));
+        }
     }
 
     private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)
@@ -269,20 +312,21 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private async Task<bool> HandleDelete(IDeletable message, string response)
     {
         var wasDeleted = false;
-        if (response.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
+        if (!response.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
         {
-            try
+            return wasDeleted;
+        }
+        try
+        {
+            await message.DeleteAsync(new RequestOptions
             {
-                await message.DeleteAsync(new RequestOptions
-                {
-                    AuditLogReason = "Deleted by replybot."
-                });
-                wasDeleted = true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(LogLevel.Error, $"Failed to delete message: {ex.Message}", ex);
-            }
+                AuditLogReason = "Deleted by replybot."
+            });
+            wasDeleted = true;
+        }
+        catch (Exception ex)
+        {
+            _logger.Log(LogLevel.Error, $"Failed to delete message: {ex.Message}", ex);
         }
 
         return wasDeleted;

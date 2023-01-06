@@ -234,9 +234,7 @@
       "triggers": [
         "fix twitter",
         "fxtwitter",
-        "fixtwitter",
         "fixtwit",
-        "fxtwit"
       ],
       "responses": [
         "{{MESSAGEWITHFIXEDTWITTERURL}}"
