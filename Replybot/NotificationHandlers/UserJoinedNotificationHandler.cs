@@ -14,7 +14,7 @@ public class UserJoinedNotificationHandler : INotificationHandler<UserJoinedNoti
     {
         _ = Task.Run(async () =>
         {
-            await _logChannelPoster.SendToLogChannel(notification.UserWhoJoined.Guild, $"User Joined: **{notification.UserWhoJoined.Username}** has joined the server.");
+            await _logChannelPoster.SendToLogChannel(notification.UserWhoJoined.Guild, $"User Joined: **{notification.UserWhoJoined.Mention}** ({notification.UserWhoJoined.Username}) has joined the server.");
 
             return Task.CompletedTask;
         }, cancellationToken);

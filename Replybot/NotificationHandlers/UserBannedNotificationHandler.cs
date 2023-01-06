@@ -14,7 +14,7 @@ public class UserBannedNotificationHandler : INotificationHandler<UserBannedNoti
     {
         _ = Task.Run(async () =>
         {
-            await _logChannelPoster.SendToLogChannel(notification.Guild, $"Banned User: **{notification.UserWhoWasBanned.Username}** was banned.");
+            await _logChannelPoster.SendToLogChannel(notification.Guild, $"Banned User: **{notification.UserWhoWasBanned.Mention}** ({notification.UserWhoWasBanned.Username}) was banned.");
 
             return Task.CompletedTask;
         }, cancellationToken);

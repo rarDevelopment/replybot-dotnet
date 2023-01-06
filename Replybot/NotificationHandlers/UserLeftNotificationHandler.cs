@@ -14,7 +14,7 @@ public class UserLeftNotificationHandler : INotificationHandler<UserLeftNotifica
     {
         _ = Task.Run(async () =>
         {
-            await _logChannelPoster.SendToLogChannel(notification.Guild, $"User Departure: **{notification.UserWhoLeft.Username}** has left the server.");
+            await _logChannelPoster.SendToLogChannel(notification.Guild, $"User Departure: **{notification.UserWhoLeft.Mention}** ({notification.UserWhoLeft.Username}) has left the server.");
 
             return Task.CompletedTask;
         }, cancellationToken);
