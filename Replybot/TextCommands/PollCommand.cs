@@ -16,7 +16,7 @@ namespace Replybot.TextCommands
             _discordFormatter = discordFormatter;
         }
 
-        public (Embed? pollEmbed, IReadOnlyList<IEmote>? reactionEmotes) GetPollEmbed(SocketMessage message)
+        public (Embed? pollEmbed, IReadOnlyList<IEmote>? reactionEmotes) BuildPollEmbed(SocketMessage message)
         {
             var messageContent = message.Content;
             var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);

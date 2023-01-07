@@ -112,6 +112,8 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<FreeDictionaryApi>();
 
     services.AddSingleton<PollCommand>();
+    
+    services.AddSingleton<FixTwitterCommand>();
 
     services.AddSingleton<GetFortniteShopInformationCommand>();
     services.AddSingleton<FortniteApi>();

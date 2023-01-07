@@ -232,12 +232,17 @@
     },
     {
       "triggers": [
-        "fix twitter",
-        "fxtwitter",
+        "fxtwt",
+        "fx twt",
         "fixtwit",
+        "fixtwitter",
+        "fix twitter",
+        "fix twit",
+        "fix tweet",
+        "fixtweet"
       ],
       "responses": [
-        "{{MESSAGEWITHFIXEDTWITTERURL}}"
+        "{{FIXTWITTER}}"
       ],
       "mentionAuthor": true,
       "requiresBotName": true

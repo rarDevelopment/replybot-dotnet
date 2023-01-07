@@ -14,6 +14,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly DefineWordCommand _defineWordCommand;
     private readonly GetFortniteShopInformationCommand _fortniteShopInformationCommand;
     private readonly PollCommand _pollCommand;
+    private readonly FixTwitterCommand _fixTwitterCommand;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
     private readonly LogMessageBuilder _logMessageBuilder;
@@ -25,6 +26,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         DefineWordCommand defineWordCommand,
         GetFortniteShopInformationCommand fortniteShopInformationCommand,
         PollCommand pollCommand,
+        FixTwitterCommand fixTwitterCommand,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         LogMessageBuilder logMessageBuilder,
@@ -36,6 +38,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _defineWordCommand = defineWordCommand;
         _fortniteShopInformationCommand = fortniteShopInformationCommand;
         _pollCommand = pollCommand;
+        _fixTwitterCommand = fixTwitterCommand;
         _versionSettings = versionSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
@@ -58,10 +61,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             }
 
             await HandleDiscordMessageLink(channel, notification.Message);
-            if (notification.Message.Reference != null)
-            {
-                await HandleRepliedMessageProcessing(channel, notification.Message);
-            }
 
             var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
             if (triggerResponse == null)
@@ -131,7 +130,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             if (response == _keywordHandler.BuildKeyword(TriggerKeyword.Poll))
             {
-                var (pollEmbed, reactionEmotes) = _pollCommand.GetPollEmbed(message);
+                var (pollEmbed, reactionEmotes) = _pollCommand.BuildPollEmbed(message);
                 if (pollEmbed == null)
                 {
                     return Task.CompletedTask;
@@ -144,6 +143,17 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 }
 
                 return Task.CompletedTask;
+            }
+
+            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FixTwitter))
+            {
+                var fixedTwitterMessage = await _fixTwitterCommand.GetFixedTwitterMessage(channel, notification.Message);
+                if (fixedTwitterMessage != null)
+                {
+                    await message.Channel.SendMessageAsync(fixedTwitterMessage.Value.fixedTwitterMessage,
+                        messageReference: fixedTwitterMessage.Value.messageToReplyTo);
+                    return Task.CompletedTask;
+                }
             }
 
             var messageText = _keywordHandler.ReplaceKeywords(response,
@@ -163,45 +173,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
-    }
-
-    private static async Task HandleRepliedMessageProcessing(ISocketMessageChannel channel, SocketMessage message)
-    {
-        await HandleFixTwitterInReply(channel, message);
-    }
-
-    private static async Task HandleFixTwitterInReply(ISocketMessageChannel channel, SocketMessage message)
-    {
-        var messageReferenceId = message.Reference.MessageId.GetValueOrDefault(default);
-        if (messageReferenceId == default)
-        {
-            await channel.SendMessageAsync("Hmm something is wrong, did you reply to a valid message?",
-                messageReference: new MessageReference(message.Id));
-            return;
-        }
-
-        var messageReferenced = await message.Channel.GetMessageAsync(messageReferenceId);
-        if (messageReferenced == null)
-        {
-            await channel.SendMessageAsync("I couldn't get the message to fix it, sorry!",
-                messageReference: new MessageReference(message.Id));
-            return;
-        }
-
-        var requestingMessageWithoutSpacesOrI = message.Content.Replace(" ", "")
-            .Replace("i", "", StringComparison.InvariantCultureIgnoreCase);
-        if (requestingMessageWithoutSpacesOrI.Contains("fxtwt", StringComparison.InvariantCultureIgnoreCase))
-        {
-            if (!messageReferenced.Content.Contains("twitter.com", StringComparison.InvariantCultureIgnoreCase))
-            {
-                await channel.SendMessageAsync("I don't think there's a twitter link there.",
-                    messageReference: new MessageReference(message.Id));
-                return;
-            }
-
-            var fixedMessage = messageReferenced.Content.Replace("twitter.com", "fxtwitter.com");
-            await channel.SendMessageAsync(fixedMessage, messageReference: new MessageReference(messageReferenceId));
-        }
     }
 
     private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)

@@ -39,10 +39,9 @@ namespace Replybot.BusinessLayer
             }
 
             var cleanedMessage = _keywordHandler.CleanMessageForTrigger(message);
-            var foundTriggerResponse = responseData.FirstOrDefault(r =>
-                r.Triggers.FirstOrDefault(
-                    triggerTerm => GetWordMatch(triggerTerm, cleanedMessage)) != null);
-            return foundTriggerResponse;
+
+            return responseData.FirstOrDefault(r => 
+                r.Triggers.FirstOrDefault(triggerTerm => GetWordMatch(triggerTerm, cleanedMessage)) != null);
         }
 
         private bool GetWordMatch(string triggerTerm, string input)

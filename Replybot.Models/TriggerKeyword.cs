@@ -13,7 +13,6 @@
         MessageEncoded,
         MessageEncodedWithoutTrigger,
         MessageWithoutTrigger,
-        MessageWithFixedTwitterUrl,
         MentionedUserAvatar,
         ServerIcon,
         ServerBanner,
@@ -21,18 +20,10 @@
         BotName,
         Anything,
 
-        AvatarAnnounceOn,
-        AvatarAnnounceOff,
-        AvatarMentionsOn,
-        AvatarMentionsOff,
-        InitConfig,
-        EmbedMessage,
         HowLongToBeat,
         DefineWord,
         FortniteShopInfo,
         Poll,
-
-        UserMetadata,
-        GlobalMetadata,
+        FixTwitter,
     }
 }
