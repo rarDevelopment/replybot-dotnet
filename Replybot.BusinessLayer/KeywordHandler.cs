@@ -35,7 +35,6 @@ public class KeywordHandler
             .Replace(BuildKeyword(TriggerKeyword.Message), messageContent).Replace(BuildKeyword(TriggerKeyword.MessageWithoutReplybot), messageWithoutReplybot).Replace((string)BuildKeyword(TriggerKeyword.MessageWithoutTrigger), messageWithoutTrigger).Replace((string)BuildKeyword(TriggerKeyword.MessageSpongebob), Spongebobify(messageContent))
             .Replace(BuildKeyword(TriggerKeyword.MessageEncoded), HttpUtility.UrlPathEncode(messageWithoutReplybot))
             .Replace(BuildKeyword(TriggerKeyword.MessageEncodedWithoutTrigger), HttpUtility.UrlPathEncode(messageWithoutTrigger), StringComparison.InvariantCultureIgnoreCase)
-            .Replace(BuildKeyword(TriggerKeyword.MessageWithFixedTwitterUrl), messageWithoutTrigger.Replace("twitter.com","fxtwitter.com",StringComparison.InvariantCultureIgnoreCase))
             .Replace(BuildKeyword(TriggerKeyword.MessageUpperCase),
                 messageContent.ToUpper())
             .Replace(BuildKeyword(TriggerKeyword.MentionedUserAvatar),
