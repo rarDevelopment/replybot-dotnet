@@ -4,9 +4,7 @@
     {
         public async Task<(string fixedTwitterMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(ISocketMessageChannel channel, SocketMessage message)
         {
-            var messageToFix = message;
-
-            // ReSharper disable once UseNullPropagation
+            IMessage messageToFix = message;
             if (message.Reference != null)
             {
                 var messageReferenceId = message.Reference.MessageId.GetValueOrDefault(default);
@@ -16,7 +14,7 @@
                 }
 
                 var messageReferenced = await message.Channel.GetMessageAsync(messageReferenceId);
-                if (messageReferenced is not SocketMessage referencedSocketMessage)
+                if (messageReferenced is not { } referencedSocketMessage)
                 {
                     return ("I couldn't read that message for some reason, sorry!", new MessageReference(message.Id));
                 }
