@@ -9,13 +9,12 @@ public class FixTwitterCommand
 
     public async Task<(string fixedTwitterMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(ISocketMessageChannel channel, SocketMessage message)
     {
-        var authorMentionMessage = $"{message.Author.Mention} asked me to fix these tweets:\n";
         IMessage messageToFix = message;
 
         if (message.Reference == null)
         {
             return DoesMessageContainTwitterUrl(messageToFix)
-                ? ($"{authorMentionMessage}{string.Join("\n", FixTwitterUrls(messageToFix))}", new MessageReference(messageToFix.Id))
+                ? (BuildFixedTweetsMessage(messageToFix), new MessageReference(messageToFix.Id))
                 : ("I don't think there's a twitter link there.", new MessageReference(message.Id));
         }
 
@@ -34,8 +33,16 @@ public class FixTwitterCommand
         messageToFix = referencedSocketMessage;
 
         return DoesMessageContainTwitterUrl(messageToFix)
-            ? ($"{authorMentionMessage}{string.Join("\n", FixTwitterUrls(messageToFix))}", new MessageReference(messageToFix.Id))
+            ? (BuildFixedTweetsMessage(messageToFix), new MessageReference(messageToFix.Id))
             : ("I don't think there's a twitter link there.", new MessageReference(message.Id));
+    }
+
+    private string BuildFixedTweetsMessage(IMessage message)
+    {
+        var fixedTweets = FixTwitterUrls(message);
+        var tweetDescribeText = fixedTweets.Count == 1 ? "this tweet" : "these tweets";
+        var authorMentionMessage = $"{message.Author.Mention} asked me to fix {tweetDescribeText}:\n";
+        return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
     private bool DoesMessageContainTwitterUrl(IMessage messageReferenced)
@@ -43,10 +50,10 @@ public class FixTwitterCommand
         return _twitterUrlRegex.IsMatch(messageReferenced.Content);
     }
 
-    private IEnumerable<string> FixTwitterUrls(IMessage messageToFix)
+    private IList<string> FixTwitterUrls(IMessage messageToFix)
     {
         var urlsFromMessage = GetTwitterUrlsFromMessage(messageToFix.Content);
-        return urlsFromMessage.Select(url => url.Replace("twitter.com", "fxtwitter.com", StringComparison.InvariantCultureIgnoreCase));
+        return urlsFromMessage.Select(url => url.Replace("twitter.com", "fxtwitter.com", StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
     private IEnumerable<string> GetTwitterUrlsFromMessage(string text)
