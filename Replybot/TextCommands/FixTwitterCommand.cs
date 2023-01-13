@@ -11,17 +11,20 @@ public class FixTwitterCommand
     {
         IMessage messageToFix = message;
 
+        var requestingUser = messageToFix.Author;
+        var userWhoSentTweets = messageToFix.Author;
+
         if (message.Reference == null)
         {
             return DoesMessageContainTwitterUrl(messageToFix)
-                ? (BuildFixedTweetsMessage(messageToFix), new MessageReference(messageToFix.Id))
+                ? (BuildFixedTweetsMessage(messageToFix, requestingUser, userWhoSentTweets), new MessageReference(messageToFix.Id))
                 : ("I don't think there's a twitter link there.", new MessageReference(message.Id));
         }
 
         var messageReferenceId = message.Reference.MessageId.GetValueOrDefault(default);
         if (messageReferenceId == default)
         {
-            return (string.Join("\n", FixTwitterUrls(message)), new MessageReference(message.Id));
+            return (BuildFixedTweetsMessage(message, requestingUser, userWhoSentTweets), new MessageReference(message.Id));
         }
 
         var messageReferenced = await message.Channel.GetMessageAsync(messageReferenceId);
@@ -30,18 +33,22 @@ public class FixTwitterCommand
             return ("I couldn't read that message for some reason, sorry!", new MessageReference(message.Id));
         }
 
+        userWhoSentTweets = referencedSocketMessage.Author;
         messageToFix = referencedSocketMessage;
 
         return DoesMessageContainTwitterUrl(messageToFix)
-            ? (BuildFixedTweetsMessage(messageToFix), new MessageReference(messageToFix.Id))
+            ? (BuildFixedTweetsMessage(messageToFix, requestingUser, userWhoSentTweets), new MessageReference(messageToFix.Id))
             : ("I don't think there's a twitter link there.", new MessageReference(message.Id));
     }
 
-    private string BuildFixedTweetsMessage(IMessage message)
+    private string BuildFixedTweetsMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
     {
         var fixedTweets = FixTwitterUrls(message);
         var tweetDescribeText = fixedTweets.Count == 1 ? "this tweet" : "these tweets";
-        var authorMentionMessage = $"{message.Author.Mention} asked me to fix {tweetDescribeText}:\n";
+        var differentUserText = requestingUser.Id != userWhoSentTweets.Id
+            ? $" (in {userWhoSentTweets.Mention}'s message)"
+            : "";
+        var authorMentionMessage = $"{requestingUser.Mention} asked me to fix {tweetDescribeText}{differentUserText}:\n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
