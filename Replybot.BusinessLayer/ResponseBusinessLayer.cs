@@ -18,11 +18,11 @@ namespace Replybot.BusinessLayer
             _keywordHandler = keywordHandler;
         }
 
-        public async Task<TriggerResponse?> GetTriggerResponse(string message, IGuildChannel? channel)
+        public async Task<TriggerResponse?> GetTriggerResponse(string message, ulong? guildId)
         {
             var defaultResponses = _responseDataLayer.GetDefaultResponses();
-            var guildResponses = channel != null
-                ? await _responseDataLayer.GetResponsesForGuild(channel.GuildId)
+            var guildResponses = guildId != null
+                ? await _responseDataLayer.GetResponsesForGuild(guildId.Value)
                 : null;
 
             var defaultResponse = FindResponseFromData(defaultResponses, message);

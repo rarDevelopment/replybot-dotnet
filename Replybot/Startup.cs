@@ -47,7 +47,8 @@ builder.ConfigureServices((host, services) =>
                              GatewayIntents.GuildMessages |
                              GatewayIntents.GuildMessageReactions |
                              GatewayIntents.MessageContent |
-                             GatewayIntents.GuildBans,
+                             GatewayIntents.GuildBans |
+                             GatewayIntents.DirectMessages,
             FormatUsersInBidirectionalUnicode = false,
             AlwaysDownloadUsers = true,
             LogGatewayIntentWarnings = false,
@@ -112,7 +113,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<FreeDictionaryApi>();
 
     services.AddSingleton<PollCommand>();
-    
+
     services.AddSingleton<FixTwitterCommand>();
 
     services.AddSingleton<GetFortniteShopInformationCommand>();
