@@ -55,20 +55,21 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            if (message.Channel is not SocketTextChannel channel)
+            var messageChannel = message.Channel;
+            var guildChannel = messageChannel as SocketGuildChannel;
+
+            if (guildChannel != null)
             {
-                return Task.CompletedTask;
+                await HandleDiscordMessageLink(guildChannel, notification.Message);
             }
 
-            await HandleDiscordMessageLink(channel, notification.Message);
-
-            var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, channel);
+            var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, guildChannel?.Guild.Id);
             if (triggerResponse == null)
             {
                 return Task.CompletedTask;
             }
 
-            var isBotMentioned = await IsBotMentioned(message, channel);
+            var isBotMentioned = await IsBotMentioned(message, guildChannel);
             if (triggerResponse.RequiresBotName && !isBotMentioned)
             {
                 return Task.CompletedTask;
@@ -96,7 +97,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 var howLongToBeatEmbed = await _howLongToBeatCommand.GetHowLongToBeatEmbed(message);
                 if (howLongToBeatEmbed != null)
                 {
-                    await message.Channel.SendMessageAsync(embed: howLongToBeatEmbed,
+                    await messageChannel.SendMessageAsync(embed: howLongToBeatEmbed,
                         messageReference: messageReference);
                 }
 
@@ -108,7 +109,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 var defineWordEmbed = await _defineWordCommand.GetWordDefinitionEmbed(message);
                 if (defineWordEmbed != null)
                 {
-                    await message.Channel.SendMessageAsync(embed: defineWordEmbed,
+                    await messageChannel.SendMessageAsync(embed: defineWordEmbed,
                         messageReference: messageReference);
                 }
 
@@ -121,7 +122,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                     await _fortniteShopInformationCommand.GetFortniteShopInformationEmbed(message);
                 if (fortniteShopInfoEmbed != null)
                 {
-                    await message.Channel.SendMessageAsync(embed: fortniteShopInfoEmbed,
+                    await messageChannel.SendMessageAsync(embed: fortniteShopInfoEmbed,
                         messageReference: messageReference);
                 }
 
@@ -135,7 +136,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 {
                     return Task.CompletedTask;
                 }
-                var messageSent = await message.Channel.SendMessageAsync(embed: pollEmbed,
+                var messageSent = await messageChannel.SendMessageAsync(embed: pollEmbed,
                     messageReference: messageReference);
                 if (messageSent != null && reactionEmotes != null)
                 {
@@ -147,10 +148,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FixTwitter))
             {
-                var fixedTwitterMessage = await _fixTwitterCommand.GetFixedTwitterMessage(channel, notification.Message);
+                var fixedTwitterMessage = await _fixTwitterCommand.GetFixedTwitterMessage(notification.Message);
                 if (fixedTwitterMessage != null)
                 {
-                    await message.Channel.SendMessageAsync(fixedTwitterMessage.Value.fixedTwitterMessage,
+                    await messageChannel.SendMessageAsync(fixedTwitterMessage.Value.fixedTwitterMessage,
                         messageReference: fixedTwitterMessage.Value.messageToReplyTo);
                     return Task.CompletedTask;
                 }
@@ -163,9 +164,9 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 message.Content,
                 triggerResponse,
                 message.MentionedUsers.ToList(),
-                channel.Guild);
+                guildChannel?.Guild);
 
-            await message.Channel.SendMessageAsync(
+            await messageChannel.SendMessageAsync(
                 messageText,
                 messageReference: messageReference
             );
