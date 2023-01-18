@@ -146,9 +146,14 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FixTwitter))
+            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FixTwitter) || response == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter))
             {
-                var fixedTwitterMessage = await _fixTwitterCommand.GetFixedTwitterMessage(notification.Message);
+                var keywordToPass = TriggerKeyword.FixTwitter;
+                if (response == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter))
+                {
+                    keywordToPass = TriggerKeyword.BreakTwitter;
+                }
+                var fixedTwitterMessage = await _fixTwitterCommand.GetFixedTwitterMessage(notification.Message, keywordToPass);
                 if (fixedTwitterMessage != null)
                 {
                     await messageChannel.SendMessageAsync(fixedTwitterMessage.Value.fixedTwitterMessage,

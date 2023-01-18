@@ -1,36 +1,36 @@
 {
   "defaultResponses": [
     {
-      "triggers": ["{{BOTNAME}} secretly say", "{{BOTNAME}} silently say"],
-      "responses": ["{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}"],
+      "triggers": [ "{{BOTNAME}} secretly say", "{{BOTNAME}} silently say" ],
+      "responses": [ "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}" ],
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} say"],
-      "responses": ["{{MESSAGEWITHOUTTRIGGER}}"],
+      "triggers": [ "{{BOTNAME}} say" ],
+      "responses": [ "{{MESSAGEWITHOUTTRIGGER}}" ],
       "requiresBotName": true
     },
     {
-      "triggers": ["testing"],
-      "responses": ["it's working"],
+      "triggers": [ "testing" ],
+      "responses": [ "it's working" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
-      "triggers": ["turn on avatar announcements"],
-      "responses": ["{{AVATARANNOUNCEON}}"]
+      "triggers": [ "turn on avatar announcements" ],
+      "responses": [ "{{AVATARANNOUNCEON}}" ]
     },
     {
-      "triggers": ["turn off avatar announcements"],
-      "responses": ["{{AVATARANNOUNCEOFF}}"]
+      "triggers": [ "turn off avatar announcements" ],
+      "responses": [ "{{AVATARANNOUNCEOFF}}" ]
     },
     {
-      "triggers": ["turn on avatar mentions"],
-      "responses": ["{{AVATARMENTIONSON}}"]
+      "triggers": [ "turn on avatar mentions" ],
+      "responses": [ "{{AVATARMENTIONSON}}" ]
     },
     {
-      "triggers": ["turn off avatar mentions"],
-      "responses": ["{{AVATARMENTIONSOFF}}"]
+      "triggers": [ "turn off avatar mentions" ],
+      "responses": [ "{{AVATARMENTIONSOFF}}" ]
     },
     {
       "triggers": [
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "triggers": ["how many members", "how many people"],
+      "triggers": [ "how many members", "how many people" ],
       "responses": [
         "Hmm, approximately {{MEMBERCOUNT}} member(s) in this Discord.",
         "I think there's about {{MEMBERCOUNT}} member(s) in this Discord."
@@ -79,8 +79,8 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["flip a coin", "🪙"],
-      "responses": ["Heads 🪙", "Tails 🪙"],
+      "triggers": [ "flip a coin", "🪙" ],
+      "responses": [ "Heads 🪙", "Tails 🪙" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
@@ -97,34 +97,34 @@
       ],
       "mentionAuthor": true,
       "requiresBotName": true,
-      "reactions": ["🎬"]
+      "reactions": [ "🎬" ]
     },
     {
-      "triggers": ["hltb"],
-      "responses": ["{{HOWLONGTOBEAT}}"],
+      "triggers": [ "hltb" ],
+      "responses": [ "{{HOWLONGTOBEAT}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
-      "triggers": ["define"],
-      "responses": ["{{DEFINEWORD}}"],
+      "triggers": [ "define" ],
+      "responses": [ "{{DEFINEWORD}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
-      "triggers": ["fortnite shop"],
-      "responses": ["{{FORTNITESHOPINFO}}"],
+      "triggers": [ "fortnite shop" ],
+      "responses": [ "{{FORTNITESHOPINFO}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
-      "triggers": ["poll"],
-      "responses": ["{{POLL}}"],
+      "triggers": [ "poll" ],
+      "responses": [ "{{POLL}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
-      "triggers": ["search", "look up"],
+      "triggers": [ "search", "look up" ],
       "responses": [
         "https://duckduckgo.com/?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
       ],
@@ -132,7 +132,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["google"],
+      "triggers": [ "google" ],
       "responses": [
         "https://www.google.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
       ],
@@ -140,7 +140,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["bing"],
+      "triggers": [ "bing" ],
       "responses": [
         "https://www.bing.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
       ],
@@ -148,8 +148,8 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["songlink", "song link"],
-      "responses": ["https://song.link/{{MESSAGEENCODEDWITHOUTTRIGGER}}"],
+      "triggers": [ "songlink", "song link" ],
+      "responses": [ "https://song.link/{{MESSAGEENCODEDWITHOUTTRIGGER}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
@@ -166,12 +166,28 @@
         "fixtweet",
         "fixtweets"
       ],
-      "responses": ["{{FIXTWITTER}}"],
+      "responses": [ "{{FIXTWITTER}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
-      "triggers": ["8-ball", "8ball", "8 ball", "🎱"],
+      "triggers": [
+        "breaktwt",
+        "break twt",
+        "breaktwitter",
+        "break twitter",
+        "break twit",
+        "break tweet",
+        "break tweets",
+        "breaktweet",
+        "breaktweets"
+      ],
+      "responses": [ "{{BREAKTWITTER}}" ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [ "8-ball", "8ball", "8 ball", "🎱" ],
       "responses": [
         "It is certain.",
         "It is decidedly so.",
@@ -196,12 +212,12 @@
         "Better believe it!"
       ],
       "mentionAuthor": true,
-      "reactions": ["🎱"],
+      "reactions": [ "🎱" ],
       "requiresBotName": true
     },
     {
-      "triggers": ["template test"],
-      "responses": ["I don't think this is for you."],
+      "triggers": [ "template test" ],
+      "responses": [ "I don't think this is for you." ],
       "peopleResponses": [
         {
           "userId": 234356032099450890,
@@ -213,19 +229,19 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["test"],
-      "responses": ["I don't think this is for you."],
+      "triggers": [ "test" ],
+      "responses": [ "I don't think this is for you." ],
       "peopleResponses": [
         {
           "userId": 234356032099450890,
-          "personResponses": ["It's working, boss!"]
+          "personResponses": [ "It's working, boss!" ]
         }
       ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
-      "triggers": ["-v", "version", "what version"],
+      "triggers": [ "-v", "version", "what version" ],
       "responses": [
         "I am {{VERSIONNUMBER}} versions old.",
         "That's kind of private, but if you must know, I'm at v{{VERSIONNUMBER}}.",
@@ -255,7 +271,7 @@
         "❤️❤️❤️❤️❤️"
       ],
       "mentionAuthor": true,
-      "reactions": ["❤️"],
+      "reactions": [ "❤️" ],
       "requiresBotName": true
     },
     {
@@ -286,7 +302,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["how many"],
+      "triggers": [ "how many" ],
       "responses": [
         "0",
         "200",
@@ -300,7 +316,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} how"],
+      "triggers": [ "{{BOTNAME}} how" ],
       "responses": [
         "Easily.",
         "It's not hard!",
@@ -315,7 +331,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} why", "{{BOTNAME}}, why"],
+      "triggers": [ "{{BOTNAME}} why", "{{BOTNAME}}, why" ],
       "responses": [
         "Look I don't have an answer for everything.",
         "I've got a lot of reasons, but I can't explain them to you.",
@@ -327,7 +343,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} what", "{{BOTNAME}}, what"],
+      "triggers": [ "{{BOTNAME}} what", "{{BOTNAME}}, what" ],
       "responses": [
         "It's whatever you think it is.",
         "You think I know?",
@@ -337,25 +353,25 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["avatar"],
-      "responses": ["{{MENTIONEDUSERAVATAR}}"],
+      "triggers": [ "avatar" ],
+      "responses": [ "{{MENTIONEDUSERAVATAR}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
-      "triggers": ["server icon"],
-      "responses": ["{{SERVERICON}}"],
+      "triggers": [ "server icon" ],
+      "responses": [ "{{SERVERICON}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
-      "triggers": ["server banner"],
-      "responses": ["{{SERVERBANNER}}"],
+      "triggers": [ "server banner" ],
+      "responses": [ "{{SERVERBANNER}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} who", "{{BOTNAME}}, who"],
+      "triggers": [ "{{BOTNAME}} who", "{{BOTNAME}}, who" ],
       "responses": [
         "Not sure.",
         "In all honesty, it might be you.",
@@ -369,7 +385,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} when", "{{BOTNAME}}, when"],
+      "triggers": [ "{{BOTNAME}} when", "{{BOTNAME}}, when" ],
       "responses": [
         "Never.",
         "Tomorrow.",
@@ -382,7 +398,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} where", "{{BOTNAME}}, where"],
+      "triggers": [ "{{BOTNAME}} where", "{{BOTNAME}}, where" ],
       "responses": [
         "Far away from here, that's for sure.",
         "Closer than you think.",
@@ -416,7 +432,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["keep it up", "good work", "good job"],
+      "triggers": [ "keep it up", "good work", "good job" ],
       "responses": [
         "Thanks, I thought so too.",
         "Same to you, friend!",
@@ -457,7 +473,7 @@
       "requiresBotName": true
     },
     {
-      "triggers": ["{{BOTNAME}} is", "{{BOTNAME}}'s", "{{BOTNAME}} was"],
+      "triggers": [ "{{BOTNAME}} is", "{{BOTNAME}}'s", "{{BOTNAME}} was" ],
       "responses": [
         "I am not!",
         "Only sometimes",
@@ -537,11 +553,11 @@
         "shut your goddamn mouth",
         "shut your god damn mouth"
       ],
-      "reactions": ["🤐"],
+      "reactions": [ "🤐" ],
       "requiresBotName": true
     },
     {
-      "triggers": ["{{ANYTHING}}"],
+      "triggers": [ "{{ANYTHING}}" ],
       "responses": [
         "How can I help?",
         "Hell yeah",
