@@ -25,5 +25,6 @@
         FortniteShopInfo,
         Poll,
         FixTwitter,
+        BreakTwitter
     }
 }
