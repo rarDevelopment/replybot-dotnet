@@ -42,7 +42,16 @@ public class FixTwitterCommand
 
         userWhoSentTweets = referencedSocketMessage.Author;
 
-        return FixLinksIfFound(referencedSocketMessage, requestingUser, userWhoSentTweets, noLinkFoundTuple, keyword);
+        var result = FixLinksIfFound(referencedSocketMessage, requestingUser, userWhoSentTweets, noLinkFoundTuple,
+            keyword);
+        if (result == noLinkFoundTuple)
+        {
+            return
+                FixLinksIfFound(requestingMessage, requestingUser, userWhoSentTweets,
+                    noLinkFoundTuple, keyword);
+        }
+
+        return result;
     }
 
     private (string, MessageReference) FixLinksIfFound(IMessage messageToFix,

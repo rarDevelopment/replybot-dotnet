@@ -1,6 +1,12 @@
 {
   "defaultResponses": [
     {
+      "triggers": [ "poll" ],
+      "responses": [ "{{POLL}}" ],
+      "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
       "triggers": [ "{{BOTNAME}} secretly say", "{{BOTNAME}} silently say" ],
       "responses": [ "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}" ],
       "requiresBotName": true
@@ -115,12 +121,6 @@
       "triggers": [ "fortnite shop" ],
       "responses": [ "{{FORTNITESHOPINFO}}" ],
       "mentionAuthor": true,
-      "requiresBotName": true
-    },
-    {
-      "triggers": [ "poll" ],
-      "responses": [ "{{POLL}}" ],
-      "mentionAuthor": false,
       "requiresBotName": true
     },
     {
@@ -251,6 +251,27 @@
     },
     {
       "triggers": [
+        "trans",
+        "transgender",
+        "trans rights"
+      ],
+      "responses": [
+        "trans rights are human rights!"
+      ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "your pronouns"
+      ],
+      "responses": [
+        "My pronouns are He/Him!"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
         "love you",
         "love u",
         "love {{BOTNAME}}",
@@ -272,6 +293,37 @@
       ],
       "mentionAuthor": true,
       "reactions": [ "❤️" ],
+      "requiresBotName": true
+    },
+    {
+      "triggers": [
+        "suck",
+        "suk",
+        "worst",
+        "shit",
+        "shut up",
+        "shutup",
+        "awful",
+        "stinky",
+        "go away",
+        "fuck",
+        "fuk",
+        "asshole",
+        "ass hole",
+        "fucko"
+      ],
+      "responses": [
+        "You don't have to be mean 😔",
+        "Wow, who asked for this nasty language?",
+        "What'd I do to deserve that?",
+        "Honestly, kinda rude but okay then.",
+        "I know when I've been insulted! 😤",
+        "At least I'm nicer than you, wow.",
+        "Are you always this mean?",
+        "Be nice to me, I'm just a robot",
+        "I would never say that to you."
+      ],
+      "mentionAuthor": true,
       "requiresBotName": true
     },
     {
@@ -311,6 +363,10 @@
         "74",
         "42",
         "69",
+        "73.2",
+        "454",
+        "19980629",
+        "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086",
         "I'm not good with numbers."
       ],
       "requiresBotName": true
@@ -368,6 +424,28 @@
       "triggers": [ "server banner" ],
       "responses": [ "{{SERVERBANNER}}" ],
       "mentionAuthor": false,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [ "{{BOTNAME}} knows" ],
+      "responses": [
+        "I sure do.",
+        "I'm an expert",
+        "Who doesn't?",
+        "I am the wisest one here, after all.",
+        "🤓"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [ "{{BOTNAME}} I'll", "{{BOTNAME}}, I'll" ],
+      "responses": [
+        "Will you though?",
+        "Hop to it then!",
+        "What are you waiting for?"
+      ],
+      "mentionAuthor": true,
       "requiresBotName": true
     },
     {
@@ -473,6 +551,30 @@
       "requiresBotName": true
     },
     {
+      "triggers": [ "{{BOTNAME}} ban" ],
+      "responses": [
+        "I'd sooner ban you.",
+        "You're asking to be banned? Okay I'll talk to the mods.",
+        "Ban {{USERTAG}}, got it!",
+        "For the true ban recipient, look inside of yourself.",
+        "Forgot my hammer, sorry.",
+        "Busy right now, ask me later."
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
+      "triggers": [ "{{BOTNAME}} can" ],
+      "responses": [
+        "That's right, I can do anything!",
+        "When I feel like it, yeah I can.",
+        "Usually yeah, not really in the mood right now.",
+        "I mean I can, but will I?"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
       "triggers": [ "{{BOTNAME}} is", "{{BOTNAME}}'s", "{{BOTNAME}} was" ],
       "responses": [
         "I am not!",
@@ -486,8 +588,12 @@
     {
       "triggers": [
         "{{BOTNAME}}, is",
+        "{{BOTNAME}}, am",
         "{{BOTNAME}}, are",
         "{{BOTNAME}}, can",
+        "{{BOTNAME}}, will",
+        "{{BOTNAME}} will",
+        "{{BOTNAME}}, should",
         "can you",
         "is {{BOTNAME}}",
         "can {{BOTNAME}}",
