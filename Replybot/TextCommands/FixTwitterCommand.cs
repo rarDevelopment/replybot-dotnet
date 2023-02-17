@@ -21,37 +21,27 @@ public class FixTwitterCommand
         var requesterMessageReference = new MessageReference(requestingMessage.Id);
         var noLinkFoundTuple = (NoLinkMessage, requesterMessageReference);
 
+        var fixedLinksResult = FixLinksIfFound(requestingMessage, requestingUser, userWhoSentTweets, noLinkFoundTuple, keyword);
+        if (fixedLinksResult != noLinkFoundTuple)
+        {
+            return fixedLinksResult;
+        }
+
         if (requestingMessage.Reference == null)
         {
-            return FixLinksIfFound(requestingMessage, requestingUser, userWhoSentTweets, noLinkFoundTuple, keyword);
+            return noLinkFoundTuple;
         }
 
         var messageReferenceId = requestingMessage.Reference.MessageId.GetValueOrDefault(default);
         if (messageReferenceId == default)
         {
-            return
-                FixLinksIfFound(requestingMessage, requestingUser, userWhoSentTweets,
-                    noLinkFoundTuple, keyword);
+            return noLinkFoundTuple;
         }
 
         var messageReferenced = await requestingMessage.Channel.GetMessageAsync(messageReferenceId);
-        if (messageReferenced is not { } referencedSocketMessage)
-        {
-            return ("I couldn't read that message for some reason, sorry!", requesterMessageReference);
-        }
-
-        userWhoSentTweets = referencedSocketMessage.Author;
-
-        var result = FixLinksIfFound(referencedSocketMessage, requestingUser, userWhoSentTweets, noLinkFoundTuple,
-            keyword);
-        if (result == noLinkFoundTuple)
-        {
-            return
-                FixLinksIfFound(requestingMessage, requestingUser, userWhoSentTweets,
-                    noLinkFoundTuple, keyword);
-        }
-
-        return result;
+        return messageReferenced is not { } referencedSocketMessage
+            ? ("I couldn't read that message for some reason, sorry!", requesterMessageReference)
+            : FixLinksIfFound(referencedSocketMessage, requestingUser, referencedSocketMessage.Author, noLinkFoundTuple, keyword);
     }
 
     private (string, MessageReference) FixLinksIfFound(IMessage messageToFix,
