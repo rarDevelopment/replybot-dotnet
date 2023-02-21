@@ -85,6 +85,12 @@
       "requiresBotName": true
     },
     {
+      "triggers": [ "yes or no", "yes/no", "yes / no", "y/n", "y/n", "y or n" ],
+      "responses": [ "Yes 👍🏼", "No 👎🏼" ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
       "triggers": [ "flip a coin", "🪙" ],
       "responses": [ "Heads 🪙", "Tails 🪙" ],
       "mentionAuthor": true,
