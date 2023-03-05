@@ -6,6 +6,8 @@ Now written in C# and .NET 6.
 
 Previous Version: https://github.com/rarDevelopment/replybot
 
+![Toby](https://user-images.githubusercontent.com/4060573/222975221-94dff40a-207d-4c34-b633-7d74cffb8d19.png)
+
 # Toby's Names
 
 Toby answers to the following names:
