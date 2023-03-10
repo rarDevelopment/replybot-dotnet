@@ -17,6 +17,7 @@
         ServerIcon,
         ServerBanner,
         MemberCount,
+        ChannelCreateDate,
         BotName,
         Anything,
 
@@ -25,6 +26,6 @@
         FortniteShopInfo,
         Poll,
         FixTwitter,
-        BreakTwitter
+        BreakTwitter,
     }
 }

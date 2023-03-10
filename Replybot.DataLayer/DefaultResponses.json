@@ -85,6 +85,14 @@
       "requiresBotName": true
     },
     {
+      "triggers": [ "channel age", "how old is this channel" ],
+      "responses": [
+        "This channel was created on {{CHANNELCREATEDATE}}"
+      ],
+      "mentionAuthor": true,
+      "requiresBotName": true
+    },
+    {
       "triggers": [ "yes or no", "yes/no", "yes / no", "y/n", "y/n", "y or n" ],
       "responses": [ "Yes 👍🏼", "No 👎🏼" ],
       "mentionAuthor": true,
@@ -642,7 +650,9 @@
         "good afternoon",
         "morning",
         "how are you",
-        "bonjour"
+        "bonjour",
+        "what's up",
+        "whats up"
       ],
       "responses": [
         "what's up",
