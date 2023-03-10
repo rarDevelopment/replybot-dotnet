@@ -169,7 +169,8 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 message.Content,
                 triggerResponse,
                 message.MentionedUsers.ToList(),
-                guildChannel?.Guild);
+                guildChannel?.Guild,
+                guildChannel);
 
             await messageChannel.SendMessageAsync(
                 messageText,

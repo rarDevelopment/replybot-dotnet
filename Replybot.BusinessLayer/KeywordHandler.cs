@@ -23,7 +23,7 @@ public class KeywordHandler
         string messageContent,
         TriggerResponse triggerResponse,
         IReadOnlyList<SocketUser> mentionedUsers,
-        IGuild? guild)
+        IGuild? guild, SocketGuildChannel? socketGuildChannel)
     {
         var userTag = BuildUserTag(userId);
         var messageWithoutReplybot = RemoveBotName(messageContent);
@@ -45,7 +45,20 @@ public class KeywordHandler
                 GetGuildBanner(guild))
             .Replace(BuildKeyword(TriggerKeyword.MemberCount),
                 GetGuildMemberCount(guild)?.ToString())
+            .Replace(BuildKeyword(TriggerKeyword.ChannelCreateDate),GetChannelAgeString(socketGuildChannel))
             .Replace(BuildKeyword(TriggerKeyword.DeleteMessage), "");
+    }
+
+    private static string GetChannelAgeString(SocketGuildChannel? socketGuildChannel)
+    {
+        if (socketGuildChannel == null)
+        {
+            return "...this is not a channel.";
+        }
+        
+        var createdAtDate = socketGuildChannel.CreatedAt;
+        var timeAgo = DateTime.UtcNow - createdAtDate;
+        return $"{createdAtDate} ({timeAgo:d'd 'h'h 'm'm 's's'} ago)";
     }
 
     private string RemoveTriggerFromMessage(string messageContent, TriggerResponse triggerResponses)
