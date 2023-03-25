@@ -1,8 +1,8 @@
 ﻿namespace Replybot.Models;
 
-public class PersonResponse
+public class UserResponse
 {
-    public PersonResponse(ulong userId, string[] responses)
+    public UserResponse(ulong userId, string[] responses)
     {
         UserId = userId;
         Responses = responses;

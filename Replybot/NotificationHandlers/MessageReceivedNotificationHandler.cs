@@ -78,7 +78,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             await HandleReactions(message, triggerResponse);
 
             if ((triggerResponse.Responses == null || !triggerResponse.Responses.Any()) &&
-                (triggerResponse.PeopleResponses == null || !triggerResponse.PeopleResponses.Any()))
+                (triggerResponse.UserResponses == null || !triggerResponse.UserResponses.Any()))
             {
                 return Task.CompletedTask;
             }
@@ -313,12 +313,11 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private static string? ChooseResponse(TriggerResponse triggerResponse, SocketUser author)
     {
         var responseOptions = triggerResponse.Responses;
-        if (triggerResponse.PeopleResponses != null && triggerResponse.PeopleResponses.Any())
+        if (triggerResponse.UserResponses != null && triggerResponse.UserResponses.Any())
         {
-            var personId = author.Id;
-            if (triggerResponse.PeopleResponses.Any(pr => pr.UserId == personId))
+            if (triggerResponse.UserResponses.Any(pr => pr.UserId == author.Id))
             {
-                responseOptions = triggerResponse.PeopleResponses.First(pr => pr.UserId == personId).Responses;
+                responseOptions = triggerResponse.UserResponses.First(pr => pr.UserId == author.Id).Responses;
             }
         }
 
