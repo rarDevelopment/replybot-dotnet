@@ -235,7 +235,7 @@
       "peopleResponses": [
         {
           "userId": 234356032099450890,
-          "personResponses": [
+          "userResponses": [
             "User Name: {{USERNAME}}\nUser Mention: {{USERTAG}}\nVersion Number: {{VERSIONNUMBER}}\nMessage Content: {{MESSAGE}}\nMessage Without Replybot: {{MESSAGEWITHOUTREPLYBOT}}\nMessage Without Trigger: {{MESSAGEWITHOUTTRIGGER}}\nMessage Spongebob: {{MESSAGESPONGEBOB}}\nMessage Uppercase: {{MESSAGEUPPERCASE}}"
           ]
         }
@@ -245,10 +245,10 @@
     {
       "triggers": [ "test" ],
       "responses": [ "I don't think this is for you." ],
-      "peopleResponses": [
+      "userResponses": [
         {
           "userId": 234356032099450890,
-          "personResponses": [ "It's working, boss!" ]
+          "userResponses": [ "It's working, boss!" ]
         }
       ],
       "mentionAuthor": false,

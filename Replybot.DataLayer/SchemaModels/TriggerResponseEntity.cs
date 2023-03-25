@@ -18,8 +18,8 @@ public class TriggerResponseEntity
     public string[] Triggers { get; set; }
     [BsonElement("responses")]
     public string[]? Responses { get; set; }
-    [BsonElement("peopleResponses")]
-    public PersonResponseEntity[]? PeopleResponses { get; set; }
+    [BsonElement("userResponses")]
+    public UserResponseEntity[]? UserResponses { get; set; }
     [BsonElement("mentionAuthor")]
     public bool MentionAuthor { get; set; }
     [BsonElement("requiresBotName")]
@@ -29,7 +29,7 @@ public class TriggerResponseEntity
 
     public TriggerResponse ToDomain()
     {
-        var peopleResponses = PeopleResponses?.Select(p => p.ToDomain()).ToArray();
+        var peopleResponses = UserResponses?.Select(p => p.ToDomain()).ToArray();
         return new TriggerResponse(Triggers, Responses, peopleResponses, MentionAuthor, RequiresBotName, Reactions);
     }
 }
