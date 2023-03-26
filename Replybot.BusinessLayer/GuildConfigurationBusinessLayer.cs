@@ -6,24 +6,24 @@ namespace Replybot.BusinessLayer;
 
 public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 {
-    private readonly IResponseDataLayer _responseDataLayer;
+    private readonly IReplyDataLayer _replyDataLayer;
 
-    public GuildConfigurationBusinessLayer(IResponseDataLayer responseDataLayer)
+    public GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer)
     {
-        _responseDataLayer = responseDataLayer;
+        _replyDataLayer = replyDataLayer;
     }
 
     public async Task<GuildConfiguration> GetGuildConfiguration(IGuild guild)
     {
-        return await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        return await _replyDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
     }
 
     public async Task<bool> UpdateGuildConfiguration(IGuild guild)
     {
-        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
         if (config != null)
         {
-            return await _responseDataLayer.UpdateGuildConfiguration(guild.Id, guild.Name);
+            return await _replyDataLayer.UpdateGuildConfiguration(guild.Id, guild.Name);
         }
 
         return false;
@@ -31,10 +31,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetAvatarAnnouncementEnabled(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
         if (config != null)
         {
-            return await _responseDataLayer.SetEnableAvatarAnnouncements(guild.Id, isEnabled);
+            return await _replyDataLayer.SetEnableAvatarAnnouncements(guild.Id, isEnabled);
         }
 
         return false;
@@ -42,10 +42,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetAvatarMentionEnabled(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
         if (config != null)
         {
-            return await _responseDataLayer.SetEnableAvatarMentions(guild.Id, isEnabled);
+            return await _replyDataLayer.SetEnableAvatarMentions(guild.Id, isEnabled);
         }
 
         return false;
@@ -53,10 +53,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetLogChannel(IGuild guild, ulong? channelId)
     {
-        GuildConfiguration? config = await _responseDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
         if (config != null)
         {
-            return await _responseDataLayer.SetLogChannel(guild.Id, channelId);
+            return await _replyDataLayer.SetLogChannel(guild.Id, channelId);
         }
 
         return false;

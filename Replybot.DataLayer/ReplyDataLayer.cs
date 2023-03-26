@@ -5,43 +5,42 @@ using Replybot.Models;
 
 namespace Replybot.DataLayer;
 
-public class ResponseDataLayer : IResponseDataLayer
+public class ReplyDataLayer : IReplyDataLayer
 {
-    private readonly IMongoCollection<GuildResponseEntity>? _guildResponsesCollection;
-    private readonly IMongoCollection<GuildConfigurationEntity> _guildConfigurationsCollection;
+    private readonly IMongoCollection<GuildReplyDefinitionEntity>? _guildRepliesCollection;
+    private readonly IMongoCollection<GuildConfigurationEntity> _guildConfigurationCollection;
 
-    public ResponseDataLayer(DatabaseSettings databaseSettings)
+    public ReplyDataLayer(DatabaseSettings databaseSettings)
     {
         var connectionString = $"mongodb+srv://{databaseSettings.User}:{databaseSettings.Password}@{databaseSettings.Cluster}.mongodb.net/{databaseSettings.Name}?w=majority";
         var client = new MongoClient(connectionString);
         var database = client.GetDatabase(databaseSettings.Name);
-        _guildResponsesCollection = database.GetCollection<GuildResponseEntity>("responses");
-        _guildConfigurationsCollection = database.GetCollection<GuildConfigurationEntity>("configuration");
+        _guildRepliesCollection = database.GetCollection<GuildReplyDefinitionEntity>("guildReplyDefinitions");
+        _guildConfigurationCollection = database.GetCollection<GuildConfigurationEntity>("configuration");
     }
-    public IList<TriggerResponse>? GetDefaultResponses()
+    public IList<GuildReplyDefinition>? GetDefaultReplies()
     {
-        var filePath = Path.GetFullPath("DefaultResponses.json");
+        var filePath = Path.GetFullPath("DefaultReplies.json");
         using var r = new StreamReader(filePath);
         var json = r.ReadToEnd();
-        var defaultResponseData = JsonSerializer.Deserialize<DefaultResponseData>(json, new JsonSerializerOptions
+        var defaultReplyData = JsonSerializer.Deserialize<DefaultReplyData>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
-        return defaultResponseData?.DefaultResponses.Select(tr => tr.ToDomain()).ToList();
+        return defaultReplyData?.DefaultReplies.Select(tr => tr.ToDomain()).ToList();
     }
 
-    public async Task<IList<TriggerResponse>?> GetResponsesForGuild(ulong guildId)
+    public async Task<IList<GuildReplyDefinition>?> GetRepliesForGuild(ulong guildId)
     {
-        var filter = Builders<GuildResponseEntity>.Filter.Eq("guildId", guildId.ToString());
-        var guildResponses = await _guildResponsesCollection.Find(filter).FirstOrDefaultAsync();
-        var triggerResponses = guildResponses?.Responses;
-        return triggerResponses?.Select(tr => tr.ToDomain()).ToList();
+        var filter = Builders<GuildReplyDefinitionEntity>.Filter.Eq("guildId", guildId.ToString());
+        var guildReplyDefinitionEntities = await _guildRepliesCollection.Find(filter).ToListAsync();
+        return guildReplyDefinitionEntities.Select(r => r.ToDomain()).ToList();
     }
 
     public async Task<GuildConfiguration> GetConfigurationForGuild(ulong guildId, string guildName)
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
-        var guildConfig = await _guildConfigurationsCollection.Find(filter).FirstOrDefaultAsync();
+        var guildConfig = await _guildConfigurationCollection.Find(filter).FirstOrDefaultAsync();
         if (guildConfig != null)
         {
             return guildConfig.ToDomain();
@@ -49,13 +48,13 @@ public class ResponseDataLayer : IResponseDataLayer
 
         await InitGuildConfiguration(guildId, guildName);
 
-        guildConfig = await _guildConfigurationsCollection.Find(filter).FirstOrDefaultAsync();
+        guildConfig = await _guildConfigurationCollection.Find(filter).FirstOrDefaultAsync();
         return guildConfig.ToDomain();
     }
 
     private async Task InitGuildConfiguration(ulong guildId, string guildName)
     {
-        await _guildConfigurationsCollection.InsertOneAsync(new GuildConfigurationEntity
+        await _guildConfigurationCollection.InsertOneAsync(new GuildConfigurationEntity
         {
             GuildId = guildId.ToString(),
             GuildName = guildName,
@@ -68,7 +67,7 @@ public class ResponseDataLayer : IResponseDataLayer
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.GuildName, guildName);
-        var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.MatchedCount == 1;
     }
 
@@ -76,7 +75,7 @@ public class ResponseDataLayer : IResponseDataLayer
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableAvatarAnnouncements, isEnabled);
-        var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.MatchedCount == 1;
     }
 
@@ -84,7 +83,7 @@ public class ResponseDataLayer : IResponseDataLayer
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableAvatarMentions, isEnabled);
-        var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.MatchedCount == 1;
     }
 
@@ -92,7 +91,7 @@ public class ResponseDataLayer : IResponseDataLayer
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.LogChannelId, channelId);
-        var updateResult = await _guildConfigurationsCollection.UpdateOneAsync(filter, update);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.MatchedCount == 1;
     }
 }

@@ -89,9 +89,9 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(howLongToBeatSettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
-    services.AddScoped<IResponseBusinessLayer, ResponseBusinessLayer>();
+    services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
     services.AddScoped<IGuildConfigurationBusinessLayer, GuildConfigurationBusinessLayer>();
-    services.AddScoped<IResponseDataLayer, ResponseDataLayer>();
+    services.AddScoped<IReplyDataLayer, ReplyDataLayer>();
 
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
     services.AddSingleton<InteractionHandler>();

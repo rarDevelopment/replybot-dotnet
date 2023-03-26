@@ -13,7 +13,6 @@ Previous Version: https://github.com/rarDevelopment/replybot
 Toby answers to the following names:
 - toby
 - replybot
-- responsebot
 - tobias
 - tobster
 

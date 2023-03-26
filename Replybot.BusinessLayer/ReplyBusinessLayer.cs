@@ -7,40 +7,50 @@ using Replybot.Models;
 
 namespace Replybot.BusinessLayer
 {
-    public class ResponseBusinessLayer : IResponseBusinessLayer
+    public class ReplyBusinessLayer : IReplyBusinessLayer
     {
-        private readonly IResponseDataLayer _responseDataLayer;
+        private readonly IReplyDataLayer _replyDataLayer;
         private readonly KeywordHandler _keywordHandler;
 
-        public ResponseBusinessLayer(IResponseDataLayer responseDataLayer, KeywordHandler keywordHandler)
+        public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, KeywordHandler keywordHandler)
         {
-            _responseDataLayer = responseDataLayer;
+            _replyDataLayer = replyDataLayer;
             _keywordHandler = keywordHandler;
         }
 
-        public async Task<TriggerResponse?> GetTriggerResponse(string message, ulong? guildId)
+        public async Task<GuildReplyDefinition?> GetReplyDefinition(string message, ulong? guildId)
         {
-            var defaultResponses = _responseDataLayer.GetDefaultResponses();
-            var guildResponses = guildId != null
-                ? await _responseDataLayer.GetResponsesForGuild(guildId.Value)
-                : null;
+            try
+            {
 
-            var defaultResponse = FindResponseFromData(defaultResponses, message);
-            var guildResponse = guildResponses != null ? FindResponseFromData(guildResponses, message) : null;
+                var defaultReplies = _replyDataLayer.GetDefaultReplies();
+                var guildReplyDefinitions = guildId != null
+                    ? await _replyDataLayer.GetRepliesForGuild(guildId.Value)
+                    : null;
 
-            return guildResponse ?? defaultResponse;
+                var defaultReply = FindReplyFromData(defaultReplies, message);
+                var guildReplyDefinition = guildReplyDefinitions != null
+                    ? FindReplyFromData(guildReplyDefinitions, message)
+                    : null;
+
+                return guildReplyDefinition ?? defaultReply;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        private TriggerResponse? FindResponseFromData(IList<TriggerResponse>? responseData, string message)
+        private GuildReplyDefinition? FindReplyFromData(IList<GuildReplyDefinition>? replyData, string message)
         {
-            if (responseData == null || !responseData.Any())
+            if (replyData == null || !replyData.Any())
             {
                 return null;
             }
 
             var cleanedMessage = _keywordHandler.CleanMessageForTrigger(message);
 
-            return responseData.FirstOrDefault(r => 
+            return replyData.FirstOrDefault(r =>
                 r.Triggers.FirstOrDefault(triggerTerm => GetWordMatch(triggerTerm, cleanedMessage)) != null);
         }
 

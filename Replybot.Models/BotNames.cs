@@ -5,5 +5,5 @@ namespace Replybot.Models;
 [ExcludeFromCodeCoverage]
 public static class BotNames
 {
-    public static string[] Names = { "toby", "replybot", "responsebot", "tobias", "tobster" };
+    public static string[] Names = { "toby", "replybot", "tobias", "tobster" };
 }
