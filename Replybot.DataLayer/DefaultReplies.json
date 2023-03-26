@@ -1,42 +1,42 @@
 {
-  "defaultResponses": [
+  "defaultReplies": [
     {
       "triggers": [ "poll" ],
-      "responses": [ "{{POLL}}" ],
+      "replies": [ "{{POLL}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} secretly say", "{{BOTNAME}} silently say" ],
-      "responses": [ "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}" ],
+      "replies": [ "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}" ],
       "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} say" ],
-      "responses": [ "{{MESSAGEWITHOUTTRIGGER}}" ],
+      "replies": [ "{{MESSAGEWITHOUTTRIGGER}}" ],
       "requiresBotName": true
     },
     {
       "triggers": [ "testing" ],
-      "responses": [ "it's working" ],
+      "replies": [ "it's working" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
       "triggers": [ "turn on avatar announcements" ],
-      "responses": [ "{{AVATARANNOUNCEON}}" ]
+      "replies": [ "{{AVATARANNOUNCEON}}" ]
     },
     {
       "triggers": [ "turn off avatar announcements" ],
-      "responses": [ "{{AVATARANNOUNCEOFF}}" ]
+      "replies": [ "{{AVATARANNOUNCEOFF}}" ]
     },
     {
       "triggers": [ "turn on avatar mentions" ],
-      "responses": [ "{{AVATARMENTIONSON}}" ]
+      "replies": [ "{{AVATARMENTIONSON}}" ]
     },
     {
       "triggers": [ "turn off avatar mentions" ],
-      "responses": [ "{{AVATARMENTIONSOFF}}" ]
+      "replies": [ "{{AVATARMENTIONSOFF}}" ]
     },
     {
       "triggers": [
@@ -67,7 +67,7 @@
         "t\no\nb\ny",
         "t\no\nb\ny\n"
       ],
-      "responses": [
+      "replies": [
         "I can still hear you.",
         "Nice try.",
         "I know what you're trying to do, and it won't work.",
@@ -77,7 +77,7 @@
     },
     {
       "triggers": [ "how many members", "how many people" ],
-      "responses": [
+      "replies": [
         "Hmm, approximately {{MEMBERCOUNT}} member(s) in this Discord.",
         "I think there's about {{MEMBERCOUNT}} member(s) in this Discord."
       ],
@@ -86,7 +86,7 @@
     },
     {
       "triggers": [ "channel age", "how old is this channel" ],
-      "responses": [
+      "replies": [
         "This channel was created on {{CHANNELCREATEDATE}}"
       ],
       "mentionAuthor": true,
@@ -94,13 +94,13 @@
     },
     {
       "triggers": [ "yes or no", "yes/no", "yes / no", "y/n", "y/n", "y or n" ],
-      "responses": [ "Yes 👍🏼", "No 👎🏼" ],
+      "replies": [ "Yes 👍🏼", "No 👎🏼" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
       "triggers": [ "flip a coin", "🪙" ],
-      "responses": [ "Heads 🪙", "Tails 🪙" ],
+      "replies": [ "Heads 🪙", "Tails 🪙" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
@@ -112,7 +112,7 @@
         "justwatch",
         "just watch"
       ],
-      "responses": [
+      "replies": [
         "US: https://www.justwatch.com/us/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nCA: https://www.justwatch.com/ca/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nUK: https://www.justwatch.com/uk/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\n\nFor other countries, click one of these links and change your country on the website!"
       ],
       "mentionAuthor": true,
@@ -121,25 +121,25 @@
     },
     {
       "triggers": [ "hltb" ],
-      "responses": [ "{{HOWLONGTOBEAT}}" ],
+      "replies": [ "{{HOWLONGTOBEAT}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
       "triggers": [ "define" ],
-      "responses": [ "{{DEFINEWORD}}" ],
+      "replies": [ "{{DEFINEWORD}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
       "triggers": [ "fortnite shop" ],
-      "responses": [ "{{FORTNITESHOPINFO}}" ],
+      "replies": [ "{{FORTNITESHOPINFO}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
       "triggers": [ "search", "look up" ],
-      "responses": [
+      "replies": [
         "https://duckduckgo.com/?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
       ],
       "mentionAuthor": true,
@@ -147,7 +147,7 @@
     },
     {
       "triggers": [ "google" ],
-      "responses": [
+      "replies": [
         "https://www.google.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
       ],
       "mentionAuthor": true,
@@ -155,7 +155,7 @@
     },
     {
       "triggers": [ "bing" ],
-      "responses": [
+      "replies": [
         "https://www.bing.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
       ],
       "mentionAuthor": true,
@@ -163,7 +163,7 @@
     },
     {
       "triggers": [ "songlink", "song link" ],
-      "responses": [ "https://song.link/{{MESSAGEENCODEDWITHOUTTRIGGER}}" ],
+      "replies": [ "https://song.link/{{MESSAGEENCODEDWITHOUTTRIGGER}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
@@ -180,7 +180,7 @@
         "fixtweet",
         "fixtweets"
       ],
-      "responses": [ "{{FIXTWITTER}}" ],
+      "replies": [ "{{FIXTWITTER}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
@@ -196,13 +196,13 @@
         "breaktweet",
         "breaktweets"
       ],
-      "responses": [ "{{BREAKTWITTER}}" ],
+      "replies": [ "{{BREAKTWITTER}}" ],
       "mentionAuthor": true,
       "requiresBotName": true
     },
     {
       "triggers": [ "8-ball", "8ball", "8 ball", "🎱" ],
-      "responses": [
+      "replies": [
         "It is certain.",
         "It is decidedly so.",
         "Without a doubt.",
@@ -231,11 +231,11 @@
     },
     {
       "triggers": [ "template test" ],
-      "responses": [ "I don't think this is for you." ],
-      "peopleResponses": [
+      "replies": [ "I don't think this is for you." ],
+      "userReplies": [
         {
           "userId": 234356032099450890,
-          "userResponses": [
+          "replies": [
             "User Name: {{USERNAME}}\nUser Mention: {{USERTAG}}\nVersion Number: {{VERSIONNUMBER}}\nMessage Content: {{MESSAGE}}\nMessage Without Replybot: {{MESSAGEWITHOUTREPLYBOT}}\nMessage Without Trigger: {{MESSAGEWITHOUTTRIGGER}}\nMessage Spongebob: {{MESSAGESPONGEBOB}}\nMessage Uppercase: {{MESSAGEUPPERCASE}}"
           ]
         }
@@ -244,11 +244,11 @@
     },
     {
       "triggers": [ "test" ],
-      "responses": [ "I don't think this is for you." ],
-      "userResponses": [
+      "replies": [ "I don't think this is for you." ],
+      "userReplies": [
         {
           "userId": 234356032099450890,
-          "userResponses": [ "It's working, boss!" ]
+          "replies": [ "It's working, boss!" ]
         }
       ],
       "mentionAuthor": false,
@@ -256,7 +256,7 @@
     },
     {
       "triggers": [ "-v", "version", "what version" ],
-      "responses": [
+      "replies": [
         "I am {{VERSIONNUMBER}} versions old.",
         "That's kind of private, but if you must know, I'm at v{{VERSIONNUMBER}}.",
         "I'm at v{{VERSIONNUMBER}}, what version are you at?"
@@ -269,7 +269,7 @@
         "transgender",
         "trans rights"
       ],
-      "responses": [
+      "replies": [
         "trans rights are human rights!"
       ],
       "requiresBotName": true
@@ -278,7 +278,7 @@
       "triggers": [
         "your pronouns"
       ],
-      "responses": [
+      "replies": [
         "My pronouns are He/Him!"
       ],
       "mentionAuthor": true,
@@ -298,7 +298,7 @@
         "ily",
         "ily"
       ],
-      "responses": [
+      "replies": [
         "awww 😊 same to you, friend",
         "I love you too, {{USERTAG}}! 🥰",
         "🥺❤️",
@@ -326,7 +326,7 @@
         "ass hole",
         "fucko"
       ],
-      "responses": [
+      "replies": [
         "You don't have to be mean 😔",
         "Wow, who asked for this nasty language?",
         "What'd I do to deserve that?",
@@ -355,7 +355,7 @@
         "u okay",
         "you ok"
       ],
-      "responses": [
+      "replies": [
         "With the latest update I was given, I'm feeling better than ever!",
         "I'm doing pretty well.",
         "I'm doing swell, how about you?",
@@ -369,7 +369,7 @@
     },
     {
       "triggers": [ "how many" ],
-      "responses": [
+      "replies": [
         "0",
         "200",
         "idk a lot",
@@ -387,7 +387,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} how" ],
-      "responses": [
+      "replies": [
         "Easily.",
         "It's not hard!",
         "idk, I'm pretty awesome, so it's easy. But for you? ehhhhh...",
@@ -402,7 +402,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} why", "{{BOTNAME}}, why" ],
-      "responses": [
+      "replies": [
         "Look I don't have an answer for everything.",
         "I've got a lot of reasons, but I can't explain them to you.",
         "For fun.",
@@ -414,7 +414,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} what", "{{BOTNAME}}, what" ],
-      "responses": [
+      "replies": [
         "It's whatever you think it is.",
         "You think I know?",
         "I'm about as uninterested as you are interested.",
@@ -424,25 +424,25 @@
     },
     {
       "triggers": [ "avatar" ],
-      "responses": [ "{{MENTIONEDUSERAVATAR}}" ],
+      "replies": [ "{{MENTIONEDUSERAVATAR}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
       "triggers": [ "server icon" ],
-      "responses": [ "{{SERVERICON}}" ],
+      "replies": [ "{{SERVERICON}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
       "triggers": [ "server banner" ],
-      "responses": [ "{{SERVERBANNER}}" ],
+      "replies": [ "{{SERVERBANNER}}" ],
       "mentionAuthor": false,
       "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} knows" ],
-      "responses": [
+      "replies": [
         "I sure do.",
         "I'm an expert",
         "Who doesn't?",
@@ -454,7 +454,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} I'll", "{{BOTNAME}}, I'll" ],
-      "responses": [
+      "replies": [
         "Will you though?",
         "Hop to it then!",
         "What are you waiting for?"
@@ -464,7 +464,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} who", "{{BOTNAME}}, who" ],
-      "responses": [
+      "replies": [
         "Not sure.",
         "In all honesty, it might be you.",
         "Nobody.",
@@ -478,7 +478,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} when", "{{BOTNAME}}, when" ],
-      "responses": [
+      "replies": [
         "Never.",
         "Tomorrow.",
         "Give it about a year.",
@@ -491,7 +491,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} where", "{{BOTNAME}}, where" ],
-      "responses": [
+      "replies": [
         "Far away from here, that's for sure.",
         "Closer than you think.",
         "You see those mountains off in the distance? Go there."
@@ -514,7 +514,7 @@
         "apologize",
         "apologise"
       ],
-      "responses": [
+      "replies": [
         "Sorry.",
         "I'm just telling it like it is.",
         "Please forgive me {{USERTAG}}! :sob::sob:",
@@ -525,7 +525,7 @@
     },
     {
       "triggers": [ "keep it up", "good work", "good job" ],
-      "responses": [
+      "replies": [
         "Thanks, I thought so too.",
         "Same to you, friend!",
         "I know.",
@@ -552,7 +552,7 @@
         "t.hanks",
         "t. hanks"
       ],
-      "responses": [
+      "replies": [
         "No problem, {{USERTAG}}!",
         "You're welcome, {{USERTAG}}!",
         "It's about time I get some thanks around here!",
@@ -566,7 +566,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} ban" ],
-      "responses": [
+      "replies": [
         "I'd sooner ban you.",
         "You're asking to be banned? Okay I'll talk to the mods.",
         "Ban {{USERTAG}}, got it!",
@@ -579,7 +579,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} can" ],
-      "responses": [
+      "replies": [
         "That's right, I can do anything!",
         "When I feel like it, yeah I can.",
         "Usually yeah, not really in the mood right now.",
@@ -590,7 +590,7 @@
     },
     {
       "triggers": [ "{{BOTNAME}} is", "{{BOTNAME}}'s", "{{BOTNAME}} was" ],
-      "responses": [
+      "replies": [
         "I am not!",
         "Only sometimes",
         "I know you are but what am I?",
@@ -618,7 +618,7 @@
         "does {{BOTNAME}}",
         "{{BOTNAME}}, does"
       ],
-      "responses": [
+      "replies": [
         "I think so, yeah.",
         "idk what do you think?",
         "Nah probably not.",
@@ -654,7 +654,7 @@
         "what's up",
         "whats up"
       ],
-      "responses": [
+      "replies": [
         "what's up",
         "hey",
         "hi!",
@@ -680,7 +680,7 @@
     },
     {
       "triggers": [ "{{ANYTHING}}" ],
-      "responses": [
+      "replies": [
         "How can I help?",
         "Hell yeah",
         "You're damn right!",

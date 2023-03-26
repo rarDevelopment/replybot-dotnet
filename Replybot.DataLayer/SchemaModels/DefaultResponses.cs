@@ -1,6 +1,6 @@
 ﻿namespace Replybot.DataLayer.SchemaModels;
 
-public class DefaultResponseData
+public class DefaultReplyData
 {
-    public TriggerResponseEntity[] DefaultResponses { get; set; } = null!;
+    public GuildReplyDefinitionEntity[] DefaultReplies { get; set; } = null!;
 }

@@ -4,8 +4,8 @@ using Replybot.Models;
 
 namespace Replybot.BusinessLayer;
 
-public interface IResponseBusinessLayer
+public interface IReplyBusinessLayer
 {
-    Task<TriggerResponse?> GetTriggerResponse(string message, ulong? guildId);
+    Task<GuildReplyDefinition?> GetReplyDefinition(string message, ulong? guildId);
     Task<bool> IsBotNameMentioned(SocketMessage message, IGuild? guild, ulong botUserId);
 }

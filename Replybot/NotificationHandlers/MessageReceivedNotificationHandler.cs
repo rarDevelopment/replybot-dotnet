@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
 {
-    private readonly IResponseBusinessLayer _responseBusinessLayer;
+    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
     private readonly HowLongToBeatCommand _howLongToBeatCommand;
     private readonly DefineWordCommand _defineWordCommand;
@@ -20,7 +20,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly LogMessageBuilder _logMessageBuilder;
     private readonly ILogger<DiscordBot> _logger;
 
-    public MessageReceivedNotificationHandler(IResponseBusinessLayer responseBusinessLayer,
+    public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         KeywordHandler keywordHandler,
         HowLongToBeatCommand howLongToBeatCommand,
         DefineWordCommand defineWordCommand,
@@ -32,7 +32,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         LogMessageBuilder logMessageBuilder,
         ILogger<DiscordBot> logger)
     {
-        _responseBusinessLayer = responseBusinessLayer;
+        _replyBusinessLayer = replyBusinessLayer;
         _keywordHandler = keywordHandler;
         _howLongToBeatCommand = howLongToBeatCommand;
         _defineWordCommand = defineWordCommand;
@@ -63,36 +63,36 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 await HandleDiscordMessageLink(guildChannel, notification.Message);
             }
 
-            var triggerResponse = await _responseBusinessLayer.GetTriggerResponse(message.Content, guildChannel?.Guild.Id);
-            if (triggerResponse == null)
+            var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content, guildChannel?.Guild.Id);
+            if (replyDefinition == null)
             {
                 return Task.CompletedTask;
             }
 
             var isBotMentioned = await IsBotMentioned(message, guildChannel);
-            if (triggerResponse.RequiresBotName && !isBotMentioned)
+            if (replyDefinition.RequiresBotName && !isBotMentioned)
             {
                 return Task.CompletedTask;
             }
 
-            await HandleReactions(message, triggerResponse);
+            await HandleReactions(message, replyDefinition);
 
-            if ((triggerResponse.Responses == null || !triggerResponse.Responses.Any()) &&
-                (triggerResponse.UserResponses == null || !triggerResponse.UserResponses.Any()))
+            if ((replyDefinition.Replies == null || !replyDefinition.Replies.Any()) &&
+                (replyDefinition.UserReplies == null || !replyDefinition.UserReplies.Any()))
             {
                 return Task.CompletedTask;
             }
-            var response = ChooseResponse(triggerResponse, message.Author);
+            var reply = ChooseReply(replyDefinition, message.Author);
 
-            if (string.IsNullOrEmpty(response))
+            if (string.IsNullOrEmpty(reply))
             {
                 return Task.CompletedTask;
             }
-            var wasDeleted = await HandleDelete(message, response);
+            var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
             // handle commands
-            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
+            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
             {
                 var howLongToBeatEmbed = await _howLongToBeatCommand.GetHowLongToBeatEmbed(message);
                 if (howLongToBeatEmbed != null)
@@ -104,7 +104,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.DefineWord))
+            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.DefineWord))
             {
                 var defineWordEmbed = await _defineWordCommand.GetWordDefinitionEmbed(message);
                 if (defineWordEmbed != null)
@@ -116,7 +116,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FortniteShopInfo))
+            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.FortniteShopInfo))
             {
                 var fortniteShopInfoEmbed =
                     await _fortniteShopInformationCommand.GetFortniteShopInformationEmbed(message);
@@ -129,7 +129,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.Poll))
+            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.Poll))
             {
                 var (pollEmbed, reactionEmotes) = _pollCommand.BuildPollEmbed(message);
                 if (pollEmbed == null)
@@ -146,10 +146,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            if (response == _keywordHandler.BuildKeyword(TriggerKeyword.FixTwitter) || response == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter))
+            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.FixTwitter) || reply == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter))
             {
                 var keywordToPass = TriggerKeyword.FixTwitter;
-                if (response == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter))
+                if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter))
                 {
                     keywordToPass = TriggerKeyword.BreakTwitter;
                 }
@@ -162,12 +162,12 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 }
             }
 
-            var messageText = _keywordHandler.ReplaceKeywords(response,
+            var messageText = _keywordHandler.ReplaceKeywords(reply,
                 message.Author.Username,
                 message.Author.Id,
                 _versionSettings.VersionNumber,
                 message.Content,
-                triggerResponse,
+                replyDefinition,
                 message.MentionedUsers.ToList(),
                 guildChannel?.Guild,
                 guildChannel);
@@ -250,11 +250,11 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
     }
 
-    private async Task HandleReactions(IMessage message, TriggerResponse triggerResponse)
+    private async Task HandleReactions(IMessage message, GuildReplyDefinition guildReplyDefinition)
     {
-        if (triggerResponse.Reactions != null)
+        if (guildReplyDefinition.Reactions != null)
         {
-            foreach (var triggerResponseReaction in triggerResponse.Reactions)
+            foreach (var triggerResponseReaction in guildReplyDefinition.Reactions)
             {
                 try
                 {
@@ -277,7 +277,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
         if (botUserInGuild != null)
         {
-            isBotMentioned = await _responseBusinessLayer.IsBotNameMentioned(message, channel?.Guild, botUserInGuild.Id);
+            isBotMentioned = await _replyBusinessLayer.IsBotNameMentioned(message, channel?.Guild, botUserInGuild.Id);
         }
         else if (isDm)
         {
@@ -287,10 +287,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         return isBotMentioned;
     }
 
-    private async Task<bool> HandleDelete(IDeletable message, string response)
+    private async Task<bool> HandleDelete(IDeletable message, string reply)
     {
         var wasDeleted = false;
-        if (!response.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
+        if (!reply.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
         {
             return wasDeleted;
         }
@@ -310,24 +310,24 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         return wasDeleted;
     }
 
-    private static string? ChooseResponse(TriggerResponse triggerResponse, SocketUser author)
+    private static string? ChooseReply(GuildReplyDefinition guildReplyDefinition, SocketUser author)
     {
-        var responseOptions = triggerResponse.Responses;
-        if (triggerResponse.UserResponses != null && triggerResponse.UserResponses.Any())
+        var replies = guildReplyDefinition.Replies;
+        if (guildReplyDefinition.UserReplies != null && guildReplyDefinition.UserReplies.Any())
         {
-            if (triggerResponse.UserResponses.Any(pr => pr.UserId == author.Id))
+            if (guildReplyDefinition.UserReplies.Any(pr => pr.UserId == author.Id))
             {
-                responseOptions = triggerResponse.UserResponses.First(pr => pr.UserId == author.Id).Responses;
+                replies = guildReplyDefinition.UserReplies.First(pr => pr.UserId == author.Id).Replies;
             }
         }
 
-        if (responseOptions == null || !responseOptions.Any())
+        if (replies == null || !replies.Any())
         {
             return null;
         }
 
         var random = new Random();
-        var randomNumber = random.Next(responseOptions.Length);
-        return responseOptions[randomNumber];
+        var randomNumber = random.Next(replies.Length);
+        return replies[randomNumber];
     }
 }

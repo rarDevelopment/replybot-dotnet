@@ -16,20 +16,20 @@ public class KeywordHandler
         return escapedText;
     }
 
-    public string ReplaceKeywords(string responseText,
+    public string ReplaceKeywords(string replyText,
         string username,
         ulong userId,
         string? versionNumber,
         string messageContent,
-        TriggerResponse triggerResponse,
+        GuildReplyDefinition guildReplyDefinition,
         IReadOnlyList<SocketUser> mentionedUsers,
         IGuild? guild, SocketGuildChannel? socketGuildChannel)
     {
         var userTag = BuildUserTag(userId);
         var messageWithoutReplybot = RemoveBotName(messageContent);
-        var messageWithoutTrigger = RemoveTriggerFromMessage(messageContent, triggerResponse);
+        var messageWithoutTrigger = RemoveTriggerFromMessage(messageContent, guildReplyDefinition);
 
-        return responseText
+        return replyText
             .Replace(BuildKeyword(TriggerKeyword.Username), username).Replace(BuildKeyword(TriggerKeyword.UserTag), userTag)
             .Replace(BuildKeyword(TriggerKeyword.VersionNumber), versionNumber ?? "[unavailable]")
             .Replace(BuildKeyword(TriggerKeyword.Message), messageContent).Replace(BuildKeyword(TriggerKeyword.MessageWithoutReplybot), messageWithoutReplybot).Replace((string)BuildKeyword(TriggerKeyword.MessageWithoutTrigger), messageWithoutTrigger).Replace((string)BuildKeyword(TriggerKeyword.MessageSpongebob), Spongebobify(messageContent))
@@ -61,10 +61,10 @@ public class KeywordHandler
         return $"{createdAtDate} ({timeAgo:d'd 'h'h 'm'm 's's'} ago)";
     }
 
-    private string RemoveTriggerFromMessage(string messageContent, TriggerResponse triggerResponses)
+    private string RemoveTriggerFromMessage(string messageContent, GuildReplyDefinition guildReplyDefinitions)
     {
         var messageWithoutTrigger = messageContent;
-        foreach (var triggerToUse in triggerResponses.Triggers)
+        foreach (var triggerToUse in guildReplyDefinitions.Triggers)
         {
             var triggerWithReplacedKeywords = triggerToUse;
             var botNameInTrigger = GetBotNameInMessage(messageWithoutTrigger);

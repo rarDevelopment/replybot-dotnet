@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="DefaultResponses.json" />
+    <None Remove="DefaultReplies.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="DefaultResponses.json">
+    <Content Include="DefaultReplies.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
