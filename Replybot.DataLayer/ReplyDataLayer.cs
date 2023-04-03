@@ -34,7 +34,7 @@ public class ReplyDataLayer : IReplyDataLayer
     {
         var filter = Builders<GuildReplyDefinitionEntity>.Filter.Eq("guildId", guildId.ToString());
         var guildReplyDefinitionEntities = await _guildRepliesCollection.Find(filter).ToListAsync();
-        return guildReplyDefinitionEntities.Select(r => r.ToDomain()).ToList();
+        return guildReplyDefinitionEntities.Select(r => r.ToDomain()).OrderBy(gr => gr.Priority).ToList();
     }
 
     public async Task<GuildConfiguration> GetConfigurationForGuild(ulong guildId, string guildName)
