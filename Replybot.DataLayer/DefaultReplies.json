@@ -23,6 +23,19 @@
       "requiresBotName": true
     },
     {
+      "triggers": [
+        "shut up",
+        "shut the fuck up",
+        "shut the hell up",
+        "shut your mouth",
+        "shut your damn mouth",
+        "shut your goddamn mouth",
+        "shut your god damn mouth"
+      ],
+      "reactions": [ "🤐" ],
+      "requiresBotName": true
+    },
+    {
       "triggers": [ "turn on avatar announcements" ],
       "replies": [ "{{AVATARANNOUNCEON}}" ]
     },
@@ -663,19 +676,6 @@
         ":yawning_face:",
         "Bonjour"
       ],
-      "requiresBotName": true
-    },
-    {
-      "triggers": [
-        "shut up",
-        "shut the fuck up",
-        "shut the hell up",
-        "shut your mouth",
-        "shut your damn mouth",
-        "shut your goddamn mouth",
-        "shut your god damn mouth"
-      ],
-      "reactions": [ "🤐" ],
       "requiresBotName": true
     },
     {
