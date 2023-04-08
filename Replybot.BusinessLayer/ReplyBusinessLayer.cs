@@ -20,25 +20,17 @@ namespace Replybot.BusinessLayer
 
         public async Task<GuildReplyDefinition?> GetReplyDefinition(string message, ulong? guildId)
         {
-            try
-            {
+            var defaultReplies = _replyDataLayer.GetDefaultReplies();
+            var guildReplyDefinitions = guildId != null
+                ? await _replyDataLayer.GetRepliesForGuild(guildId.Value)
+                : null;
 
-                var defaultReplies = _replyDataLayer.GetDefaultReplies();
-                var guildReplyDefinitions = guildId != null
-                    ? await _replyDataLayer.GetRepliesForGuild(guildId.Value)
-                    : null;
+            var defaultReply = FindReplyFromData(defaultReplies, message);
+            var guildReplyDefinition = guildReplyDefinitions != null
+                ? FindReplyFromData(guildReplyDefinitions, message)
+                : null;
 
-                var defaultReply = FindReplyFromData(defaultReplies, message);
-                var guildReplyDefinition = guildReplyDefinitions != null
-                    ? FindReplyFromData(guildReplyDefinitions, message)
-                    : null;
-
-                return guildReplyDefinition ?? defaultReply;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return guildReplyDefinition ?? defaultReply;
         }
 
         private GuildReplyDefinition? FindReplyFromData(IList<GuildReplyDefinition>? replyData, string message)
@@ -61,7 +53,7 @@ namespace Replybot.BusinessLayer
                 return true;
             }
 
-            var trigger = triggerTerm.ToLower(CultureInfo.InvariantCulture);
+            var trigger = triggerTerm.ToLower(CultureInfo.InvariantCulture).Trim();
             trigger = _keywordHandler.EscapeRegExp(trigger);
             var pattern = $"(^|(?<!\\w)){trigger}(\\b|(?!\\w))";
             var regex = new Regex(pattern);
