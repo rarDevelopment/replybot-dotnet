@@ -10,4 +10,5 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetAvatarAnnouncementEnabled(IGuild guild, bool isEnabled);
     Task<bool> SetAvatarMentionEnabled(IGuild guild, bool isEnabled);
     Task<bool> SetLogChannel(IGuild guild, ulong? channelId);
+    Task<bool> DeleteGuildConfiguration(IGuild guild);
 }

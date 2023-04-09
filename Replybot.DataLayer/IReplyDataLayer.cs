@@ -11,5 +11,6 @@ namespace Replybot.DataLayer
         Task<bool> SetEnableAvatarAnnouncements(ulong guildId, bool isEnabled);
         Task<bool> SetEnableAvatarMentions(ulong guildId, bool isEnabled);
         Task<bool> SetLogChannel(ulong guildId, ulong? channelId);
+        Task<bool> DeleteGuildConfiguration(ulong guildId);
     }
 }

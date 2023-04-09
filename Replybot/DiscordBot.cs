@@ -90,7 +90,9 @@ public class DiscordBot : BackgroundService
     {
         _client.MessageReceived += msg => Publish(new MessageReceivedNotification(msg));
         _client.GuildMemberUpdated += (cachedOldUser, newUser) => Publish(new GuildMemberUpdatedNotification(cachedOldUser, newUser));
+        _client.JoinedGuild += (SocketGuild socketGuild) => Publish(new JoinedGuildNotification(socketGuild));
         _client.GuildUpdated += (oldGuild, newGuild) => Publish(new GuildUpdatedNotification(oldGuild, newGuild));
+        _client.LeftGuild += (SocketGuild socketGuild) => Publish(new LeftGuildNotification(socketGuild));
         _client.UserUpdated += (oldUser, newUser) => Publish(new UserUpdatedNotification(oldUser, newUser));
         _client.MessageUpdated += (oldMessage, newMessage, channel) => Publish(new MessageUpdatedNotification(oldMessage, newMessage, channel));
         _client.MessageDeleted += (message, channel) => Publish(new MessageDeletedNotification(message, channel));

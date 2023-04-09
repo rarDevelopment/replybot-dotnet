@@ -29,6 +29,17 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         return false;
     }
 
+    public async Task<bool> DeleteGuildConfiguration(IGuild guild)
+    {
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
+        if (config != null)
+        {
+            return await _replyDataLayer.DeleteGuildConfiguration(guild.Id);
+        }
+
+        return true;
+    }
+
     public async Task<bool> SetAvatarAnnouncementEnabled(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id, guild.Name);
