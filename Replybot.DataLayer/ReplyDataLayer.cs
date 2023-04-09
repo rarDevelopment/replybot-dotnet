@@ -71,6 +71,13 @@ public class ReplyDataLayer : IReplyDataLayer
         return updateResult.MatchedCount == 1;
     }
 
+    public async Task<bool> DeleteGuildConfiguration(ulong guildId)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
+        var deleteResult = await _guildConfigurationCollection.DeleteOneAsync(filter);
+        return deleteResult.DeletedCount == 1;
+    }
+
     public async Task<bool> SetEnableAvatarAnnouncements(ulong guildId, bool isEnabled)
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId.ToString());
