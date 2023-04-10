@@ -17,18 +17,20 @@ namespace Replybot.DataLayer.SchemaModels
         public bool EnableAvatarAnnouncements { get; set; }
         [BsonElement("enableAvatarMentions")]
         public bool EnableAvatarMentions { get; set; }
-
-        public ulong? LogChannelId { get; set; }
+        public string? LogChannelId { get; set; }
+        [BsonElement("adminRoleIds")]
+        public List<string> AdminRoleIds { get; set; }
 
         public GuildConfiguration ToDomain()
         {
             return new GuildConfiguration
             {
-                GuildId = (ulong)Convert.ToInt64(GuildId),
+                GuildId = GuildId,
                 GuildName = GuildName,
                 EnableAvatarAnnouncements = EnableAvatarAnnouncements,
                 EnableAvatarMentions = EnableAvatarMentions,
-                LogChannelId = LogChannelId
+                LogChannelId = LogChannelId,
+                AdminRoleIds = AdminRoleIds
             };
         }
     }

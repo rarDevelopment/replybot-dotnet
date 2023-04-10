@@ -120,6 +120,8 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
 
+    services.AddScoped<RoleHelper>();
+
     services.AddMediatR(typeof(DiscordBot));
 
     services.AddHostedService<DiscordBot>();
