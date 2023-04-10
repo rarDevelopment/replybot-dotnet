@@ -40,24 +40,17 @@ public class ReplyDataLayer : IReplyDataLayer
     public async Task<GuildConfiguration> GetConfigurationForGuild(string guildId, string guildName)
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
-        try
+
+        var guildConfig = await _guildConfigurationCollection.Find(filter).FirstOrDefaultAsync();
+        if (guildConfig != null)
         {
-
-            var guildConfig = await _guildConfigurationCollection.Find(filter).FirstOrDefaultAsync();
-            if (guildConfig != null)
-            {
-                return guildConfig.ToDomain();
-            }
-
-            await InitGuildConfiguration(guildId, guildName);
-
-            guildConfig = await _guildConfigurationCollection.Find(filter).FirstOrDefaultAsync();
             return guildConfig.ToDomain();
         }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
+
+        await InitGuildConfiguration(guildId, guildName);
+
+        guildConfig = await _guildConfigurationCollection.Find(filter).FirstOrDefaultAsync();
+        return guildConfig.ToDomain();
     }
 
     private async Task InitGuildConfiguration(string guildId, string guildName)
