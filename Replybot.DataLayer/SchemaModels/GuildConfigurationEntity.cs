@@ -17,6 +17,7 @@ namespace Replybot.DataLayer.SchemaModels
         public bool EnableAvatarAnnouncements { get; set; }
         [BsonElement("enableAvatarMentions")]
         public bool EnableAvatarMentions { get; set; }
+        [BsonElement("logChannelId")]
         public string? LogChannelId { get; set; }
         [BsonElement("adminRoleIds")]
         public List<string> AdminRoleIds { get; set; }
