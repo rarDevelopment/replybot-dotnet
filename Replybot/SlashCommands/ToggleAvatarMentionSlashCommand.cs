@@ -5,15 +5,16 @@ namespace Replybot.SlashCommands
     public class ToggleAvatarMentionSlashCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
+        private readonly RoleHelper _roleHelper;
 
-        public ToggleAvatarMentionSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
+        public ToggleAvatarMentionSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
         {
             _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
+            _roleHelper = roleHelper;
         }
-
-        [DefaultMemberPermissions(GuildPermission.Administrator)]
+        
         [SlashCommand("set-avatar-mention", "Set avatar change mentions to on or off (true or false).")]
-        public async Task Toggle(
+        public async Task ToggleAvatarMention(
             [Summary("is_enabled", "True for Enabled, False for Disabled")] bool isEnabled)
         {
             var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);
@@ -22,7 +23,8 @@ namespace Replybot.SlashCommands
                 await RespondAsync("Hmm, something is wrong, you aren't able to do that.");
                 return;
             }
-            if (member.GuildPermissions.Administrator)
+
+            if (await _roleHelper.CanAdministrate(Context.Guild, member))
             {
                 var success = await _guildConfigurationBusinessLayer.SetAvatarMentionEnabled(Context.Guild, isEnabled);
                 if (success)

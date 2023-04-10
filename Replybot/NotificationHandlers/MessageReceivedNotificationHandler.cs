@@ -63,7 +63,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 await HandleDiscordMessageLink(guildChannel, notification.Message);
             }
 
-            var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content, guildChannel?.Guild.Id);
+            var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content, guildChannel?.Guild.Id.ToString());
             if (replyDefinition == null)
             {
                 return Task.CompletedTask;
