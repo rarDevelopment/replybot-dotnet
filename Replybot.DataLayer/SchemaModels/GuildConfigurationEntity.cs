@@ -19,6 +19,8 @@ namespace Replybot.DataLayer.SchemaModels
         public bool EnableAvatarMentions { get; set; }
         [BsonElement("logChannelId")]
         public string? LogChannelId { get; set; }
+
+        [Obsolete("No longer used. Still here until data is removed.", true)]
         [BsonElement("adminRoleIds")]
         public List<string> AdminRoleIds { get; set; } = new();
         [BsonElement("adminUserIds")]
@@ -33,7 +35,6 @@ namespace Replybot.DataLayer.SchemaModels
                 EnableAvatarAnnouncements = EnableAvatarAnnouncements,
                 EnableAvatarMentions = EnableAvatarMentions,
                 LogChannelId = LogChannelId,
-                //AdminRoleIds = AdminRoleIds,
                 AdminUserIds = AdminUserIds
             };
         }
