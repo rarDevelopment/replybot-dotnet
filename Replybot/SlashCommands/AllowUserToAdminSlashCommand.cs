@@ -45,7 +45,7 @@ public class AllowUserToAdminSlashCommand : InteractionModuleBase<SocketInteract
         }
 
         var config = await _configurationBusinessLayer.GetGuildConfiguration(Context.Guild);
-        var isUserAllowed = Context.Guild.Users.Any(u => config.AdminUserIds.Contains(u.Id.ToString()));
+        var isUserAllowed = config.AdminUserIds.Contains(userToSet.Id.ToString());
 
         if (setAllowed)
         {
