@@ -27,14 +27,20 @@ public class GuildReplyDefinitionEntity
     public string[] Triggers { get; set; }
     [BsonElement("replies")]
     public string[]? Replies { get; set; }
-    [BsonElement("userReplies")]
-    public UserReplyEntity[]? UserReplies { get; set; }
     [BsonElement("mentionAuthor")]
     public bool MentionAuthor { get; set; }
     [BsonElement("requiresBotName")]
     public bool RequiresBotName { get; set; }
     [BsonElement("reactions")]
     public string[]? Reactions { get; set; }
+    [BsonElement("channelId")]
+    public string? ChannelId { get; set; }
+    [BsonElement("createdBy")]
+    public string? CreatedBy { get; set; }
+    [BsonElement("lastEditedBy")]
+    public string? LastEditedBy { get; set; }
+    [BsonElement("userReplies")]
+    public UserReplyEntity[]? UserReplies { get; set; }
     [BsonElement("priority")]
     public decimal Priority { get; set; }
 

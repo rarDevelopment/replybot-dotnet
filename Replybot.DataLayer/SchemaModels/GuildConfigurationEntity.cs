@@ -20,7 +20,9 @@ namespace Replybot.DataLayer.SchemaModels
         [BsonElement("logChannelId")]
         public string? LogChannelId { get; set; }
         [BsonElement("adminRoleIds")]
-        public List<string> AdminRoleIds { get; set; }
+        public List<string> AdminRoleIds { get; set; } = new();
+        [BsonElement("adminUserIds")]
+        public List<string> AdminUserIds { get; set; } = new();
 
         public GuildConfiguration ToDomain()
         {
@@ -31,7 +33,8 @@ namespace Replybot.DataLayer.SchemaModels
                 EnableAvatarAnnouncements = EnableAvatarAnnouncements,
                 EnableAvatarMentions = EnableAvatarMentions,
                 LogChannelId = LogChannelId,
-                AdminRoleIds = AdminRoleIds
+                //AdminRoleIds = AdminRoleIds,
+                AdminUserIds = AdminUserIds
             };
         }
     }

@@ -18,10 +18,10 @@ public class AllowRoleToAdminSlashCommand : InteractionModuleBase<SocketInteract
         _discordFormatter = discordFormatter;
     }
 
-    [SlashCommand("allow-role-to-admin", "Set whether or not the specified role can use the bot to create roles and channels.")]
-    public async Task AllowRoleToAdmin(
-        [Summary("role", "The name of the role to manage")] IRole roleToSet,
-        [Summary("set-allowed", "Whether or not the role should be allowed to use the bot to create roles and related channels")] bool setAllowed
+    [SlashCommand("allow-admin-users-in-role", "Allow the users currently in the specified role to administrate the bot.")]
+    public async Task AllowUsersInRoleToAdmin(
+        [Summary("role", "The name of the role")] IRole roleToSet,
+        [Summary("set-allowed", "Whether to allow or disallow all users currently in this role to administrate the bot")] bool setAllowed
         )
     {
         await DeferAsync();
@@ -45,36 +45,73 @@ public class AllowRoleToAdminSlashCommand : InteractionModuleBase<SocketInteract
         }
 
         var config = await _configurationBusinessLayer.GetGuildConfiguration(Context.Guild);
-        var guildRoles = Context.Guild.Roles.Where(r => config.AdminRoleIds.Contains(r.Id.ToString()));
-        var isRoleAllowed = guildRoles.Contains(roleToSet);
+        var usersInRole = Context.Guild.Users.Where(u => u.Roles.Any(r => r.Id == roleToSet.Id));
+
+        var usersToProcess = new List<string>();
+        var usersAlreadyProcessed = new List<string>();
 
         if (setAllowed)
         {
-            if (isRoleAllowed)
+            foreach (var user in usersInRole)
             {
-                await FollowupAsync(embed:
-                    _discordFormatter.BuildErrorEmbed("Role Already Allowed",
-                        "Sorry, this role is already allowed to manage the bot.",
-                        Context.User));
-                return;
+                if (config.AdminUserIds.Contains(user.Id.ToString()))
+                {
+                    usersAlreadyProcessed.Add(user.Id.ToString());
+                }
+                else
+                {
+                    usersToProcess.Add(user.Id.ToString());
+                }
             }
-            await _configurationBusinessLayer.SetApprovedRole(Context.Guild, roleToSet.Id.ToString(), true);
         }
         else
         {
-            if (!isRoleAllowed)
+            foreach (var user in usersInRole)
             {
-                await FollowupAsync(embed:
-                    _discordFormatter.BuildErrorEmbed("Role Is Already Not Allowed",
-                        "Sorry, this role is not allowed to manage the bot so there's nothing to change.",
-                        Context.User));
-                return;
+                if (!config.AdminUserIds.Contains(user.Id.ToString()))
+                {
+                    usersAlreadyProcessed.Add(user.Id.ToString());
+                }
+                else
+                {
+                    usersToProcess.Add(user.Id.ToString());
+                }
             }
-            await _configurationBusinessLayer.SetApprovedRole(Context.Guild, roleToSet.Id.ToString(), false);
         }
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Configuring Bot Permissions",
-            $"The role {roleToSet.Mention} can now {(setAllowed ? "" : "no longer")} manage the bot.",
-            Context.User));
+        var isSuccess = await _configurationBusinessLayer.SetApprovedUsers(Context.Guild, usersToProcess, setAllowed);
+
+        if (isSuccess)
+        {
+            var usersProcessed = Context.Guild.Users.Where(u => usersToProcess.Contains(u.Id.ToString())).ToList();
+            var usersNotProcessed = Context.Guild.Users.Where(u => usersAlreadyProcessed.Contains(u.Id.ToString())).ToList();
+
+            var usersProcessedEmbedFieldBuilder = new EmbedFieldBuilder
+            {
+                Name = $"Users {(setAllowed ? "Allowed" : "Removed")}",
+                Value = usersProcessed.Any() ? string.Join(", ", usersProcessed.Select(u => u.Mention)) : "None",
+                IsInline = false
+            };
+            var usersNotProcessedEmbedFieldBuilder = new EmbedFieldBuilder
+            {
+                Name = $"Users Not Processed (possibly were already {(setAllowed ? "Allowed" : "Removed")})",
+                Value = usersNotProcessed.Any() ? string.Join(", ", usersNotProcessed.Select(u => u.Mention)) : "None",
+                IsInline = false
+            };
+
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Configuring Bot Permissions",
+                $"**NOTE:** Users added to this role later will still need to be manually {(setAllowed ? "Allowed" : "Removed")} (or you can run this command again).",
+                Context.User, new List<EmbedFieldBuilder>
+                {
+                    usersProcessedEmbedFieldBuilder,
+                    usersNotProcessedEmbedFieldBuilder
+                }));
+        }
+        else
+        {
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed("Configuring Bot Permissions",
+                "The command failed. Please try again later, or there might be an issue with your request.",
+                Context.User));
+        }
     }
 }

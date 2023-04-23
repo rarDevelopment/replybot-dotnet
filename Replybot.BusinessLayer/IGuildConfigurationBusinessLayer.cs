@@ -11,6 +11,6 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetAvatarMentionEnabled(IGuild guild, bool isEnabled);
     Task<bool> SetLogChannel(IGuild guild, string? channelId);
     Task<bool> DeleteGuildConfiguration(IGuild guild);
-    Task<bool> SetApprovedRole(IGuild guild, string roleId, bool isApproved);
-    Task<bool> HasAdminRole(IGuild guild, IReadOnlyCollection<string> roleIds);
+    Task<bool> SetApprovedUsers(IGuild guild, List<string> userIds, bool setAllowed);
+    Task<bool> CanUserAdmin(IGuild guild, IGuildUser user);
 }

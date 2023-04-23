@@ -12,9 +12,8 @@ public class RoleHelper
     }
     public async Task<bool> CanAdministrate(IGuild guild, IGuildUser guildUser)
     {
-        var roleIds = guildUser.RoleIds.Select(r => r.ToString()).ToList();
         return guildUser.GuildPermissions.Administrator
                || guildUser.GuildPermissions.ManageRoles
-               || await _configurationBusinessLayer.HasAdminRole(guild, roleIds);
+               || await _configurationBusinessLayer.CanUserAdmin(guild, guildUser);
     }
 }
