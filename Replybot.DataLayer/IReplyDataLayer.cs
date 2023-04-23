@@ -12,7 +12,7 @@ namespace Replybot.DataLayer
         Task<bool> SetEnableAvatarMentions(string guildId, bool isEnabled);
         Task<bool> SetLogChannel(string guildId, string? channelId);
         Task<bool> DeleteGuildConfiguration(string guildId);
-        Task<bool> AddAllowedRoleId(string guildId, string guildName, string roleId);
-        Task<bool> RemoveAllowedRoleId(string guildId, string guildName, string roleId);
+        Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds);
+        Task<bool> RemoveAllowedUserIds(string guildId, string guildName, List<string> userIds);
     }
 }

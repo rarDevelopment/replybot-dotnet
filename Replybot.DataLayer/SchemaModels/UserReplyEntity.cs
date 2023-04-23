@@ -15,6 +15,8 @@ public class UserReplyEntity
     public ulong UserId { get; set; }
     [BsonElement("replies")]
     public string[] Replies { get; set; }
+    [BsonElement("reactions")]
+    public string[]? Reactions { get; set; }
 
     public UserReply ToDomain()
     {

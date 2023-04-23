@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Replybot.DataLayer;
 using Replybot.Models;
+using System;
 
 namespace Replybot.BusinessLayer;
 
@@ -40,13 +41,13 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         return true;
     }
 
-    public async Task<bool> SetApprovedRole(IGuild guild, string roleId, bool setAllowed)
+    public async Task<bool> SetApprovedUsers(IGuild guild, List<string> userIds, bool setAllowed)
     {
         if (setAllowed)
         {
-            return await _replyDataLayer.AddAllowedRoleId(guild.Id.ToString(), guild.Name, roleId);
+            return await _replyDataLayer.AddAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
         }
-        return await _replyDataLayer.RemoveAllowedRoleId(guild.Id.ToString(), guild.Name, roleId);
+        return await _replyDataLayer.RemoveAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
     }
 
     public async Task<bool> SetAvatarAnnouncementEnabled(IGuild guild, bool isEnabled)
@@ -82,9 +83,9 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         return false;
     }
 
-    public async Task<bool> HasAdminRole(IGuild guild, IReadOnlyCollection<string> roleIds)
+    public async Task<bool> CanUserAdmin(IGuild guild, IGuildUser user)
     {
         var config = await GetGuildConfiguration(guild);
-        return config.AdminRoleIds.Any(roleIds.Contains);
+        return config.AdminUserIds.Contains(user.Id.ToString());
     }
 }

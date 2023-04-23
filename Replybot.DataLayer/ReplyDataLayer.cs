@@ -40,7 +40,6 @@ public class ReplyDataLayer : IReplyDataLayer
     public async Task<GuildConfiguration> GetConfigurationForGuild(string guildId, string guildName)
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
-
         var guildConfig = await _guildConfigurationCollection.Find(filter).FirstOrDefaultAsync();
         if (guildConfig != null)
         {
@@ -61,7 +60,7 @@ public class ReplyDataLayer : IReplyDataLayer
             GuildName = guildName,
             EnableAvatarAnnouncements = true,
             EnableAvatarMentions = true,
-            AdminRoleIds = new List<string>()
+            AdminUserIds = new List<string>()
         });
     }
 
@@ -80,26 +79,24 @@ public class ReplyDataLayer : IReplyDataLayer
         return deleteResult.DeletedCount == 1;
     }
 
-    public async Task<bool> AddAllowedRoleId(string guildId, string guildName, string roleId)
+    public async Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds)
     {
         var existingConfig = await GetConfigurationForGuild(guildId, guildName);
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
-        var updatedAllowedRoleIds = existingConfig.AdminRoleIds;
-        updatedAllowedRoleIds.Add(roleId);
-        var updatedAllowedRoleIdStrings = updatedAllowedRoleIds.Select(r => r.ToString());
-        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.AdminRoleIds, updatedAllowedRoleIdStrings);
+        var updatedAllowedUserIds = existingConfig.AdminUserIds;
+        updatedAllowedUserIds.AddRange(userIds);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.AdminUserIds, updatedAllowedUserIds);
         var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }
 
-    public async Task<bool> RemoveAllowedRoleId(string guildId, string guildName, string roleId)
+    public async Task<bool> RemoveAllowedUserIds(string guildId, string guildName, List<string> userIds)
     {
         var existingConfig = await GetConfigurationForGuild(guildId, guildName);
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
-        var updatedAllowedRoleIds = existingConfig.AdminRoleIds;
-        updatedAllowedRoleIds.Remove(roleId);
-        var updatedAllowedRoleIdStrings = updatedAllowedRoleIds.Select(r => r.ToString());
-        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.AdminRoleIds, updatedAllowedRoleIdStrings);
+        var updatedAllowedUserIds = existingConfig.AdminUserIds;
+        updatedAllowedUserIds.RemoveAll(userIds.Contains);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.AdminUserIds, updatedAllowedUserIds);
         var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }
