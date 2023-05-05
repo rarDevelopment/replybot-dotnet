@@ -87,3 +87,7 @@ Want to shake the 8-ball? Ask Toby a question and include `Toby 🎱` or `Toby 8
 ## Repeat After Me
 
 Toby can say what you want, just say `toby say [what you want him to say here]`.
+
+## Tell me the future
+
+Toby can tell you how you are going to die. And then he will make it happen. Type 'toby end my suffering'
