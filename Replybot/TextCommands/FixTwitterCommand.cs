@@ -5,7 +5,7 @@ namespace Replybot.TextCommands;
 
 public class FixTwitterCommand
 {
-    private const string NoLinkMessage = "I don't think there's a Twitter link there.";
+    public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private readonly Regex _twitterUrlRegex = new(TwitterUrlRegexPattern, RegexOptions.IgnoreCase);
     private const string FxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(fxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
@@ -39,9 +39,9 @@ public class FixTwitterCommand
         }
 
         var messageReferenced = await requestingMessage.Channel.GetMessageAsync(messageReferenceId);
-        return messageReferenced is not { } referencedSocketMessage
+        return messageReferenced is null
             ? ("I couldn't read that message for some reason, sorry!", requesterMessageReference)
-            : FixLinksIfFound(referencedSocketMessage, requestingUser, referencedSocketMessage.Author, noLinkFoundTuple, keyword);
+            : FixLinksIfFound(messageReferenced, requestingUser, messageReferenced.Author, noLinkFoundTuple, keyword);
     }
 
     private (string, MessageReference) FixLinksIfFound(IMessage messageToFix,
@@ -66,11 +66,12 @@ public class FixTwitterCommand
     private string BuildFixedTweetsMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
     {
         var fixedTweets = FixTwitterUrls(message);
-        var tweetDescribeText = fixedTweets.Count == 1 ? "this tweet" : "these tweets";
+        var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
+        var isAre = fixedTweets.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
             ? $" (in {userWhoSentTweets.Mention}'s message)"
             : "";
-        var authorMentionMessage = $"{requestingUser.Mention} asked me to fix {tweetDescribeText}{differentUserText}:\n";
+        var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the fixed {tweetDescribeText}{differentUserText}:\n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
@@ -78,19 +79,20 @@ public class FixTwitterCommand
     {
         var fixedTweets = FixFxTwitterUrls(message);
         var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
+        var isAre = fixedTweets.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
             ? $" (in {userWhoSentTweets.Mention}'s message)"
             : "";
-        var authorMentionMessage = $"{requestingUser.Mention} asked for the original {tweetDescribeText}{differentUserText}:\n";
+        var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {tweetDescribeText}{differentUserText}: \n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
-    private bool DoesMessageContainTwitterUrl(IMessage messageReferenced)
+    public bool DoesMessageContainTwitterUrl(IMessage messageReferenced)
     {
         return _twitterUrlRegex.IsMatch(messageReferenced.Content);
     }
 
-    private bool DoesMessageContainFxTwitterUrl(IMessage messageReferenced)
+    public bool DoesMessageContainFxTwitterUrl(IMessage messageReferenced)
     {
         return _fxTwitterUrlRegex.IsMatch(messageReferenced.Content);
     }

@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Replybot.DataLayer;
 using Replybot.Models;
-using System;
 
 namespace Replybot.BusinessLayer;
 
@@ -50,7 +49,7 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         return await _replyDataLayer.RemoveAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
     }
 
-    public async Task<bool> SetAvatarAnnouncementEnabled(IGuild guild, bool isEnabled)
+    public async Task<bool> SetEnableAvatarAnnouncements(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
@@ -61,12 +60,45 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         return false;
     }
 
-    public async Task<bool> SetAvatarMentionEnabled(IGuild guild, bool isEnabled)
+    public async Task<bool> SetEnableAvatarMentions(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
             return await _replyDataLayer.SetEnableAvatarMentions(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableAutoFixTweets(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await _replyDataLayer.SetEnableAutoFixTweets(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableAutoBreakTweets(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await _replyDataLayer.SetEnableAutoBreakTweets(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await _replyDataLayer.SetEnableDefaultReplies(guild.Id.ToString(), isEnabled);
         }
 
         return false;
