@@ -193,7 +193,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 {
                     keywordToPass = TriggerKeyword.BreakTwitter;
                 }
-                
+
                 if (keywordToPass != null)
                 {
                     var fixedTwitterMessage =
@@ -205,6 +205,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                             messageReference: fixedTwitterMessage.Value.messageToReplyTo);
                         return Task.CompletedTask;
                     }
+                }
+                else if (hasTwitterKeyword)
+                {
+                    return Task.CompletedTask;
                 }
             }
 
