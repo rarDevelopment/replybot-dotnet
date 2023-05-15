@@ -2,19 +2,19 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleAvatarAnnounceSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ToggleAutoBreakTweetsSlashCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly RoleHelper _roleHelper;
 
-    public ToggleAvatarAnnounceSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
+    public ToggleAutoBreakTweetsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
     {
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _roleHelper = roleHelper;
     }
-    
-    [SlashCommand("set-avatar-announcement", "Set avatar announcements to on or off (true or false).")]
-    public async Task ToggleAvatarAnnounce(
+
+    [SlashCommand("set-auto-break-tweets", "Set automatic conversion of fxtwitter.com back to twitter.com to on or off (true or false).")]
+    public async Task ToggleAutoBreakTweets(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
     {
         var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);
@@ -26,10 +26,10 @@ public class ToggleAvatarAnnounceSlashCommand : InteractionModuleBase<SocketInte
 
         if (await _roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetEnableAvatarAnnouncements(Context.Guild, isEnabled);
+            var success = await _guildConfigurationBusinessLayer.SetEnableAutoBreakTweets(Context.Guild, isEnabled);
             if (success)
             {
-                await RespondAsync($"Consider it done! Avatar announcements are now {(isEnabled ? "ON" : "OFF")}.");
+                await RespondAsync($"Consider it done! Automatic conversion of fxtwitter.com back to twitter.com is now {(isEnabled ? "ON" : "OFF")}.");
                 return;
             }
 

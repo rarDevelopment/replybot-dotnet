@@ -15,7 +15,7 @@ namespace Replybot.SlashCommands
         
         [SlashCommand("set-avatar-mention", "Set avatar change mentions to on or off (true or false).")]
         public async Task ToggleAvatarMention(
-            [Summary("is_enabled", "True for Enabled, False for Disabled")] bool isEnabled)
+            [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
         {
             var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);
             if (member == null)
@@ -26,7 +26,7 @@ namespace Replybot.SlashCommands
 
             if (await _roleHelper.CanAdministrate(Context.Guild, member))
             {
-                var success = await _guildConfigurationBusinessLayer.SetAvatarMentionEnabled(Context.Guild, isEnabled);
+                var success = await _guildConfigurationBusinessLayer.SetEnableAvatarMentions(Context.Guild, isEnabled);
                 if (success)
                 {
                     await RespondAsync($"Consider it done! Avatar mentions are now {(isEnabled ? "ON" : "OFF")}.");

@@ -33,21 +33,17 @@ public class GuildReplyDefinitionEntity
     public bool RequiresBotName { get; set; }
     [BsonElement("reactions")]
     public string[]? Reactions { get; set; }
-    [BsonElement("channelId")]
-    public string? ChannelId { get; set; }
-    [BsonElement("createdBy")]
-    public string? CreatedBy { get; set; }
-    [BsonElement("lastEditedBy")]
-    public string? LastEditedBy { get; set; }
     [BsonElement("userReplies")]
     public UserReplyEntity[]? UserReplies { get; set; }
     [BsonElement("priority")]
     public decimal Priority { get; set; }
+    [BsonIgnore]
+    public bool IsSpecialFeature { get; set; }
 
     public GuildReplyDefinition ToDomain()
     {
         var userReplies = UserReplies?.Select(p => p.ToDomain()).ToArray();
-        return new GuildReplyDefinition(GuildId, Triggers, Replies, userReplies, MentionAuthor, RequiresBotName, Reactions, Priority)
+        return new GuildReplyDefinition(GuildId, Triggers, Replies, userReplies, MentionAuthor, RequiresBotName, Reactions, Priority, IsSpecialFeature)
         {
             Id = Id
         };

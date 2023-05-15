@@ -124,4 +124,28 @@ public class ReplyDataLayer : IReplyDataLayer
         var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }
+
+    public async Task<bool> SetEnableAutoFixTweets(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableAutoFixTweets, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableAutoBreakTweets(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableAutoBreakTweets, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableDefaultReplies(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableDefaultReplies, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
 }
