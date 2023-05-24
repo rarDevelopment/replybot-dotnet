@@ -10,9 +10,11 @@ public class FixTwitterCommand
     private readonly Regex _twitterUrlRegex = new(TwitterUrlRegexPattern, RegexOptions.IgnoreCase);
     private const string FxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(fxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private readonly Regex _fxTwitterUrlRegex = new(FxTwitterUrlRegexPattern, RegexOptions.IgnoreCase);
+    public const string FixTweetButtonEmojiId = "1110617858892894248";
+    public const string FixTweetButtonEmojiName = "fixtweet";
 
     public async Task<(string fixedTwitterMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(
-        SocketMessage requestingMessage,
+        IUserMessage requestingMessage,
         TriggerKeyword keyword)
     {
         var requestingUser = requestingMessage.Author;
@@ -119,5 +121,10 @@ public class FixTwitterCommand
     {
         var matches = _fxTwitterUrlRegex.Matches(text);
         return matches.Select(t => t.Value).ToList();
+    }
+
+    public Emote GetFixTwitterEmote()
+    {
+        return Emote.Parse($"<:{FixTweetButtonEmojiName}:{FixTweetButtonEmojiId}>");
     }
 }

@@ -70,8 +70,12 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 ? await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel.Guild)
                 : null;
 
-            var replyDefinition =
-                await _replyBusinessLayer.GetReplyDefinition(message.Content, guildChannel?.Guild.Id.ToString());
+            if (config != null)
+            {
+                await HandleTwitterReaction(config, notification.Message);
+            }
+
+            var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content, guildChannel?.Guild.Id.ToString());
             if (replyDefinition == null)
             {
                 return Task.CompletedTask;
@@ -155,63 +159,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var hasTwitterKeyword = reply == _keywordHandler.BuildKeyword(TriggerKeyword.FixTwitter) ||
-                                    reply == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter);
-            var autoTwitterEnabled = (config?.EnableAutoFixTweets ?? false) || (config?.EnableAutoBreakTweets ?? false);
-            if (hasTwitterKeyword || autoTwitterEnabled)
-            {
-                TriggerKeyword? keywordToPass = null;
-
-                if ((isBotMentioned || notification.Message.Reference != null) && hasTwitterKeyword)
-                {
-                    keywordToPass = TriggerKeyword.FixTwitter;
-                    if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.BreakTwitter))
-                    {
-                        keywordToPass = TriggerKeyword.BreakTwitter;
-                    }
-
-                    var fixedTwitterMessage =
-                        await _fixTwitterCommand.GetFixedTwitterMessage(notification.Message, keywordToPass.Value);
-                    if (fixedTwitterMessage != null)
-                    {
-                        await messageChannel.SendMessageAsync(fixedTwitterMessage.Value.fixedTwitterMessage,
-                            messageReference: fixedTwitterMessage.Value.messageToReplyTo);
-                        return Task.CompletedTask;
-                    }
-                }
-
-                else if (!isBotMentioned &&
-                         (config?.EnableAutoFixTweets ?? false) &&
-                         _fixTwitterCommand.DoesMessageContainTwitterUrl(notification.Message))
-                {
-                    keywordToPass = TriggerKeyword.FixTwitter;
-                }
-
-                else if (!isBotMentioned &&
-                         (config?.EnableAutoBreakTweets ?? false) &&
-                         _fixTwitterCommand.DoesMessageContainFxTwitterUrl(notification.Message))
-                {
-                    keywordToPass = TriggerKeyword.BreakTwitter;
-                }
-
-                if (keywordToPass != null)
-                {
-                    var fixedTwitterMessage =
-                        await _fixTwitterCommand.GetFixedTwitterMessage(notification.Message, keywordToPass.Value);
-                    if (fixedTwitterMessage != null && fixedTwitterMessage.Value.fixedTwitterMessage !=
-                        _fixTwitterCommand.NoLinkMessage)
-                    {
-                        await messageChannel.SendMessageAsync(fixedTwitterMessage.Value.fixedTwitterMessage,
-                            messageReference: fixedTwitterMessage.Value.messageToReplyTo);
-                        return Task.CompletedTask;
-                    }
-                }
-                else if (hasTwitterKeyword)
-                {
-                    return Task.CompletedTask;
-                }
-            }
-
             //this handles skipping if the above features haven't triggered and if the default reply isn't a special feature otherwise (manually specified)
             var defaultRepliesEnabled = config?.EnableDefaultReplies ?? true;
             if (!defaultRepliesEnabled && replyDefinition is { IsDefaultReply: true, IsSpecialFeature: false })
@@ -239,6 +186,20 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
+    }
+
+    private async Task HandleTwitterReaction(GuildConfiguration config, SocketMessage message)
+    {
+        if (!config.EnableFixTweetReactions)
+        {
+            return;
+        }
+
+        var hasTwitterLink = _fixTwitterCommand.DoesMessageContainTwitterUrl(message) || _fixTwitterCommand.DoesMessageContainFxTwitterUrl(message);
+        if (hasTwitterLink)
+        {
+            await message.AddReactionAsync(_fixTwitterCommand.GetFixTwitterEmote());
+        }
     }
 
     private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)

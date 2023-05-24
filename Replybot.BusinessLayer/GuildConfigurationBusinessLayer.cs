@@ -76,18 +76,7 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetEnableAutoFixTweets(guild.Id.ToString(), isEnabled);
-        }
-
-        return false;
-    }
-
-    public async Task<bool> SetEnableAutoBreakTweets(IGuild guild, bool isEnabled)
-    {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
-        if (config != null)
-        {
-            return await _replyDataLayer.SetEnableAutoBreakTweets(guild.Id.ToString(), isEnabled);
+            return await _replyDataLayer.SetEnableFixTweetReactions(guild.Id.ToString(), isEnabled);
         }
 
         return false;
