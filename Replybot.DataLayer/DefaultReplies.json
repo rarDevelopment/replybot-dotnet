@@ -192,13 +192,11 @@
         "fix tweet",
         "fix tweets",
         "fixtweet",
-        "fixtweets",
-        "twitter.com",
-        "t.co"
+        "fixtweets"
       ],
-      "replies": [ "{{FIXTWITTER}}" ],
+      "replies": [ "You can just use the reaction for that now!" ],
       "mentionAuthor": true,
-      "requiresBotName": false,
+      "requiresBotName": true,
       "isSpecialFeature": true
     },
     {
@@ -211,12 +209,11 @@
         "break tweet",
         "break tweets",
         "breaktweet",
-        "breaktweets",
-        "fxtwitter.com"
+        "breaktweets"
       ],
-      "replies": [ "{{BREAKTWITTER}}" ],
+      "replies": [ "You can just use the reaction for that now!" ],
       "mentionAuthor": true,
-      "requiresBotName": false,
+      "requiresBotName": true,
       "isSpecialFeature": true
     },
     {

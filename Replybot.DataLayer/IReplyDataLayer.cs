@@ -14,8 +14,7 @@ namespace Replybot.DataLayer
         Task<bool> DeleteGuildConfiguration(string guildId);
         Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds);
         Task<bool> RemoveAllowedUserIds(string guildId, string guildName, List<string> userIds);
-        Task<bool> SetEnableAutoFixTweets(string guildId, bool isEnabled);
-        Task<bool> SetEnableAutoBreakTweets(string guildId, bool isEnabled);
+        Task<bool> SetEnableFixTweetReactions(string guildId, bool isEnabled);
         Task<bool> SetEnableDefaultReplies(string guildId, bool isEnabled);
     }
 }

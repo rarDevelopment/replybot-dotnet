@@ -2,18 +2,18 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleAutoFixTweetsSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ToggleFixTweetReactionsSlashCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly RoleHelper _roleHelper;
 
-    public ToggleAutoFixTweetsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
+    public ToggleFixTweetReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
     {
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _roleHelper = roleHelper;
     }
     
-    [SlashCommand("set-auto-fix-tweets", "Set automatic conversion of twitter.com to fxtwitter.com to on or off (true or false).")]
+    [SlashCommand("set-fix-tweet-reactions", "Set fix tweet reactions on or off (true or false).")]
     public async Task ToggleAutoFixTweets(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
     {
@@ -29,7 +29,7 @@ public class ToggleAutoFixTweetsSlashCommand : InteractionModuleBase<SocketInter
             var success = await _guildConfigurationBusinessLayer.SetEnableAutoFixTweets(Context.Guild, isEnabled);
             if (success)
             {
-                await RespondAsync($"Consider it done! Automatic conversion of twitter.com to fxtwitter.com is now {(isEnabled ? "ON" : "OFF")}.");
+                await RespondAsync($"Consider it done! Fix tweet reactions, which allow you to react to convert twitter.com links to fxtwitter.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");
                 return;
             }
 

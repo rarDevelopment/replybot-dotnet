@@ -100,6 +100,7 @@ public class DiscordBot : BackgroundService
         _client.UserBanned += (userWhoWasBanned, guild) => Publish(new UserBannedNotification(userWhoWasBanned, guild));
         _client.UserUnbanned += (userWhoWasUnbanned, guild) => Publish(new UserUnbannedNotification(userWhoWasUnbanned, guild));
         _client.UserJoined += user => Publish(new UserJoinedNotification(user));
+        _client.ReactionAdded += (cacheableMessage, cacheableChannel, reaction) => Publish(new ReactionAddedNotification(cacheableMessage, cacheableChannel, reaction));
     }
 
     private Task Publish<TEvent>(TEvent @event) where TEvent : INotification

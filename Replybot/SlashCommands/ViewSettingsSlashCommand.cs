@@ -31,8 +31,7 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
             var message = $"Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarAnnouncements)}\n";
             message += $"Mention User on Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarMentions)}\n";
             message += $"Log Channel: {(guildConfig.LogChannelId != null ? $"<#{guildConfig.LogChannelId}>" : "Not Set")}\n";
-            message += $"Auto Fix Tweets: {GetEnabledText(guildConfig.EnableAutoFixTweets)}\n";
-            message += $"Auto Break Tweets: {GetEnabledText(guildConfig.EnableAutoBreakTweets)}\n";
+            message += $"Fix Tweet Reactions: {GetEnabledText(guildConfig.EnableFixTweetReactions)}\n";
             message += $"Default Replies: {GetEnabledText(guildConfig.EnableDefaultReplies)}\n";
 
             await RespondAsync(embed: _discordFormatter.BuildRegularEmbed($"Settings for {Context.Guild.Name}",

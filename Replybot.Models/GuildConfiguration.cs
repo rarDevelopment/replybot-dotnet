@@ -8,8 +8,7 @@ public class GuildConfiguration
     public bool EnableAvatarMentions { get; set; }
     public string? LogChannelId { get; set; }
     public List<string> AdminUserIds { get; set; }
-    public bool EnableAutoFixTweets { get; set; }
-    public bool EnableAutoBreakTweets { get; set; }
     public bool EnableDefaultReplies { get; set; }
     public bool IsSpecialFeature { get; set; }
+    public bool EnableFixTweetReactions { get; set; }
 }
