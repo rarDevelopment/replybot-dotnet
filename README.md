@@ -51,9 +51,7 @@ You can say `Toby define [word here]` and he'll try to find a dictionary definit
 You can make a (very simple) poll by doing `"Toby poll [question here], [answer 1 here], [answer 2 here], and so on..."`. This will genereate a post with the question, answer choices, and reactions associated with each answer choice.
 
 ## Fix Tweet Previews (uses [FixTweet](https://github.com/FixTweet/FixTweet))
-If you say `Toby fix tweet [your tweet link here]` he will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message.
-
-If you reply to another message with a tweet link in it and say `Toby fix tweet`, he'll fix those tweets for you.
+Tweets posted in Discord will include a preview embed of that tweet. But if there's a video, that video preview might not play properly. Or if there is more than 1 image, those other images won't show on mobile devices. To help with this, Toby will add a reaction emoji to any post that includes a Twitter link. If someone taps on that reaction emoji, Toby will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message. If someone has posted an fxtwitter.com link directly and you'd like the original tweet link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original tweet link. Admins can use `/set-fix-tweet-reactions` to turn this on or off.
 
 ## Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
 
