@@ -28,6 +28,10 @@ Avatar change announcements will post in the server's system channel (where welc
 
 This relates to the avatar change announcements above. You can also have the user who updated their avatar be @mentioned in those announcements. You can enable or disable these mentions with the `/set-avatar-mention` command.
 
+## Default Replies
+
+By default, Toby has replies to give him some personality. However, if you'd like to turn this off, you can use the `/set-default-replies` command.
+
 ## Server Activity Logging
 
 For moderators, you might want to keep a more detailed log of the activity on your server than the default audit log functionality in Discord is capable of doing. You can have Toby log server activity to a particular channel by using the `/set-logs-channel` command and specifying the channel where you want the logs to appear.
@@ -51,7 +55,7 @@ You can say `Toby define [word here]` and he'll try to find a dictionary definit
 You can make a (very simple) poll by doing `"Toby poll [question here], [answer 1 here], [answer 2 here], and so on..."`. This will genereate a post with the question, answer choices, and reactions associated with each answer choice.
 
 ## Fix Tweet Previews (uses [FixTweet](https://github.com/FixTweet/FixTweet))
-Tweets posted in Discord will include a preview embed of that tweet. But if there's a video, that video preview might not play properly. Or if there is more than 1 image, those other images won't show on mobile devices. To help with this, Toby will add a reaction emoji to any post that includes a Twitter link. If someone taps on that reaction emoji, Toby will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message. If someone has posted an fxtwitter.com link directly and you'd like the original tweet link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original tweet link. Admins can use `/set-fix-tweet-reactions` to turn this on or off.
+Tweets posted in Discord will include a preview embed of that tweet. But if there's a video, that video preview might not play properly. Or if there is more than 1 image, those other images won't show on mobile devices. To help with this, Toby will add a reaction emoji to any post that includes a Twitter link. If someone taps on that reaction emoji, Toby will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message. If someone has posted an fxtwitter.com link directly and you'd like the original tweet link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original tweet link. Admins can use the `/set-fix-tweet-reactions` command to turn this on or off.
 
 ## Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
 
