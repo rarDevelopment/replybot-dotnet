@@ -122,7 +122,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddScoped<RoleHelper>();
 
-    services.AddMediatR(typeof(DiscordBot));
+    services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(DiscordBot).GetTypeInfo().Assembly));
 
     services.AddHostedService<DiscordBot>();
 
