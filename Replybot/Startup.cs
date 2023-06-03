@@ -11,7 +11,6 @@ using Replybot;
 using Serilog;
 using System.Reflection;
 using Fortnite_API;
-using MediatR;
 using Replybot.BusinessLayer;
 using Replybot.DataLayer;
 using Replybot.Models;

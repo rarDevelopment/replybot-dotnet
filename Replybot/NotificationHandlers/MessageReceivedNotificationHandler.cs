@@ -87,18 +87,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            if ((replyDefinition.Replies == null || !replyDefinition.Replies.Any()) &&
-                (replyDefinition.UserReplies == null || !replyDefinition.UserReplies.Any()))
-            {
-                return Task.CompletedTask;
-            }
-
             var reply = ChooseReply(replyDefinition, message.Author);
-
-            if (string.IsNullOrEmpty(reply))
-            {
-                return Task.CompletedTask;
-            }
 
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
@@ -167,6 +156,11 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             }
 
             await HandleReactions(message, replyDefinition);
+
+            if (string.IsNullOrEmpty(reply))
+            {
+                return Task.CompletedTask;
+            }
 
             var messageText = _keywordHandler.ReplaceKeywords(reply,
                 message.Author.Username,
@@ -307,8 +301,13 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         return isBotMentioned;
     }
 
-    private async Task<bool> HandleDelete(IDeletable message, string reply)
+    private async Task<bool> HandleDelete(IDeletable message, string? reply)
     {
+        if (string.IsNullOrEmpty(reply))
+        {
+            return false;
+        }
+
         var wasDeleted = false;
         if (!reply.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
         {
