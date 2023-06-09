@@ -61,6 +61,9 @@ You can make a (very simple) poll by doing `"Toby poll [question here], [answer 
 ## Fix Tweet Previews (uses [FixTweet](https://github.com/FixTweet/FixTweet))
 Tweets posted in Discord will include a preview embed of that tweet. But if there's a video, that video preview might not play properly. Or if there is more than 1 image, those other images won't show on mobile devices. To help with this, Toby will add a reaction emoji to any post that includes a Twitter link. If someone taps on that reaction emoji, Toby will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message. If someone has posted an fxtwitter.com link directly and you'd like the original tweet link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original tweet link. Admins can use the `/set-fix-tweet-reactions` command to turn this on or off.
 
+## Fix Instagram Previews (uses [InstaFix](https://github.com/Wikidepia/InstaFix))
+Instagram links posted in Discord don't preview at all! Similar to the above, Toby will add a reaction emoji to any post that includes an Instagram link. If someone taps that reaction emoji, Toby will reply with that same link at ddinstagram.com, which is a site that fixes video and image preview embeds in Discord's Instagram previews. This works with all Instagram posts in the message. If someone has posted a ddinstagram.com link directly and you'd like the original link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original Instagram link. Admins can use the `/set-fix-instagram-reactions` command to turn this on or off.
+
 ## Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
 
 Use `Toby hltb [game here]` and Toby will tell you how long that game is.
