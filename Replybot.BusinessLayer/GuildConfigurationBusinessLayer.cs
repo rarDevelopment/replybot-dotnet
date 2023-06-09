@@ -82,6 +82,17 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         return false;
     }
 
+    public async Task<bool> SetEnableAutoFixInstagram(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await _replyDataLayer.SetEnableFixInstagramReactions(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
     public async Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);

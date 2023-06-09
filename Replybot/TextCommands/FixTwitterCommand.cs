@@ -12,18 +12,20 @@ public class FixTwitterCommand
     private readonly Regex _fxTwitterUrlRegex = new(FxTwitterUrlRegexPattern, RegexOptions.IgnoreCase);
     public const string FixTweetButtonEmojiId = "1110617858892894248";
     public const string FixTweetButtonEmojiName = "fixtweet";
+    private const string OriginalTwitterBaseUrl = "twitter.com";
+    private const string FixedTwitterBaseUrl = "fxtwitter.com";
 
-    public async Task<(string fixedTwitterMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(
+    public async Task<(string fixedMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(
         IUserMessage requestingMessage,
         TriggerKeyword keyword)
     {
         var requestingUser = requestingMessage.Author;
-        IUser userWhoSentTweets = requestingMessage.Author;
+        IUser userWhoSent = requestingMessage.Author;
 
         var requesterMessageReference = new MessageReference(requestingMessage.Id);
         var noLinkFoundTuple = (NoLinkMessage, requesterMessageReference);
 
-        var fixedLinksResult = FixLinksIfFound(requestingMessage, requestingUser, userWhoSentTweets, noLinkFoundTuple, keyword);
+        var fixedLinksResult = FixLinksIfFound(requestingMessage, requestingUser, userWhoSent, noLinkFoundTuple, keyword);
         if (fixedLinksResult != noLinkFoundTuple)
         {
             return fixedLinksResult;
@@ -102,13 +104,13 @@ public class FixTwitterCommand
     private IList<string> FixTwitterUrls(IMessage messageToFix)
     {
         var urlsFromMessage = GetTwitterUrlsFromMessage(messageToFix.Content);
-        return urlsFromMessage.Select(url => url.Replace("twitter.com", "fxtwitter.com", StringComparison.InvariantCultureIgnoreCase)).ToList();
+        return urlsFromMessage.Select(url => url.Replace(OriginalTwitterBaseUrl, FixedTwitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
     private IList<string> FixFxTwitterUrls(IMessage messageToFix)
     {
         var urlsFromMessage = GetFxTwitterUrlsFromMessage(messageToFix.Content);
-        return urlsFromMessage.Select(url => url.Replace("fxtwitter.com", "twitter.com", StringComparison.InvariantCultureIgnoreCase)).ToList();
+        return urlsFromMessage.Select(url => url.Replace(FixedTwitterBaseUrl, OriginalTwitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
     private IEnumerable<string> GetTwitterUrlsFromMessage(string text)

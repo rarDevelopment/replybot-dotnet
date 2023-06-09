@@ -16,6 +16,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly GetFortniteShopInformationCommand _fortniteShopInformationCommand;
     private readonly PollCommand _pollCommand;
     private readonly FixTwitterCommand _fixTwitterCommand;
+    private readonly FixInstagramCommand _fixInstagramCommand;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
     private readonly LogMessageBuilder _logMessageBuilder;
@@ -29,6 +30,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         GetFortniteShopInformationCommand fortniteShopInformationCommand,
         PollCommand pollCommand,
         FixTwitterCommand fixTwitterCommand,
+        FixInstagramCommand fixInstagramCommand,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         LogMessageBuilder logMessageBuilder,
@@ -42,6 +44,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _fortniteShopInformationCommand = fortniteShopInformationCommand;
         _pollCommand = pollCommand;
         _fixTwitterCommand = fixTwitterCommand;
+        _fixInstagramCommand = fixInstagramCommand;
         _versionSettings = versionSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
@@ -73,6 +76,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             if (config != null)
             {
                 await HandleTwitterReaction(config, notification.Message);
+                await HandleInstagramReaction(config, notification.Message);
             }
 
             var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content, guildChannel?.Guild.Id.ToString());
@@ -193,6 +197,20 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         if (hasTwitterLink)
         {
             await message.AddReactionAsync(_fixTwitterCommand.GetFixTwitterEmote());
+        }
+    }
+
+    private async Task HandleInstagramReaction(GuildConfiguration config, SocketMessage message)
+    {
+        if (!config.EnableFixInstagramReactions)
+        {
+            return;
+        }
+
+        var hasInstagramLink = _fixInstagramCommand.DoesMessageContainInstagramUrl(message) || _fixInstagramCommand.DoesMessageContainDdInstagramUrl(message);
+        if (hasInstagramLink)
+        {
+            await message.AddReactionAsync(_fixInstagramCommand.GetFixInstagramEmote());
         }
     }
 

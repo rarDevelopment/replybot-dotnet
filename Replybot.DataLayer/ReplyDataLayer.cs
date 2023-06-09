@@ -133,6 +133,14 @@ public class ReplyDataLayer : IReplyDataLayer
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }
 
+    public async Task<bool> SetEnableFixInstagramReactions(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableFixInstagramReactions, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
     public async Task<bool> SetEnableDefaultReplies(string guildId, bool isEnabled)
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);

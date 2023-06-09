@@ -27,5 +27,7 @@
         Poll,
         FixTwitter,
         BreakTwitter,
+        FixInstagram,
+        BreakInstagram,
     }
 }

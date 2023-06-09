@@ -9,6 +9,6 @@ public class GuildConfiguration
     public string? LogChannelId { get; set; }
     public List<string> AdminUserIds { get; set; }
     public bool EnableDefaultReplies { get; set; }
-    public bool IsSpecialFeature { get; set; }
     public bool EnableFixTweetReactions { get; set; }
+    public bool EnableFixInstagramReactions { get; set; }
 }
