@@ -6,9 +6,9 @@ namespace Replybot.TextCommands;
 public class FixInstagramCommand
 {
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
-    private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/p\\/[a-z0-9-_]+";
+    private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel)\\/[a-z0-9-_]+";
     private readonly Regex _instagramUrlRegex = new(InstagramUrlRegexPattern, RegexOptions.IgnoreCase);
-    private const string DdInstagramUrlRegexPattern = "https?:\\/\\/(www.)?(ddinstagram.com)\\/p\\/[a-z0-9-_]+";
+    private const string DdInstagramUrlRegexPattern = "https?:\\/\\/(www.)?(ddinstagram.com)\\/(p|reel)\\/[a-z0-9-_]+";
     private readonly Regex _ddInstagramUrlRegex = new(DdInstagramUrlRegexPattern, RegexOptions.IgnoreCase);
     public const string FixInstagramButtonEmojiId = "1116574189592260658";
     public const string FixInstagramButtonEmojiName = "fixinstagram";
