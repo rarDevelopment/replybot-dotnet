@@ -15,4 +15,5 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> CanUserAdmin(IGuild guild, IGuildUser user);
     Task<bool> SetEnableAutoFixTweets(IGuild guild, bool isEnabled);
     Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableAutoFixInstagram(IGuild guild, bool isEnabled);
 }

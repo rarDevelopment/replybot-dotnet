@@ -16,5 +16,6 @@ namespace Replybot.DataLayer
         Task<bool> RemoveAllowedUserIds(string guildId, string guildName, List<string> userIds);
         Task<bool> SetEnableFixTweetReactions(string guildId, bool isEnabled);
         Task<bool> SetEnableDefaultReplies(string guildId, bool isEnabled);
+        Task<bool> SetEnableFixInstagramReactions(string guildId, bool isEnabled);
     }
 }

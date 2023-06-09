@@ -114,6 +114,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<PollCommand>();
 
     services.AddSingleton<FixTwitterCommand>();
+    services.AddSingleton<FixInstagramCommand>();
 
     services.AddSingleton<GetFortniteShopInformationCommand>();
     services.AddSingleton<FortniteApi>();
