@@ -2,5 +2,10 @@
 
 public class VersionSettings
 {
-    public string? VersionNumber { get; set; }
+    public VersionSettings(string versionNumber)
+    {
+        VersionNumber = versionNumber;
+    }
+
+    public string VersionNumber { get; set; }
 }

@@ -2,6 +2,12 @@
 
 public class HowLongToBeatSettings
 {
-    public string? BaseUrl { get; set; }
-    public string? Referer { get; set; }
+    public HowLongToBeatSettings(string baseUrl, string referer)
+    {
+        BaseUrl = baseUrl;
+        Referer = referer;
+    }
+
+    public string BaseUrl { get; set; }
+    public string Referer { get; set; }
 }
