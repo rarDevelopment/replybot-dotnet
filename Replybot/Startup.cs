@@ -23,7 +23,7 @@ var builder = new HostBuilder();
 
 builder.ConfigureAppConfiguration(options
     => options.AddJsonFile("appsettings.json")
-        .AddUserSecrets(Assembly.GetEntryAssembly(), true)
+        .AddUserSecrets(Assembly.GetEntryAssembly()!, true)
         .AddEnvironmentVariables())
     .ConfigureHostConfiguration(configHost =>
     {
@@ -54,33 +54,23 @@ builder.ConfigureServices((host, services) =>
             MessageCacheSize = 50
         }));
 
-    var versionSettings = new VersionSettings
-    {
-        VersionNumber = host.Configuration["Version:VersionNumber"]
-    };
+    var versionSettings = new VersionSettings(host.Configuration["Version:VersionNumber"]!);
 
-    var discordSettings = new DiscordSettings(botToken: host.Configuration["Discord:BotToken"],
-        avatarBaseUrl: host.Configuration["Discord:AvatarBaseUrl"],
+    var discordSettings = new DiscordSettings(botToken: host.Configuration["Discord:BotToken"]!,
+        avatarBaseUrl: host.Configuration["Discord:AvatarBaseUrl"]!,
         maxCharacters: Convert.ToInt32(host.Configuration["Discord:MaxCharacters"]));
 
-    var databaseSettings = new DatabaseSettings
-    {
-        Cluster = host.Configuration["Database:Cluster"],
-        User = host.Configuration["Database:User"],
-        Password = host.Configuration["Database:Password"],
-        Name = host.Configuration["Database:Name"],
-    };
+    var databaseSettings = new DatabaseSettings(
+        host.Configuration["Database:Cluster"]!,
+        host.Configuration["Database:User"]!,
+        host.Configuration["Database:Password"]!,
+        host.Configuration["Database:Name"]!
+        );
 
-    var howLongToBeatSettings = new HowLongToBeatSettings
-    {
-        BaseUrl = host.Configuration["HowLongToBeat:BaseUrl"],
-        Referer = host.Configuration["HowLongToBeat:Referer"]
-    };
+    var howLongToBeatSettings = new HowLongToBeatSettings(host.Configuration["HowLongToBeat:BaseUrl"]!,
+        host.Configuration["HowLongToBeat:Referer"]!);
 
-    var dictionarySettings = new DictionarySettings
-    {
-        BaseUrl = host.Configuration["FreeDictionary:BaseUrl"]
-    };
+    var dictionarySettings = new DictionarySettings(host.Configuration["FreeDictionary:BaseUrl"]!);
 
     services.AddSingleton(versionSettings);
     services.AddSingleton(discordSettings);
@@ -128,7 +118,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddHttpClient(HttpClients.HowLongToBeat.ToString(), config =>
     {
-        config.BaseAddress = new Uri(howLongToBeatSettings.BaseUrl);
+        config.BaseAddress = new Uri(howLongToBeatSettings.BaseUrl!);
         config.DefaultRequestHeaders.Add("Referer", howLongToBeatSettings.Referer);
         config.DefaultRequestHeaders.Add("Connection", "keep-alive");
         config.DefaultRequestHeaders.Add("Accept", "*/*");
@@ -137,7 +127,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddHttpClient(HttpClients.Dictionary.ToString(), config =>
     {
-        config.BaseAddress = new Uri(dictionarySettings.BaseUrl);
+        config.BaseAddress = new Uri(dictionarySettings.BaseUrl!);
     });
 });
 

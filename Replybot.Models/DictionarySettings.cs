@@ -2,6 +2,11 @@
 {
     public class DictionarySettings
     {
-        public string? BaseUrl { get; set; }
+        public DictionarySettings(string baseUrl)
+        {
+            BaseUrl = baseUrl;
+        }
+
+        public string BaseUrl { get; set; }
     }
 }
