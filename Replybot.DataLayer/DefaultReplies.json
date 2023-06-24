@@ -182,41 +182,6 @@
       "isSpecialFeature": true
     },
     {
-      "triggers": [
-        "fxtwt",
-        "fx twt",
-        "fixtwit",
-        "fixtwitter",
-        "fix twitter",
-        "fix twit",
-        "fix tweet",
-        "fix tweets",
-        "fixtweet",
-        "fixtweets"
-      ],
-      "replies": [ "You can just use the reaction for that now!" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [
-        "breaktwt",
-        "break twt",
-        "breaktwitter",
-        "break twitter",
-        "break twit",
-        "break tweet",
-        "break tweets",
-        "breaktweet",
-        "breaktweets"
-      ],
-      "replies": [ "You can just use the reaction for that now!" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "8-ball", "8ball", "8 ball", "🎱" ],
       "replies": [
         "It is certain.",
