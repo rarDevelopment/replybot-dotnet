@@ -18,7 +18,10 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
         _keywordHandler = keywordHandler;
     }
 
-    public async Task<GuildReplyDefinition?> GetReplyDefinition(string message, string? guildId)
+    public async Task<GuildReplyDefinition?> GetReplyDefinition(string message,
+        string? guildId,
+        string? channelId = null,
+        string? userId = null)
     {
         var defaultReplies = _replyDataLayer.GetDefaultReplies();
         var guildReplyDefinitions = guildId != null
@@ -27,13 +30,16 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
 
         var defaultReply = FindReplyFromData(defaultReplies, message);
         var guildReplyDefinition = guildReplyDefinitions != null
-            ? FindReplyFromData(guildReplyDefinitions, message)
+            ? FindReplyFromData(guildReplyDefinitions, message, channelId, userId)
             : null;
 
         return guildReplyDefinition ?? defaultReply;
     }
 
-    private GuildReplyDefinition? FindReplyFromData(IList<GuildReplyDefinition>? replyData, string message)
+    private GuildReplyDefinition? FindReplyFromData(IList<GuildReplyDefinition>? replyData,
+        string message,
+        string? channelId = null,
+        string? userId = null)
     {
         if (replyData == null || !replyData.Any())
         {
@@ -42,8 +48,12 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
 
         var cleanedMessage = _keywordHandler.CleanMessageForTrigger(message);
 
-        return replyData.FirstOrDefault(r =>
-            r.Triggers.FirstOrDefault(triggerTerm => GetWordMatch(triggerTerm, cleanedMessage)) != null);
+        var matches = replyData.Where(r =>
+            r.Triggers.FirstOrDefault(triggerTerm => GetWordMatch(triggerTerm, cleanedMessage)) != null).ToList();
+
+        return matches.FirstOrDefault(r =>
+            (r.ChannelIds == null || !r.ChannelIds.Any() || r.ChannelIds.Contains(channelId)) &&
+            (r.UserIds == null || !r.UserIds.Any() || r.UserIds.Contains(userId)));
     }
 
     private bool GetWordMatch(string triggerTerm, string input)
