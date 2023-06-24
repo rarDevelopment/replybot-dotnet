@@ -79,7 +79,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 await HandleInstagramReaction(config, notification.Message);
             }
 
-            var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content, guildChannel?.Guild.Id.ToString());
+            var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content,
+                guildChannel?.Guild.Id.ToString(),
+                messageChannel.Id.ToString(),
+                message.Author.Id.ToString());
             if (replyDefinition == null)
             {
                 return Task.CompletedTask;
@@ -350,13 +353,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private static string? ChooseReply(GuildReplyDefinition guildReplyDefinition, SocketUser author)
     {
         var replies = guildReplyDefinition.Replies;
-        if (guildReplyDefinition.UserReplies != null && guildReplyDefinition.UserReplies.Any())
-        {
-            if (guildReplyDefinition.UserReplies.Any(pr => pr.UserId == author.Id))
-            {
-                replies = guildReplyDefinition.UserReplies.First(pr => pr.UserId == author.Id).Replies;
-            }
-        }
 
         if (replies == null || !replies.Any())
         {
