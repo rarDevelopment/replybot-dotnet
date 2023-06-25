@@ -4,6 +4,7 @@ using Replybot.Models;
 
 namespace Replybot.DataLayer.SchemaModels;
 
+[BsonIgnoreExtraElements]
 public class GuildReplyDefinitionEntity
 {
     public GuildReplyDefinitionEntity(ulong guildId, string[] triggers, decimal priority, string[]? replies = null,
@@ -37,9 +38,6 @@ public class GuildReplyDefinitionEntity
     public string[]? UserIds { get; set; }
     [BsonElement("channelIds")]
     public string[]? ChannelIds { get; set; }
-    [Obsolete("Removed in favour of UserIds property")]
-    [BsonElement("userReplies")]
-    public UserReplyEntity[]? UserReplies { get; set; }
     [BsonElement("priority")]
     public decimal Priority { get; set; }
     [BsonIgnore]
@@ -47,11 +45,9 @@ public class GuildReplyDefinitionEntity
 
     public GuildReplyDefinition ToDomain()
     {
-        var userReplies = UserReplies?.Select(p => p.ToDomain()).ToArray();
         return new GuildReplyDefinition(GuildId,
             Triggers,
             Replies,
-            userReplies,
             ChannelIds,
             UserIds,
             MentionAuthor,

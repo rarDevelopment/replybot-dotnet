@@ -4,7 +4,6 @@ public class GuildReplyDefinition
 {
     public GuildReplyDefinition(ulong guildId, string[] triggers,
         string[]? replies,
-        UserReply[]? userReplies,
         string[]? channelIds,
         string[]? userIds,
         bool mentionAuthor,
@@ -14,7 +13,6 @@ public class GuildReplyDefinition
         GuildId = guildId;
         Triggers = triggers;
         Replies = replies;
-        UserReplies = userReplies;
         ChannelIds = channelIds;
         UserIds = userIds;
         MentionAuthor = mentionAuthor;
@@ -30,7 +28,6 @@ public class GuildReplyDefinition
     public string[]? Replies { get; set; }
     public string[]? ChannelIds { get; set; }
     public string[]? UserIds { get; set; }
-    public UserReply[]? UserReplies { get; set; }
     public bool MentionAuthor { get; set; }
     public bool RequiresBotName { get; set; }
     public string[]? Reactions { get; set; }
