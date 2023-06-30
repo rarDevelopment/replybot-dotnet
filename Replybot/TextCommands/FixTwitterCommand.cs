@@ -8,12 +8,12 @@ public class FixTwitterCommand
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private readonly Regex _twitterUrlRegex = new(TwitterUrlRegexPattern, RegexOptions.IgnoreCase);
-    private const string FxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(fxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
+    private const string FxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(vxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private readonly Regex _fxTwitterUrlRegex = new(FxTwitterUrlRegexPattern, RegexOptions.IgnoreCase);
     public const string FixTweetButtonEmojiId = "1110617858892894248";
     public const string FixTweetButtonEmojiName = "fixtweet";
     private const string OriginalTwitterBaseUrl = "twitter.com";
-    private const string FixedTwitterBaseUrl = "fxtwitter.com";
+    private const string FixedTwitterBaseUrl = "vxtwitter.com";
 
     public async Task<(string fixedMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(
         IUserMessage requestingMessage,
