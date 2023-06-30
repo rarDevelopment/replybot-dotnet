@@ -29,7 +29,7 @@ public class ToggleFixTweetReactionsSlashCommand : InteractionModuleBase<SocketI
             var success = await _guildConfigurationBusinessLayer.SetEnableAutoFixTweets(Context.Guild, isEnabled);
             if (success)
             {
-                await RespondAsync($"Consider it done! Fix tweet reactions, which allow you to react to convert twitter.com links to fxtwitter.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");
+                await RespondAsync($"Consider it done! Fix tweet reactions, which allow you to react to convert twitter.com links to vxtwitter.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");
                 return;
             }
 
