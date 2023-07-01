@@ -30,11 +30,14 @@ public class ReplyDataLayer : IReplyDataLayer
         return defaultReplyData?.DefaultReplies.Select(tr => tr.ToDomain()).ToList();
     }
 
-    public async Task<IList<GuildReplyDefinition>?> GetRepliesForGuild(string guildId)
+    public async Task<IList<GuildReplyDefinition>?> GetActiveRepliesForGuild(string guildId)
     {
         var filter = Builders<GuildReplyDefinitionEntity>.Filter.Eq("guildId", guildId);
         var guildReplyDefinitionEntities = await _guildRepliesCollection.Find(filter).ToListAsync();
-        return guildReplyDefinitionEntities.Select(r => r.ToDomain()).OrderBy(gr => gr.Priority).ToList();
+        return guildReplyDefinitionEntities.Where(r => r.IsActive)
+            .Select(r => r.ToDomain())
+            .OrderBy(gr => gr.Priority)
+            .ToList();
     }
 
     public async Task<GuildConfiguration> GetConfigurationForGuild(string guildId, string guildName)
