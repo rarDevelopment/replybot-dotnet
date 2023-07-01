@@ -40,6 +40,8 @@ public class GuildReplyDefinitionEntity
     public string[]? ChannelIds { get; set; }
     [BsonElement("priority")]
     public decimal Priority { get; set; }
+    [BsonElement("isActive")]
+    public bool IsActive { get; set; }
     [BsonIgnore]
     public bool IsSpecialFeature { get; set; }
 
@@ -53,7 +55,9 @@ public class GuildReplyDefinitionEntity
             MentionAuthor,
             RequiresBotName,
             Reactions,
-            Priority, IsSpecialFeature)
+            Priority,
+            IsActive,
+            IsSpecialFeature)
         {
             Id = Id
         };

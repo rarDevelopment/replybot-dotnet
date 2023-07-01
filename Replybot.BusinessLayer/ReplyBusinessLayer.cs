@@ -25,7 +25,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
     {
         var defaultReplies = _replyDataLayer.GetDefaultReplies();
         var guildReplyDefinitions = guildId != null
-            ? await _replyDataLayer.GetRepliesForGuild(guildId)
+            ? await _replyDataLayer.GetActiveRepliesForGuild(guildId)
             : null;
 
         var defaultReply = FindReplyFromData(defaultReplies, message);

@@ -8,7 +8,10 @@ public class GuildReplyDefinition
         string[]? userIds,
         bool mentionAuthor,
         bool requiresBotName,
-        string[]? reactions, decimal priority, bool isSpecialFeature)
+        string[]? reactions,
+        decimal priority,
+        bool isActive,
+        bool isSpecialFeature)
     {
         GuildId = guildId;
         Triggers = triggers;
@@ -19,6 +22,7 @@ public class GuildReplyDefinition
         RequiresBotName = requiresBotName;
         Reactions = reactions;
         Priority = priority;
+        IsActive = isActive;
         IsSpecialFeature = isSpecialFeature;
     }
 
@@ -32,6 +36,7 @@ public class GuildReplyDefinition
     public bool RequiresBotName { get; set; }
     public string[]? Reactions { get; set; }
     public decimal Priority { get; set; }
+    public bool IsActive { get; set; }
     public bool IsDefaultReply => GuildId == 0;
     public bool IsSpecialFeature { get; set; }
 }
