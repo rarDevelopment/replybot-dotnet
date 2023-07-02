@@ -1,33 +1,32 @@
-﻿namespace Replybot.Models
-{
-    public enum TriggerKeyword
-    {
-        Username,
-        UserTag,
-        VersionNumber,
-        Message,
-        MessageUpperCase,
-        DeleteMessage,
-        MessageWithoutReplybot,
-        MessageSpongebob,
-        MessageEncoded,
-        MessageEncodedWithoutTrigger,
-        MessageWithoutTrigger,
-        MentionedUserAvatar,
-        ServerIcon,
-        ServerBanner,
-        MemberCount,
-        ChannelCreateDate,
-        BotName,
-        Anything,
+﻿namespace Replybot.Models;
 
-        HowLongToBeat,
-        DefineWord,
-        FortniteShopInfo,
-        Poll,
-        FixTwitter,
-        BreakTwitter,
-        FixInstagram,
-        BreakInstagram,
-    }
+public enum TriggerKeyword
+{
+    Username,
+    UserTag,
+    VersionNumber,
+    Message,
+    MessageUpperCase,
+    DeleteMessage,
+    MessageWithoutReplybot,
+    MessageSpongebob,
+    MessageEncoded,
+    MessageEncodedWithoutTrigger,
+    MessageWithoutTrigger,
+    MentionedUserAvatar,
+    ServerIcon,
+    ServerBanner,
+    MemberCount,
+    ChannelCreateDate,
+    BotName,
+    Anything,
+
+    HowLongToBeat,
+    DefineWord,
+    FortniteShopInfo,
+    Poll,
+    FixTwitter,
+    BreakTwitter,
+    FixInstagram,
+    BreakInstagram,
 }

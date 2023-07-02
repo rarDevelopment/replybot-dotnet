@@ -5,73 +5,72 @@ using System.Text.Json;
 using Replybot.Models;
 using Replybot.Models.HowLongToBeat;
 
-namespace Replybot.ServiceLayer
+namespace Replybot.ServiceLayer;
+
+public class HowLongToBeatApi
 {
-    public class HowLongToBeatApi
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public HowLongToBeatApi(IHttpClientFactory httpClientFactory)
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        _httpClientFactory = httpClientFactory;
+    }
 
-        public HowLongToBeatApi(IHttpClientFactory httpClientFactory)
+    public async Task<HowLongToBeatResponse?> GetHowLongToBeatInformation(string searchTerm)
+    {
+        var client = _httpClientFactory.CreateClient(HttpClients.HowLongToBeat.ToString());
+        var request = new HowLongToBeatRequest
         {
-            _httpClientFactory = httpClientFactory;
-        }
-
-        public async Task<HowLongToBeatResponse?> GetHowLongToBeatInformation(string searchTerm)
-        {
-            var client = _httpClientFactory.CreateClient(HttpClients.HowLongToBeat.ToString());
-            var request = new HowLongToBeatRequest
+            SearchType = "games",
+            SearchTerms = searchTerm.Trim().Split(" "),
+            SearchPage = 1,
+            Size = 20,
+            SearchOptions = new SearchOptions
             {
-                SearchType = "games",
-                SearchTerms = searchTerm.Trim().Split(" "),
-                SearchPage = 1,
-                Size = 20,
-                SearchOptions = new SearchOptions
+                Games = new SearchOptionsGames
                 {
-                    Games = new SearchOptionsGames
+                    UserId = 0,
+                    Platform = "",
+                    SortCategory = "popular",
+                    RangeCategory = "main",
+                    RangeTime = new SearchOptionsGamesRangeTime
                     {
-                        UserId = 0,
-                        Platform = "",
-                        SortCategory = "popular",
-                        RangeCategory = "main",
-                        RangeTime = new SearchOptionsGamesRangeTime
-                        {
-                            Min = 0,
-                            Max = 0
-                        },
-                        Gameplay = new SearchOptionsGamesGameplay
-                        {
-                            Perspective = "",
-                            Flow = "",
-                            Genre = ""
-                        },
-                        Modifier = ""
+                        Min = 0,
+                        Max = 0
                     },
-                    Users = new SearchOptionsUsers
+                    Gameplay = new SearchOptionsGamesGameplay
                     {
-                        SortCategory = "postcount"
+                        Perspective = "",
+                        Flow = "",
+                        Genre = ""
                     },
-                    Filter = "",
-                    Sort = 0,
-                    Randomizer = 0
-                }
-            };
-
-            var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "api/search")
-            {
-                Content = content
-            };
-
-            var response = await client.SendAsync(httpRequest);
-            if (response.IsSuccessStatusCode)
-            {
-                var hltbResponse = await response.Content.ReadFromJsonAsync<HowLongToBeatResponse>();
-                return hltbResponse;
+                    Modifier = ""
+                },
+                Users = new SearchOptionsUsers
+                {
+                    SortCategory = "postcount"
+                },
+                Filter = "",
+                Sort = 0,
+                Randomizer = 0
             }
+        };
 
-            return null;
+        var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "api/search")
+        {
+            Content = content
+        };
+
+        var response = await client.SendAsync(httpRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            var hltbResponse = await response.Content.ReadFromJsonAsync<HowLongToBeatResponse>();
+            return hltbResponse;
         }
+
+        return null;
     }
 }

@@ -28,11 +28,14 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
         {
             var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(Context.Guild);
 
-            var message = $"Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarAnnouncements)}\n";
+            var message = "";
+            message += $"Default Replies: {GetEnabledText(guildConfig.EnableDefaultReplies)}\n";
+            message += $"Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarAnnouncements)}\n";
             message += $"Mention User on Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarMentions)}\n";
             message += $"Log Channel: {(guildConfig.LogChannelId != null ? $"<#{guildConfig.LogChannelId}>" : "Not Set")}\n";
             message += $"Fix Tweet Reactions: {GetEnabledText(guildConfig.EnableFixTweetReactions)}\n";
-            message += $"Default Replies: {GetEnabledText(guildConfig.EnableDefaultReplies)}\n";
+            message += $"Fix Instagram Reactions: {GetEnabledText(guildConfig.EnableFixInstagramReactions)}\n";
+            message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (Note: Administrators are not shown here)\n";
 
             await RespondAsync(embed: _discordFormatter.BuildRegularEmbed($"Settings for {Context.Guild.Name}",
                 message,
@@ -41,6 +44,11 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
         }
 
         await RespondAsync("You aren't allowed to do that!");
+    }
+
+    private static string GetAdminUserDisplayText(IEnumerable<string> adminUserIds)
+    {
+        return string.Join(", ", adminUserIds.Select(s => $"<@{s}>"));
     }
 
     private static string GetEnabledText(bool isEnabled)

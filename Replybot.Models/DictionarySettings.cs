@@ -1,12 +1,11 @@
-﻿namespace Replybot.Models
-{
-    public class DictionarySettings
-    {
-        public DictionarySettings(string baseUrl)
-        {
-            BaseUrl = baseUrl;
-        }
+﻿namespace Replybot.Models;
 
-        public string BaseUrl { get; set; }
+public class DictionarySettings
+{
+    public DictionarySettings(string baseUrl)
+    {
+        BaseUrl = baseUrl;
     }
+
+    public string BaseUrl { get; set; }
 }
