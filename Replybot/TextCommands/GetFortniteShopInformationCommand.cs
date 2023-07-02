@@ -3,129 +3,128 @@ using Fortnite_API.Objects.V2;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-namespace Replybot.TextCommands
+namespace Replybot.TextCommands;
+
+public class GetFortniteShopInformationCommand
 {
-    public class GetFortniteShopInformationCommand
+    private readonly FortniteApi _fortniteApi;
+    private readonly DiscordSettings _discordSettings;
+    private readonly IDiscordFormatter _discordFormatter;
+    private readonly ILogger<DiscordBot> _logger;
+
+    private const string MoreText = "\n(see shop for more)";
+    private const string SectionSeparator = "\n";
+
+    public GetFortniteShopInformationCommand(
+        FortniteApi fortniteApi,
+        DiscordSettings discordSettings,
+        IDiscordFormatter discordFormatter,
+        ILogger<DiscordBot> logger)
     {
-        private readonly FortniteApi _fortniteApi;
-        private readonly DiscordSettings _discordSettings;
-        private readonly IDiscordFormatter _discordFormatter;
-        private readonly ILogger<DiscordBot> _logger;
+        _fortniteApi = fortniteApi;
+        _discordSettings = discordSettings;
+        _discordFormatter = discordFormatter;
+        _logger = logger;
+    }
 
-        private const string MoreText = "\n(see shop for more)";
-        private const string SectionSeparator = "\n";
-
-        public GetFortniteShopInformationCommand(
-            FortniteApi fortniteApi,
-            DiscordSettings discordSettings,
-            IDiscordFormatter discordFormatter,
-            ILogger<DiscordBot> logger)
+    public async Task<Embed?> GetFortniteShopInformationEmbed(SocketMessage message)
+    {
+        var shopInfo = await _fortniteApi.GetFortniteShopInformation();
+        if (shopInfo == null)
         {
-            _fortniteApi = fortniteApi;
-            _discordSettings = discordSettings;
-            _discordFormatter = discordFormatter;
-            _logger = logger;
+            return null;
         }
 
-        public async Task<Embed?> GetFortniteShopInformationEmbed(SocketMessage message)
+        var date = shopInfo.Date;
+        var shopItems = new List<EmbedFieldBuilder>
         {
-            var shopInfo = await _fortniteApi.GetFortniteShopInformation();
-            if (shopInfo == null)
+            BuildShopSection(shopInfo.Featured, "Featured"),
+            BuildShopSection(shopInfo.Daily, "Daily")
+        };
+
+        return _discordFormatter.BuildRegularEmbed(
+            $"Fortnite Shop Information - {date.ToShortDateString()}",
+            "",
+            message.Author,
+            shopItems
+        );
+    }
+
+    private EmbedFieldBuilder BuildShopSection(BrShopV2StoreFront storeSection, string defaultSectionName)
+    {
+        var storeItems = new HashSet<string>();
+        foreach (var section in storeSection.Entries)
+        {
+            var sectionTextToAdd = section.IsBundle
+                ? $"{BuildBundleField(section)}"
+                : $"{BuildSectionField(section)}";
+
+            var lengthIfAdded = MakeShopItemsString(storeItems).Length + sectionTextToAdd.Length;
+            var maxAllowedCharacters = _discordSettings.MaxCharacters - (MoreText.Length + SectionSeparator.Length); //extra SectionSeparator to account for when MoreText is joined in with the others down below
+            if (lengthIfAdded >= maxAllowedCharacters)
             {
-                return null;
+                storeItems.Add(MoreText);
+                break;
             }
 
-            var date = shopInfo.Date;
-            var shopItems = new List<EmbedFieldBuilder>
+            storeItems.Add(sectionTextToAdd);
+        }
+
+        var outputString = MakeShopItemsString(storeItems);
+        try
+        {
+            return new EmbedFieldBuilder
             {
-                BuildShopSection(shopInfo.Featured, "Featured"),
-                BuildShopSection(shopInfo.Daily, "Daily")
+                Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
+                Value = outputString,
+                IsInline = false
             };
-
-            return _discordFormatter.BuildRegularEmbed(
-                $"Fortnite Shop Information - {date.ToShortDateString()}",
-                "",
-                message.Author,
-                shopItems
-                );
         }
-
-        private EmbedFieldBuilder BuildShopSection(BrShopV2StoreFront storeSection, string defaultSectionName)
+        catch (Exception ex)
         {
-            var storeItems = new HashSet<string>();
-            foreach (var section in storeSection.Entries)
-            {
-                var sectionTextToAdd = section.IsBundle
-                    ? $"{BuildBundleField(section)}"
-                    : $"{BuildSectionField(section)}";
-
-                var lengthIfAdded = MakeShopItemsString(storeItems).Length + sectionTextToAdd.Length;
-                var maxAllowedCharacters = _discordSettings.MaxCharacters - (MoreText.Length + SectionSeparator.Length); //extra SectionSeparator to account for when MoreText is joined in with the others down below
-                if (lengthIfAdded >= maxAllowedCharacters)
-                {
-                    storeItems.Add(MoreText);
-                    break;
-                }
-
-                storeItems.Add(sectionTextToAdd);
-            }
-
-            var outputString = MakeShopItemsString(storeItems);
-            try
+            if (ex.Message.ToLower().Contains("field value length must be less than or equal to 1024"))
             {
                 return new EmbedFieldBuilder
                 {
                     Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
-                    Value = outputString,
+                    Value = outputString[.._discordSettings.MaxCharacters],
                     IsInline = false
                 };
             }
-            catch (Exception ex)
+
+            _logger.LogError(ex, "Error in GetFortniteShopInformationCommand");
+            return new EmbedFieldBuilder
             {
-                if (ex.Message.ToLower().Contains("field value length must be less than or equal to 1024"))
-                {
-                    return new EmbedFieldBuilder
-                    {
-                        Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
-                        Value = outputString[.._discordSettings.MaxCharacters],
-                        IsInline = false
-                    };
-                }
-
-                _logger.LogError(ex, "Error in GetFortniteShopInformationCommand");
-                return new EmbedFieldBuilder
-                {
-                    Name = "Error Loading Section",
-                    Value = "There was an error loading this section.",
-                    IsInline = false
-                };
-            }
+                Name = "Error Loading Section",
+                Value = "There was an error loading this section.",
+                IsInline = false
+            };
         }
+    }
 
-        private static string MakeShopItemsString(IEnumerable<string> shopItems)
-        {
-            return string.Join(SectionSeparator, shopItems);
-        }
+    private static string MakeShopItemsString(IEnumerable<string> shopItems)
+    {
+        return string.Join(SectionSeparator, shopItems);
+    }
 
-        private static string BuildSectionField(BrShopV2StoreFrontEntry section)
-        {
-            var priceDisplay = BuildPriceDisplay(section.FinalPrice, section.RegularPrice);
-            var itemToUse = section.Items.FirstOrDefault();
-            return $"{itemToUse?.Name} ({itemToUse?.Type.DisplayValue}) - {priceDisplay}";
-        }
+    private static string BuildSectionField(BrShopV2StoreFrontEntry section)
+    {
+        var priceDisplay = BuildPriceDisplay(section.FinalPrice, section.RegularPrice);
+        var itemToUse = section.Items.FirstOrDefault();
+        return $"{itemToUse?.Name} ({itemToUse?.Type.DisplayValue}) - {priceDisplay}";
+    }
 
-        private static string BuildBundleField(BrShopV2StoreFrontEntry bundle)
-        {
-            var priceDisplay = BuildPriceDisplay(bundle.FinalPrice, bundle.RegularPrice);
-            return $"{bundle.Bundle.Name} - {priceDisplay}";
-        }
+    private static string BuildBundleField(BrShopV2StoreFrontEntry bundle)
+    {
+        var priceDisplay = BuildPriceDisplay(bundle.FinalPrice, bundle.RegularPrice);
+        return $"{bundle.Bundle.Name} - {priceDisplay}";
+    }
 
-        private static string BuildPriceDisplay(int finalPrice, int regularPrice)
-        {
-            var priceDisplay = finalPrice != regularPrice
-                ? $"~~{regularPrice}~~ {finalPrice}"
-                : finalPrice.ToString();
-            return priceDisplay;
-        }
+    private static string BuildPriceDisplay(int finalPrice, int regularPrice)
+    {
+        var priceDisplay = finalPrice != regularPrice
+            ? $"~~{regularPrice}~~ {finalPrice}"
+            : finalPrice.ToString();
+        return priceDisplay;
     }
 }

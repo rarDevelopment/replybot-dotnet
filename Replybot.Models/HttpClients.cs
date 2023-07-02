@@ -1,8 +1,7 @@
-﻿namespace Replybot.Models
+﻿namespace Replybot.Models;
+
+public enum HttpClients
 {
-    public enum HttpClients
-    {
-        HowLongToBeat,
-        Dictionary
-    }
+    HowLongToBeat,
+    Dictionary
 }
