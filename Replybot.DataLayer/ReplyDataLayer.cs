@@ -63,6 +63,9 @@ public class ReplyDataLayer : IReplyDataLayer
             GuildName = guildName,
             EnableAvatarAnnouncements = true,
             EnableAvatarMentions = true,
+            EnableDefaultReplies = true,
+            EnableFixTweetReactions = true,
+            EnableFixInstagramReactions = true,
             AdminUserIds = new List<string>()
         });
     }
