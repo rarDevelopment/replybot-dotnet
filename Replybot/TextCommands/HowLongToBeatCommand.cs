@@ -98,7 +98,7 @@ public class HowLongToBeatCommand
         {
             _logger.Log(LogLevel.Error, "Error in HowLongToBeat command - {0}", ex.Message);
             return _discordFormatter.BuildErrorEmbed("How Long To Beat",
-                $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}");
+                $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}", embedFooterBuilder: null);
         }
     }
 
