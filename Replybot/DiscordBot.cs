@@ -55,7 +55,7 @@ public class DiscordBot : BackgroundService
 
         await _client.LoginAsync(TokenType.Bot, _discordSettings.BotToken);
 
-        await _client.SetActivityAsync(new Game("everything you say", ActivityType.Watching));
+        //await _client.SetActivityAsync(new Game("everything you say", ActivityType.Watching));
 
         await _client.StartAsync();
 

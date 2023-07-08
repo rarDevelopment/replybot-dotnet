@@ -25,6 +25,8 @@ public class GuildConfigurationEntity
     public bool EnableFixTweetReactions { get; set; }
     [BsonElement("enableFixInstagramReactions")]
     public bool EnableFixInstagramReactions { get; set; }
+    [BsonElement("enableFixBlueskyReactions")]
+    public bool EnableFixBlueskyReactions { get; set; }
     [BsonElement("enableDefaultReplies")]
     public bool EnableDefaultReplies { get; set; }
 
@@ -40,7 +42,8 @@ public class GuildConfigurationEntity
             AdminUserIds = AdminUserIds,
             EnableDefaultReplies = EnableDefaultReplies,
             EnableFixTweetReactions = EnableFixTweetReactions,
-            EnableFixInstagramReactions = EnableFixInstagramReactions
-};
+            EnableFixInstagramReactions = EnableFixInstagramReactions,
+            EnableFixBlueskyReactions = EnableFixBlueskyReactions
+        };
     }
 }

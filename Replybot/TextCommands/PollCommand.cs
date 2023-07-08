@@ -25,7 +25,7 @@ public class PollCommand
         if (messageWithoutTrigger.Length == 0)
         {
             return (_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                "You need at least two answers in your poll"), null);
+                "You need at least two answers in your poll", embedFooterBuilder: null), null);
         }
 
         var splitArgs = messageWithoutTrigger.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
@@ -33,7 +33,7 @@ public class PollCommand
         if (splitArgs.Count <= 2)
         {
             return (_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                "You need at least two answers in your poll"), null);
+                "You need at least two answers in your poll", embedFooterBuilder: null), null);
         }
 
         var question = splitArgs[0];
@@ -42,7 +42,8 @@ public class PollCommand
         if (answers.Count > _pollOptionsAlphabet.Count)
         {
             return (_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                    $"You can't have more than {_pollOptionsAlphabet.Count} answers. Nobody is going to read a poll that long anyway 😌"),
+                    $"You can't have more than {_pollOptionsAlphabet.Count} answers. Nobody is going to read a poll that long anyway 😌",
+                    embedFooterBuilder: null),
                 null);
         }
 

@@ -17,6 +17,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly PollCommand _pollCommand;
     private readonly FixTwitterCommand _fixTwitterCommand;
     private readonly FixInstagramCommand _fixInstagramCommand;
+    private readonly FixBlueskyCommand _fixBlueskyCommand;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
     private readonly LogMessageBuilder _logMessageBuilder;
@@ -31,6 +32,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         PollCommand pollCommand,
         FixTwitterCommand fixTwitterCommand,
         FixInstagramCommand fixInstagramCommand,
+        FixBlueskyCommand fixBlueskyCommand,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         LogMessageBuilder logMessageBuilder,
@@ -45,6 +47,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _pollCommand = pollCommand;
         _fixTwitterCommand = fixTwitterCommand;
         _fixInstagramCommand = fixInstagramCommand;
+        _fixBlueskyCommand = fixBlueskyCommand;
         _versionSettings = versionSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
@@ -77,6 +80,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             {
                 await HandleTwitterReaction(config, notification.Message);
                 await HandleInstagramReaction(config, notification.Message);
+                await HandleBlueskyReaction(config, notification.Message);
             }
 
             var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content,
@@ -214,6 +218,20 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         if (hasInstagramLink)
         {
             await message.AddReactionAsync(_fixInstagramCommand.GetFixInstagramEmote());
+        }
+    }
+
+    private async Task HandleBlueskyReaction(GuildConfiguration config, SocketMessage message)
+    {
+        if (!config.EnableFixBlueskyReactions)
+        {
+            return;
+        }
+
+        var hasBlueskyLink = _fixBlueskyCommand.DoesMessageContainBlueskyUrl(message);
+        if (hasBlueskyLink)
+        {
+            await message.AddReactionAsync(_fixBlueskyCommand.GetFixBlueskyEmote());
         }
     }
 

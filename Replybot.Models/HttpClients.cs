@@ -3,5 +3,6 @@
 public enum HttpClients
 {
     HowLongToBeat,
-    Dictionary
+    Dictionary,
+    Bluesky
 }
