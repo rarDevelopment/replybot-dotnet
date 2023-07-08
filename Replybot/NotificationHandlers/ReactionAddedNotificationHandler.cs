@@ -173,10 +173,12 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                             var fileName = $"bsky_{fileDate}_{index}.png";
                             var fileAttachment = new FileAttachment(image.Image, fileName, image.AltText);
                             fileAttachments.Add(fileAttachment);
+                            index++;
                         }
+
                     }
 
-                    var description = $"Okay, here's the content of that Bluesky post:\n> ### {embedWithImages.embed.Title}\n> {embedWithImages.embed.Description}";
+                    var description = $"Okay, here's the content of that Bluesky post:\n>>> ### {embedWithImages.embed.Title}\n {embedWithImages.embed.Description}";
                     await message.Channel.SendFilesAsync(fileAttachments, description,
                         messageReference: new MessageReference(message.Id, failIfNotExists: false));
                 }
