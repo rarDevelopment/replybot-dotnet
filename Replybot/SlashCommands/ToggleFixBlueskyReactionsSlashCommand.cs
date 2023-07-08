@@ -12,7 +12,7 @@ public class ToggleFixBlueskyReactionsSlashCommand : InteractionModuleBase<Socke
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _roleHelper = roleHelper;
     }
-    
+
     [SlashCommand("set-fix-bluesky-reactions", "Set fix Bluesky reactions on or off (true or false).")]
     public async Task ToggleAutoFixBluesky(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
@@ -26,10 +26,10 @@ public class ToggleFixBlueskyReactionsSlashCommand : InteractionModuleBase<Socke
 
         if (await _roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetEnableAutoFixInstagram(Context.Guild, isEnabled);
+            var success = await _guildConfigurationBusinessLayer.SetEnableAutoFixBluesky(Context.Guild, isEnabled);
             if (success)
             {
-                await RespondAsync($"Consider it done! Fix Bluesky reactions, which allow you to react to convert Bluesky.com links to ddBluesky.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");
+                await RespondAsync($"Consider it done! Fix Bluesky reactions, which allow you to react to get a preview of Bluesky.com links are now {(isEnabled ? "ON" : "OFF")}.");
                 return;
             }
 

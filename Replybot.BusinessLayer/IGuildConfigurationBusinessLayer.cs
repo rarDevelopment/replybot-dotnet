@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using Replybot.Models;
 
 namespace Replybot.BusinessLayer;
@@ -16,4 +17,5 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetEnableAutoFixTweets(IGuild guild, bool isEnabled);
     Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled);
     Task<bool> SetEnableAutoFixInstagram(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableAutoFixBluesky(IGuild guild, bool isEnabled);
 }
