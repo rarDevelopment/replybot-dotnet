@@ -1,11 +1,7 @@
-﻿using System.Drawing;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
-using ImageMagick;
-using Replybot.Models;
 using Replybot.ServiceLayer;
 using Image = Discord.Image;
-using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
 namespace Replybot.TextCommands;
 
@@ -25,74 +21,17 @@ public class FixBlueskyCommand
         _discordFormatter = discordFormatter;
     }
 
-    public async Task<List<(Embed embed, Image? image)>> GetFixedBlueskyMessage(
-        IUserMessage requestingMessage,
-        TriggerKeyword keyword)
+    public async Task<List<(Embed embed, Image? image)>> GetFixedBlueskyMessage(IUserMessage messageToFix)
     {
-        //var requestingUser = requestingMessage.Author;
-        //IUser userWhoSent = requestingMessage.Author;
-
-        //var requesterMessageReference = new MessageReference(requestingMessage.Id);
-        //var noLinkFoundTuple = (new List<Embed> { _discordFormatter.BuildRegularEmbed("No Link Found", NoLinkMessage, embedFooterBuilder: null) }, requestingMessage);
-
-        //var fixedLinksResult = FixLinksIfFound(requestingMessage, requestingUser, userWhoSent, noLinkFoundTuple, keyword);
-        //if (fixedLinksResult != noLinkFoundTuple)
-        //{
-        //    return fixedLinksResult;
-        //}
-
-        if (DoesMessageContainBlueskyUrl(requestingMessage))
+        if (DoesMessageContainBlueskyUrl(messageToFix))
         {
-            return await GetBlueskyEmbeds(requestingMessage);
+            return await GetBlueskyEmbeds(messageToFix);
         }
 
         return new List<(Embed, Image?)>
         {
             (_discordFormatter.BuildRegularEmbed("No Link Found", NoLinkMessage, embedFooterBuilder: null), null)
         };
-
-        //if (requestingMessage.Reference == null)
-        //{
-        //    return noLinkFoundTuple;
-        //}
-
-        //var messageReferenceId = requestingMessage.Reference.MessageId.GetValueOrDefault(default);
-        //if (messageReferenceId == default)
-        //{
-        //    return noLinkFoundTuple;
-        //}
-
-        //var messageReferenced = await requestingMessage.Channel.GetMessageAsync(messageReferenceId);
-        //return messageReferenced is null
-        //    ? ("I couldn't read that message for some reason, sorry!", requesterMessageReference)
-        //    : await FixLinksIfFound(messageReferenced, requestingUser, messageReferenced.Author, noLinkFoundTuple, keyword);
-    }
-
-    //private async Task<(List<Embed>, MessageReference)> FixLinksIfFound(IMessage messageToFix,
-    //    IUser requestingUser,
-    //    IUser userWhoSentTweets,
-    //    (List<Embed> NoLinkMessage, MessageReference) noLinkFoundTuple, TriggerKeyword triggerKeyword)
-    //{
-    //    return triggerKeyword switch
-    //    {
-    //        TriggerKeyword.FixBluesky => DoesMessageContainBlueskyUrl(messageToFix)
-    //            ? (await GetBlueskyEmbeds(messageToFix),
-    //                new MessageReference(messageToFix.Id))
-    //            : noLinkFoundTuple,
-    //        _ => noLinkFoundTuple
-    //    };
-    //}
-
-    private async Task<string> BuildFixedTweetsMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
-    {
-        var fixedTweets = await GetBlueskyEmbeds(message);
-        var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
-        var isAre = fixedTweets.Count == 1 ? "is" : "are";
-        var differentUserText = requestingUser.Id != userWhoSentTweets.Id
-            ? $" (in {userWhoSentTweets.Mention}'s message)"
-            : "";
-        var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the fixed {tweetDescribeText}{differentUserText}:\n";
-        return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
     public bool DoesMessageContainBlueskyUrl(IMessage messageReferenced)
@@ -186,22 +125,6 @@ public class FixBlueskyCommand
         return blueskyEmbeds;
 
     }
-
-    //private void CombineImages()
-    //{
-    //    var stream = new MemoryStream();
-    //    using Bitmap result = new Bitmap(26 * 512, 13 * 512);
-    //    for (int x = 0; x < 26; x++)
-    //    {
-    //        for (int y = 0; y < 13; y++)
-    //        {
-    //            using Graphics g = Graphics.FromImage(result);
-    //            g.DrawImage(images[x, y], x * 512, y * 512);
-    //        }
-    //    }
-
-    //    result.Save(stream, ImageFormat.Png);
-    //}
 
     private static string? GetUserDidFromUri(string uri)
     {

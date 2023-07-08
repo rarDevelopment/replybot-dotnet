@@ -154,7 +154,7 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
             }
             else if (fixingBluesky)
             {
-                var embeds = await _fixBlueskyCommand.GetFixedBlueskyMessage(message, keywordToPass.Value);
+                var embeds = await _fixBlueskyCommand.GetFixedBlueskyMessage(message);
 
                 if (!embeds.Any())
                 {
@@ -167,8 +167,8 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                     {
                         var fileAttachment = new FileAttachment(embed.image.Value.Stream,
                             $"bsky_{DateTime.Now.ToShortDateString()}.png");
-                        await message.Channel.SendFileAsync(
-                            fileAttachment, embed: embed.embed);
+                        
+                        await message.Channel.SendMessageAsync(embed: embed.embed);
                     }
                     else
                     {
