@@ -9,4 +9,7 @@ public class Embed
 
     [JsonPropertyName("media")]
     public Media? Media { get; set; }
+
+    [JsonPropertyName("images")]
+    public List<Image>? Images { get; set; }
 }

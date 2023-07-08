@@ -161,32 +161,24 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                     return Task.CompletedTask;
                 }
 
-                foreach (var embedWithImage in embeds)
+                foreach (var embedWithImages in embeds)
                 {
-                    if (embedWithImage.image != null)
+                    var fileAttachments = new List<FileAttachment>();
+                    if (embedWithImages.images != null && embedWithImages.images.Any())
                     {
-                        var fileName = $"bsky_{DateTime.Now.ToShortDateString()}.png";
-                        var fileAttachment = new FileAttachment(embedWithImage.image.Value.Stream, fileName);
-                        var newEmbed = new EmbedBuilder().WithTitle(embedWithImage.embed.Title)
-                            .WithDescription(embedWithImage.embed.Description)
-                            .WithImageUrl($"attachment://{fileName}");
-                        if (embedWithImage.embed.Footer != null)
+                        var index = 0;
+                        var fileDate = DateTime.Now.ToShortDateString();
+                        foreach (var image in embedWithImages.images)
                         {
-                            newEmbed
-                                .WithFooter(new EmbedFooterBuilder
-                                {
-                                    Text = embedWithImage.embed.Footer.Value.Text,
-                                });
+                            var fileName = $"bsky_{fileDate}_{index}.png";
+                            var fileAttachment = new FileAttachment(image.Image, fileName, image.AltText);
+                            fileAttachments.Add(fileAttachment);
                         }
+                    }
 
-                        await message.Channel.SendFileAsync(fileAttachment,
-                            embed: newEmbed.Build(),
-                            messageReference: new MessageReference(message.Id, failIfNotExists: false));
-                    }
-                    else
-                    {
-                        await message.ReplyAsync(embed: embedWithImage.embed);
-                    }
+                    var description = $"Okay, here's the content of that Bluesky post:\n> ### {embedWithImages.embed.Title}\n> {embedWithImages.embed.Description}";
+                    await message.Channel.SendFilesAsync(fileAttachments, description,
+                        messageReference: new MessageReference(message.Id, failIfNotExists: false));
                 }
 
                 return Task.CompletedTask;

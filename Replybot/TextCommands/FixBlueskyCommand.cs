@@ -1,6 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
+using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
+using Embed = Discord.Embed;
 using Image = Discord.Image;
 
 namespace Replybot.TextCommands;
@@ -21,14 +23,14 @@ public class FixBlueskyCommand
         _discordFormatter = discordFormatter;
     }
 
-    public async Task<List<(Embed embed, Image? image)>> GetFixedBlueskyMessage(IUserMessage messageToFix)
+    public async Task<List<(Embed embed, List<ImageWithMetadata>? images)>> GetFixedBlueskyMessage(IUserMessage messageToFix)
     {
         if (DoesMessageContainBlueskyUrl(messageToFix))
         {
             return await GetBlueskyEmbeds(messageToFix);
         }
 
-        return new List<(Embed, Image?)>
+        return new List<(Embed, List<ImageWithMetadata>?)>
         {
             (_discordFormatter.BuildRegularEmbed("No Link Found", NoLinkMessage, embedFooterBuilder: null), null)
         };
@@ -39,10 +41,10 @@ public class FixBlueskyCommand
         return _blueskyUrlRegex.IsMatch(messageReferenced.Content);
     }
 
-    private async Task<List<(Embed embed, Image? image)>> GetBlueskyEmbeds(IMessage messageToFix)
+    private async Task<List<(Embed embed, List<ImageWithMetadata>? images)>> GetBlueskyEmbeds(IMessage messageToFix)
     {
         var urlsToFix = GetBlueskyUrlsFromMessage(messageToFix.Content);
-        var blueskyEmbeds = new List<(Embed, Image?)>();
+        var blueskyEmbeds = new List<(Embed, List<ImageWithMetadata>?)>();
 
         foreach (var urlToFix in urlsToFix)
         {
@@ -64,7 +66,7 @@ public class FixBlueskyCommand
                 continue;
             }
 
-            var images = blueskyResponse.Value.Embed?.Media?.Images;
+            var images = blueskyResponse.Value.Embed?.Media?.Images ?? blueskyResponse.Value.Embed?.Images;
             var imageCount = images?.Count ?? 0;
 
             var postText = blueskyResponse.Value.Text;
@@ -75,43 +77,17 @@ public class FixBlueskyCommand
                 continue;
             }
 
-            Image? imageForEmbed = null;
+            var imagesToEmbed = new List<ImageWithMetadata>();
             if (images != null && imageCount > 0)
             {
-                //if (imageCount > 1)
-                //{
-                //    using var imageCollection = new MagickImageCollection();
-                //    foreach (var image in images)
-                //    {
-                //        var imageStream = await _blueskyApi.GetImage(did, image.ImageData.Ref.Link);
-                //        if (imageStream == null)
-                //        {
-                //            continue;
-                //        }
-
-                //        imageCollection.Add(new MagickImage(imageStream));
-                //    }
-
-                //    IMagickImage<ushort>? mosaicImage = null;
-                //    if (imageCollection.Count > 1)
-                //    {
-                //        mosaicImage = imageCollection.Mosaic();
-                //    }
-
-                //    if (mosaicImage != null)
-                //    {
-                //        var memoryStream = new MemoryStream(mosaicImage.ToByteArray());
-                //        imageForEmbed = new Image(memoryStream);
-                //    }
-                //}
-                //else
-                //{
-                var singleImageStream = await _blueskyApi.GetImage(did, images[0].ImageData.Ref.Link);
-                if (singleImageStream != null)
+                foreach (var image in images)
                 {
-                    imageForEmbed = new Image(singleImageStream);
+                    var blueskyImage = await _blueskyApi.GetImage(did, image.ImageData.Ref.Link);
+                    if (blueskyImage != null)
+                    {
+                        imagesToEmbed.Add(new ImageWithMetadata(blueskyImage, image.Alt));
+                    }
                 }
-                //}
             }
 
             var embed = _discordFormatter.BuildRegularEmbed($"@{repo}",
@@ -120,10 +96,9 @@ public class FixBlueskyCommand
                 {
                     Text = "Posted on Bluesky"
                 });
-            blueskyEmbeds.Add((embed, imageForEmbed ?? null));
+            blueskyEmbeds.Add((embed, imagesToEmbed ?? null));
         }
         return blueskyEmbeds;
-
     }
 
     private static string? GetUserDidFromUri(string uri)
