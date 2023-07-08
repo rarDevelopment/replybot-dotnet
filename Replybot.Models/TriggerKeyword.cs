@@ -29,4 +29,5 @@ public enum TriggerKeyword
     BreakTwitter,
     FixInstagram,
     BreakInstagram,
+    FixBluesky
 }

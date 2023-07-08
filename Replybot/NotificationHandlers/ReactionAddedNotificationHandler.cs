@@ -12,16 +12,20 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
     private readonly KeywordHandler _keywordHandler;
     private readonly FixTwitterCommand _fixTwitterCommand;
     private readonly FixInstagramCommand _fixInstagramCommand;
+    private readonly FixBlueskyCommand _fixBlueskyCommand;
 
-    public ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer configurationBusinessLayer,
+    public ReactionAddedNotificationHandler(
+        IGuildConfigurationBusinessLayer configurationBusinessLayer,
         KeywordHandler keywordHandler,
         FixTwitterCommand fixTwitterCommand,
-        FixInstagramCommand fixInstagramCommand)
+        FixInstagramCommand fixInstagramCommand,
+        FixBlueskyCommand fixBlueskyCommand)
     {
         _configurationBusinessLayer = configurationBusinessLayer;
         _keywordHandler = keywordHandler;
         _fixTwitterCommand = fixTwitterCommand;
         _fixInstagramCommand = fixInstagramCommand;
+        _fixBlueskyCommand = fixBlueskyCommand;
     }
     public Task Handle(ReactionAddedNotification notification, CancellationToken cancellationToken)
     {
@@ -38,7 +42,9 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
 
             bool fixingTwitter = Equals(reaction.Emote, _fixTwitterCommand.GetFixTwitterEmote());
             bool fixingInstagram = Equals(reaction.Emote, _fixInstagramCommand.GetFixInstagramEmote());
-            if (!fixingTwitter && !fixingInstagram)
+            bool fixingBluesky = Equals(reaction.Emote, _fixBlueskyCommand.GetFixBlueskyEmote());
+
+            if (!fixingTwitter && !fixingInstagram && !fixingBluesky)
             {
                 return Task.CompletedTask;
             }
@@ -60,6 +66,11 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                 fixReaction = message.Reactions.FirstOrDefault(r => Equals(r.Key, _fixInstagramCommand.GetFixInstagramEmote())).Value;
             }
 
+            if (fixingBluesky)
+            {
+                fixReaction = message.Reactions.FirstOrDefault(r => Equals(r.Key, _fixBlueskyCommand.GetFixBlueskyEmote())).Value;
+            }
+
             if (fixReaction == null)
             {
                 return Task.CompletedTask;
@@ -75,7 +86,9 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
             }
 
             var config = await _configurationBusinessLayer.GetGuildConfiguration(guildChannel.Guild);
-            if (fixingTwitter && config is { EnableFixTweetReactions: false } || fixingInstagram && config is { EnableFixInstagramReactions: false })
+            if (fixingTwitter && config is { EnableFixTweetReactions: false }
+                || fixingInstagram && config is { EnableFixInstagramReactions: false }
+                || fixingBluesky && config is { EnableFixBlueskyReactions: false })
             {
                 return Task.CompletedTask;
             }
@@ -88,7 +101,6 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                 {
                     keywordToPass = TriggerKeyword.FixTwitter;
                 }
-
                 else if (_fixTwitterCommand.DoesMessageContainFxTwitterUrl(message))
                 {
                     keywordToPass = TriggerKeyword.BreakTwitter;
@@ -101,10 +113,17 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                 {
                     keywordToPass = TriggerKeyword.FixInstagram;
                 }
-
                 else if (_fixInstagramCommand.DoesMessageContainDdInstagramUrl(message))
                 {
                     keywordToPass = TriggerKeyword.BreakInstagram;
+                }
+            }
+
+            if (fixingBluesky)
+            {
+                if (_fixBlueskyCommand.DoesMessageContainBlueskyUrl(message))
+                {
+                    keywordToPass = TriggerKeyword.FixBluesky;
                 }
             }
 
@@ -132,6 +151,32 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                 {
                     return Task.CompletedTask;
                 }
+            }
+            else if (fixingBluesky)
+            {
+                var embeds = await _fixBlueskyCommand.GetFixedBlueskyMessage(message, keywordToPass.Value);
+
+                if (!embeds.Any())
+                {
+                    return Task.CompletedTask;
+                }
+
+                foreach (var embed in embeds)
+                {
+                    if (embed.image != null)
+                    {
+                        var fileAttachment = new FileAttachment(embed.image.Value.Stream,
+                            $"bsky_{DateTime.Now.ToShortDateString()}.png");
+                        await message.Channel.SendFileAsync(
+                            fileAttachment, embed: embed.embed);
+                    }
+                    else
+                    {
+                        await message.ReplyAsync(embed: embed.embed);
+                    }
+                }
+
+                return Task.CompletedTask;
             }
 
             if (fixedMessage == null)

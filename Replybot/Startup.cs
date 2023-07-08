@@ -71,11 +71,13 @@ builder.ConfigureServices((host, services) =>
         host.Configuration["HowLongToBeat:Referer"]!);
 
     var dictionarySettings = new DictionarySettings(host.Configuration["FreeDictionary:BaseUrl"]!);
+    var blueskySettings = new BlueskySettings(host.Configuration["Bluesky:BaseUrl"]!);
 
     services.AddSingleton(versionSettings);
     services.AddSingleton(discordSettings);
     services.AddSingleton(databaseSettings);
     services.AddSingleton(howLongToBeatSettings);
+    services.AddSingleton(blueskySettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
@@ -100,11 +102,13 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton<DefineWordCommand>();
     services.AddSingleton<FreeDictionaryApi>();
+    services.AddSingleton<BlueskyApi>();
 
     services.AddSingleton<PollCommand>();
 
     services.AddSingleton<FixTwitterCommand>();
     services.AddSingleton<FixInstagramCommand>();
+    services.AddSingleton<FixBlueskyCommand>();
 
     services.AddSingleton<GetFortniteShopInformationCommand>();
     services.AddSingleton<FortniteApi>();
@@ -118,7 +122,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddHttpClient(HttpClients.HowLongToBeat.ToString(), config =>
     {
-        config.BaseAddress = new Uri(howLongToBeatSettings.BaseUrl!);
+        config.BaseAddress = new Uri(howLongToBeatSettings.BaseUrl);
         config.DefaultRequestHeaders.Add("Referer", howLongToBeatSettings.Referer);
         config.DefaultRequestHeaders.Add("Connection", "keep-alive");
         config.DefaultRequestHeaders.Add("Accept", "*/*");
@@ -127,7 +131,12 @@ builder.ConfigureServices((host, services) =>
 
     services.AddHttpClient(HttpClients.Dictionary.ToString(), config =>
     {
-        config.BaseAddress = new Uri(dictionarySettings.BaseUrl!);
+        config.BaseAddress = new Uri(dictionarySettings.BaseUrl);
+    });
+
+    services.AddHttpClient(HttpClients.Bluesky.ToString(), config =>
+    {
+        config.BaseAddress = new Uri(blueskySettings.BaseUrl);
     });
 });
 
