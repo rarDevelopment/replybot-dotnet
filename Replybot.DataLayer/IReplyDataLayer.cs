@@ -17,4 +17,5 @@ public interface IReplyDataLayer
     Task<bool> SetEnableFixTweetReactions(string guildId, bool isEnabled);
     Task<bool> SetEnableDefaultReplies(string guildId, bool isEnabled);
     Task<bool> SetEnableFixInstagramReactions(string guildId, bool isEnabled);
+    Task<bool> SetEnableFixBlueskyReactions(string guildId, bool isEnabled);
 }

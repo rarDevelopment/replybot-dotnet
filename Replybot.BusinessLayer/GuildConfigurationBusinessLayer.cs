@@ -93,6 +93,17 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         return false;
     }
 
+    public async Task<bool> SetEnableAutoFixBluesky(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await _replyDataLayer.SetEnableFixBlueskyReactions(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
     public async Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
