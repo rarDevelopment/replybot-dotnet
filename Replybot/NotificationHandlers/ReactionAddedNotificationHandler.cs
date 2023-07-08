@@ -161,18 +161,31 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                     return Task.CompletedTask;
                 }
 
-                foreach (var embed in embeds)
+                foreach (var embedWithImage in embeds)
                 {
-                    if (embed.image != null)
+                    if (embedWithImage.image != null)
                     {
-                        var fileAttachment = new FileAttachment(embed.image.Value.Stream,
-                            $"bsky_{DateTime.Now.ToShortDateString()}.png");
-                        
-                        await message.Channel.SendMessageAsync(embed: embed.embed);
+                        var fileName = $"bsky_{DateTime.Now.ToShortDateString()}.png";
+                        var fileAttachment = new FileAttachment(embedWithImage.image.Value.Stream, fileName);
+                        var newEmbed = new EmbedBuilder().WithTitle(embedWithImage.embed.Title)
+                            .WithDescription(embedWithImage.embed.Description)
+                            .WithImageUrl($"attachment://{fileName}");
+                        if (embedWithImage.embed.Footer != null)
+                        {
+                            newEmbed
+                                .WithFooter(new EmbedFooterBuilder
+                                {
+                                    Text = embedWithImage.embed.Footer.Value.Text,
+                                });
+                        }
+
+                        await message.Channel.SendFileAsync(fileAttachment,
+                            embed: newEmbed.Build(),
+                            messageReference: new MessageReference(message.Id, failIfNotExists: false));
                     }
                     else
                     {
-                        await message.ReplyAsync(embed: embed.embed);
+                        await message.ReplyAsync(embed: embedWithImage.embed);
                     }
                 }
 
