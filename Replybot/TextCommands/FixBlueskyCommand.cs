@@ -3,7 +3,6 @@ using DiscordDotNetUtilities.Interfaces;
 using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
 using Embed = Discord.Embed;
-using Image = Discord.Image;
 
 namespace Replybot.TextCommands;
 
@@ -13,7 +12,7 @@ public class FixBlueskyCommand
     private readonly IDiscordFormatter _discordFormatter;
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
-    private readonly Regex _blueskyUrlRegex = new(BlueskyUrlRegexPattern, RegexOptions.IgnoreCase);
+    private readonly Regex _blueskyUrlRegex;
     public const string FixTweetButtonEmojiId = "1126862392941367376";
     public const string FixTweetButtonEmojiName = "fixbluesky";
 
@@ -21,6 +20,7 @@ public class FixBlueskyCommand
     {
         _blueskyApi = blueskyApi;
         _discordFormatter = discordFormatter;
+        _blueskyUrlRegex = new Regex(BlueskyUrlRegexPattern, RegexOptions.IgnoreCase);
     }
 
     public async Task<List<(Embed embed, List<ImageWithMetadata>? images)>> GetFixedBlueskyMessage(IUserMessage messageToFix)

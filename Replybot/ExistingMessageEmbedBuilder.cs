@@ -2,12 +2,12 @@
 
 namespace Replybot;
 
-public class LogMessageBuilder
+public class ExistingMessageEmbedBuilder
 {
     private readonly DiscordSettings _discordSettings;
     private const string TruncationString = "[...]";
 
-    public LogMessageBuilder(DiscordSettings discordSettings)
+    public ExistingMessageEmbedBuilder(DiscordSettings discordSettings)
     {
         _discordSettings = discordSettings;
     }
@@ -17,13 +17,6 @@ public class LogMessageBuilder
         var embedBuilder = new EmbedBuilder()
             .WithTitle(title);
 
-        HandleEmbeds(explanationMessage, message, embedBuilder);
-
-        return embedBuilder;
-    }
-
-    private void HandleEmbeds(string explanationMessage, IMessage message, EmbedBuilder embedBuilder)
-    {
         var embedDescription = "";
 
         if (message.Embeds.Any())
@@ -48,14 +41,9 @@ public class LogMessageBuilder
         descriptionToUse += !string.IsNullOrEmpty(message.Content) ? $"\n{message.Content}" : "";
         descriptionToUse += !string.IsNullOrEmpty(embedDescription) ? $"\n-----------\n{embedDescription}" : "";
 
-        embedBuilder.WithDescription(descriptionToUse);
+        embedBuilder.WithDescription(TruncateIfLongerThanMaxCharacters(descriptionToUse, _discordSettings.MaxCharacters, TruncationString));
 
-        if (embedBuilder.Description.Length <= _discordSettings.MaxCharacters)
-        {
-            return;
-        }
-        var maxCharacters = _discordSettings.MaxCharacters - TruncationString.Length;
-        embedBuilder.WithDescription($"{embedBuilder.Description[..maxCharacters]}{TruncationString}");
+        return embedBuilder;
     }
 
     public EmbedBuilder CreateEmbedBuilderWithFields(string title, string description,

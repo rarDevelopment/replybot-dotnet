@@ -90,7 +90,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<KeywordHandler>();
     services.AddSingleton<SystemChannelPoster>();
     services.AddSingleton<LogChannelPoster>();
-    services.AddSingleton<LogMessageBuilder>();
+    services.AddSingleton<ExistingMessageEmbedBuilder>();
 
     services.AddSingleton<MessageReceivedNotificationHandler>();
     services.AddSingleton<UserUpdatedNotificationHandler>();

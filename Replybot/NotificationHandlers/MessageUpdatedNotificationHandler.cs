@@ -5,10 +5,10 @@ namespace Replybot.NotificationHandlers;
 public class MessageUpdatedNotificationHandler : INotificationHandler<MessageUpdatedNotification>
 {
     private readonly LogChannelPoster _logChannelPoster;
-    private readonly LogMessageBuilder _logMessageBuilder;
+    private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
     private readonly DiscordSocketClient _client;
 
-    public MessageUpdatedNotificationHandler(LogChannelPoster logChannelPoster, LogMessageBuilder logMessageBuilder, DiscordSocketClient client)
+    public MessageUpdatedNotificationHandler(LogChannelPoster logChannelPoster, ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
     {
         _logChannelPoster = logChannelPoster;
         _logMessageBuilder = logMessageBuilder;

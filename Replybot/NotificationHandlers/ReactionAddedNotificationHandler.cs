@@ -9,24 +9,22 @@ namespace Replybot.NotificationHandlers;
 public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAddedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _configurationBusinessLayer;
-    private readonly KeywordHandler _keywordHandler;
     private readonly FixTwitterCommand _fixTwitterCommand;
     private readonly FixInstagramCommand _fixInstagramCommand;
     private readonly FixBlueskyCommand _fixBlueskyCommand;
 
     public ReactionAddedNotificationHandler(
         IGuildConfigurationBusinessLayer configurationBusinessLayer,
-        KeywordHandler keywordHandler,
         FixTwitterCommand fixTwitterCommand,
         FixInstagramCommand fixInstagramCommand,
         FixBlueskyCommand fixBlueskyCommand)
     {
         _configurationBusinessLayer = configurationBusinessLayer;
-        _keywordHandler = keywordHandler;
         _fixTwitterCommand = fixTwitterCommand;
         _fixInstagramCommand = fixInstagramCommand;
         _fixBlueskyCommand = fixBlueskyCommand;
     }
+
     public Task Handle(ReactionAddedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
