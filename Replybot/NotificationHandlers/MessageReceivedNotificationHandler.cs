@@ -20,7 +20,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly FixBlueskyCommand _fixBlueskyCommand;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
-    private readonly LogMessageBuilder _logMessageBuilder;
+    private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
     private readonly ILogger<DiscordBot> _logger;
 
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
@@ -35,7 +35,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         FixBlueskyCommand fixBlueskyCommand,
         VersionSettings versionSettings,
         DiscordSocketClient client,
-        LogMessageBuilder logMessageBuilder,
+        ExistingMessageEmbedBuilder logMessageBuilder,
         ILogger<DiscordBot> logger)
     {
         _replyBusinessLayer = replyBusinessLayer;

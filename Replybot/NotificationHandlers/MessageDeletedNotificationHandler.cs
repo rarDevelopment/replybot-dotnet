@@ -5,10 +5,10 @@ namespace Replybot.NotificationHandlers;
 public class MessageDeletedNotificationHandler : INotificationHandler<MessageDeletedNotification>
 {
     private readonly LogChannelPoster _logChannelPoster;
-    private readonly LogMessageBuilder _logMessageBuilder;
+    private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
     private readonly DiscordSocketClient _client;
 
-    public MessageDeletedNotificationHandler(LogChannelPoster logChannelPoster, LogMessageBuilder logMessageBuilder, DiscordSocketClient client)
+    public MessageDeletedNotificationHandler(LogChannelPoster logChannelPoster, ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
     {
         _logChannelPoster = logChannelPoster;
         _logMessageBuilder = logMessageBuilder;
