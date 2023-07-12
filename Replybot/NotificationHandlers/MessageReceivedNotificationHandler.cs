@@ -4,6 +4,7 @@ using Replybot.Models;
 using Replybot.Notifications;
 using Replybot.TextCommands;
 using System.Text.RegularExpressions;
+using Replybot.TextCommands.Definitions;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
@@ -87,6 +88,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 guildChannel?.Guild.Id.ToString(),
                 messageChannel.Id.ToString(),
                 message.Author.Id.ToString());
+
             if (replyDefinition == null)
             {
                 return Task.CompletedTask;
@@ -104,59 +106,74 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
             // handle commands
-            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.HowLongToBeat))
+
+            var commands = new List<ICommandHandlerDefinition>
             {
-                var howLongToBeatEmbed = await _howLongToBeatCommand.GetHowLongToBeatEmbed(message);
-                if (howLongToBeatEmbed != null)
+                new AsyncCommandHandlerDefinition
                 {
-                    await messageChannel.SendMessageAsync(embed: howLongToBeatEmbed,
-                        messageReference: messageReference);
+                    TriggerKeyword = TriggerKeyword.HowLongToBeat,
+                    HandleCommand = _howLongToBeatCommand.GetHowLongToBeatEmbed,
+                    StopCheckingForCommands = true
+                },
+                new AsyncCommandHandlerDefinition
+                {
+                    TriggerKeyword = TriggerKeyword.DefineWord,
+                    HandleCommand = _defineWordCommand.GetWordDefinitionEmbed,
+                    StopCheckingForCommands = true
+                },
+                new AsyncCommandHandlerDefinition
+                {
+                    TriggerKeyword = TriggerKeyword.FortniteShopInfo,
+                    HandleCommand = _fortniteShopInformationCommand.GetFortniteShopInformationEmbed,
+                    StopCheckingForCommands = true
+                },
+                new CommandHandlerWithReactionsDefinition
+                {
+                    TriggerKeyword = TriggerKeyword.Poll,
+                    HandleCommand = _pollCommand.BuildPollEmbed,
+                    StopCheckingForCommands = true
                 }
+            };
 
-                return Task.CompletedTask;
-            }
-
-            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.DefineWord))
+            foreach (var commandHandlerDefinition in commands)
             {
-                var defineWordEmbed = await _defineWordCommand.GetWordDefinitionEmbed(message);
-                if (defineWordEmbed != null)
+                if (reply == _keywordHandler.BuildKeyword(commandHandlerDefinition.TriggerKeyword))
                 {
-                    await messageChannel.SendMessageAsync(embed: defineWordEmbed,
-                        messageReference: messageReference);
+                    switch (commandHandlerDefinition)
+                    {
+                        case AsyncCommandHandlerDefinition embedCommandHandlerDefinition:
+                        {
+                            var embed = await embedCommandHandlerDefinition.HandleCommand(message);
+                            if (embed != null)
+                            {
+                                await messageChannel.SendMessageAsync(embed: embed, messageReference: messageReference);
+                            }
+                            if (commandHandlerDefinition.StopCheckingForCommands)
+                            {
+                                return Task.CompletedTask;
+                            }
+
+                            break;
+                        }
+                        case CommandHandlerWithReactionsDefinition
+                            embedReactionsCommandHandlerDefinition:
+                        {
+                            var (embed, reactionEmotes) = embedReactionsCommandHandlerDefinition.HandleCommand(message);
+                            var messageSent = await messageChannel.SendMessageAsync(embed: embed,
+                                messageReference: messageReference);
+                            if (messageSent != null && reactionEmotes != null)
+                            {
+                                await messageSent.AddReactionsAsync(reactionEmotes);
+                            }
+                            if (commandHandlerDefinition.StopCheckingForCommands)
+                            {
+                                return Task.CompletedTask;
+                            }
+
+                            break;
+                        }
+                    }
                 }
-
-                return Task.CompletedTask;
-            }
-
-            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.FortniteShopInfo))
-            {
-                var fortniteShopInfoEmbed =
-                    await _fortniteShopInformationCommand.GetFortniteShopInformationEmbed(message);
-                if (fortniteShopInfoEmbed != null)
-                {
-                    await messageChannel.SendMessageAsync(embed: fortniteShopInfoEmbed,
-                        messageReference: messageReference);
-                }
-
-                return Task.CompletedTask;
-            }
-
-            if (reply == _keywordHandler.BuildKeyword(TriggerKeyword.Poll))
-            {
-                var (pollEmbed, reactionEmotes) = _pollCommand.BuildPollEmbed(message);
-                if (pollEmbed == null)
-                {
-                    return Task.CompletedTask;
-                }
-
-                var messageSent = await messageChannel.SendMessageAsync(embed: pollEmbed,
-                    messageReference: messageReference);
-                if (messageSent != null && reactionEmotes != null)
-                {
-                    await messageSent.AddReactionsAsync(reactionEmotes);
-                }
-
-                return Task.CompletedTask;
             }
 
             //this handles skipping if the above features haven't triggered and if the default reply isn't a special feature otherwise (manually specified)
