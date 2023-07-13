@@ -45,7 +45,7 @@ public class KeywordHandler
                 GetGuildBanner(guild))
             .Replace(BuildKeyword(TriggerKeyword.MemberCount),
                 GetGuildMemberCount(guild)?.ToString())
-            .Replace(BuildKeyword(TriggerKeyword.ChannelCreateDate),GetChannelAgeString(socketGuildChannel))
+            .Replace(BuildKeyword(TriggerKeyword.ChannelCreateDate), GetChannelAgeString(socketGuildChannel))
             .Replace(BuildKeyword(TriggerKeyword.DeleteMessage), "");
     }
 
@@ -55,7 +55,7 @@ public class KeywordHandler
         {
             return "...this is not a channel.";
         }
-        
+
         var createdAtDate = socketGuildChannel.CreatedAt;
         var timeAgo = DateTime.UtcNow - createdAtDate;
         return $"{createdAtDate} ({timeAgo:d'd 'h'h 'm'm 's's'} ago)";
@@ -194,6 +194,11 @@ public class KeywordHandler
 
     public string BuildKeyword(TriggerKeyword keyword)
     {
-        return $"{{{{{keyword.ToString().ToUpper(CultureInfo.InvariantCulture)}}}}}";
+        return BuildKeyword(keyword.ToString());
+    }
+
+    public string BuildKeyword(string keyword)
+    {
+        return $"{{{{{keyword.ToUpper(CultureInfo.InvariantCulture)}}}}}";
     }
 }

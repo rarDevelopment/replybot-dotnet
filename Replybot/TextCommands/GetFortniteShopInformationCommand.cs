@@ -1,14 +1,16 @@
 ﻿using DiscordDotNetUtilities.Interfaces;
 using Fortnite_API.Objects.V2;
+using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
 namespace Replybot.TextCommands;
 
-public class GetFortniteShopInformationCommand
+public class GetFortniteShopInformationCommand : IReplyCommand
 {
     private readonly FortniteApi _fortniteApi;
     private readonly DiscordSettings _discordSettings;
+    private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
 
@@ -18,16 +20,35 @@ public class GetFortniteShopInformationCommand
     public GetFortniteShopInformationCommand(
         FortniteApi fortniteApi,
         DiscordSettings discordSettings,
+        KeywordHandler keywordHandler,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _fortniteApi = fortniteApi;
         _discordSettings = discordSettings;
+        _keywordHandler = keywordHandler;
         _discordFormatter = discordFormatter;
         _logger = logger;
     }
 
-    public async Task<Embed?> GetFortniteShopInformationEmbed(SocketMessage message)
+    public bool CanHandle(string? reply)
+    {
+        return reply == _keywordHandler.BuildKeyword("FortniteShopInfo");
+    }
+
+    public async Task<MessageToSend> Handle(SocketMessage message)
+    {
+        var embed = await GetFortniteShopInformationEmbed(message);
+
+        return new MessageToSend
+        {
+            Embed = embed,
+            Reactions = null,
+            StopProcessing = true
+        };
+    }
+
+    private async Task<Embed?> GetFortniteShopInformationEmbed(SocketMessage message)
     {
         var shopInfo = await _fortniteApi.GetFortniteShopInformation();
         if (shopInfo == null)

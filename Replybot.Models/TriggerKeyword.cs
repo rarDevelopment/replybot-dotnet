@@ -21,10 +21,6 @@ public enum TriggerKeyword
     BotName,
     Anything,
 
-    HowLongToBeat,
-    DefineWord,
-    FortniteShopInfo,
-    Poll,
     FixTwitter,
     BreakTwitter,
     FixInstagram,

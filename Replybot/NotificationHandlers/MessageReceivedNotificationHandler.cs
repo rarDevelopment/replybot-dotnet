@@ -4,7 +4,6 @@ using Replybot.Models;
 using Replybot.Notifications;
 using Replybot.TextCommands;
 using System.Text.RegularExpressions;
-using Replybot.TextCommands.Definitions;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
@@ -12,10 +11,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
-    private readonly HowLongToBeatCommand _howLongToBeatCommand;
-    private readonly DefineWordCommand _defineWordCommand;
-    private readonly GetFortniteShopInformationCommand _fortniteShopInformationCommand;
-    private readonly PollCommand _pollCommand;
+    private readonly IEnumerable<IReplyCommand> _commands;
     private readonly FixTwitterCommand _fixTwitterCommand;
     private readonly FixInstagramCommand _fixInstagramCommand;
     private readonly FixBlueskyCommand _fixBlueskyCommand;
@@ -27,10 +23,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         KeywordHandler keywordHandler,
-        HowLongToBeatCommand howLongToBeatCommand,
-        DefineWordCommand defineWordCommand,
-        GetFortniteShopInformationCommand fortniteShopInformationCommand,
-        PollCommand pollCommand,
+        IEnumerable<IReplyCommand> commands,
         FixTwitterCommand fixTwitterCommand,
         FixInstagramCommand fixInstagramCommand,
         FixBlueskyCommand fixBlueskyCommand,
@@ -42,10 +35,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _replyBusinessLayer = replyBusinessLayer;
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _keywordHandler = keywordHandler;
-        _howLongToBeatCommand = howLongToBeatCommand;
-        _defineWordCommand = defineWordCommand;
-        _fortniteShopInformationCommand = fortniteShopInformationCommand;
-        _pollCommand = pollCommand;
+        _commands = commands;
         _fixTwitterCommand = fixTwitterCommand;
         _fixInstagramCommand = fixInstagramCommand;
         _fixBlueskyCommand = fixBlueskyCommand;
@@ -75,7 +65,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             var config = guildChannel != null
                 ? await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel.Guild)
-                : null;
+                : null; // put the null check inside
 
             if (config != null)
             {
@@ -105,73 +95,14 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
-            // handle commands
-
-            var commands = new List<ICommandHandlerDefinition>
+            foreach (var command in _commands)
             {
-                new AsyncCommandHandlerDefinition
+                if (command.CanHandle(reply))
                 {
-                    TriggerKeyword = TriggerKeyword.HowLongToBeat,
-                    HandleCommand = _howLongToBeatCommand.GetHowLongToBeatEmbed,
-                    StopCheckingForCommands = true
-                },
-                new AsyncCommandHandlerDefinition
-                {
-                    TriggerKeyword = TriggerKeyword.DefineWord,
-                    HandleCommand = _defineWordCommand.GetWordDefinitionEmbed,
-                    StopCheckingForCommands = true
-                },
-                new AsyncCommandHandlerDefinition
-                {
-                    TriggerKeyword = TriggerKeyword.FortniteShopInfo,
-                    HandleCommand = _fortniteShopInformationCommand.GetFortniteShopInformationEmbed,
-                    StopCheckingForCommands = true
-                },
-                new CommandHandlerWithReactionsDefinition
-                {
-                    TriggerKeyword = TriggerKeyword.Poll,
-                    HandleCommand = _pollCommand.BuildPollEmbed,
-                    StopCheckingForCommands = true
-                }
-            };
-
-            foreach (var commandHandlerDefinition in commands)
-            {
-                if (reply == _keywordHandler.BuildKeyword(commandHandlerDefinition.TriggerKeyword))
-                {
-                    switch (commandHandlerDefinition)
+                    var messageToSend = await HandleCommandForMessage(command, message, messageChannel, messageReference);
+                    if (messageToSend.StopProcessing)
                     {
-                        case AsyncCommandHandlerDefinition embedCommandHandlerDefinition:
-                        {
-                            var embed = await embedCommandHandlerDefinition.HandleCommand(message);
-                            if (embed != null)
-                            {
-                                await messageChannel.SendMessageAsync(embed: embed, messageReference: messageReference);
-                            }
-                            if (commandHandlerDefinition.StopCheckingForCommands)
-                            {
-                                return Task.CompletedTask;
-                            }
-
-                            break;
-                        }
-                        case CommandHandlerWithReactionsDefinition
-                            embedReactionsCommandHandlerDefinition:
-                        {
-                            var (embed, reactionEmotes) = embedReactionsCommandHandlerDefinition.HandleCommand(message);
-                            var messageSent = await messageChannel.SendMessageAsync(embed: embed,
-                                messageReference: messageReference);
-                            if (messageSent != null && reactionEmotes != null)
-                            {
-                                await messageSent.AddReactionsAsync(reactionEmotes);
-                            }
-                            if (commandHandlerDefinition.StopCheckingForCommands)
-                            {
-                                return Task.CompletedTask;
-                            }
-
-                            break;
-                        }
+                        return Task.CompletedTask;
                     }
                 }
             }
@@ -208,6 +139,23 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
+    }
+
+    private static async Task<MessageToSend> HandleCommandForMessage(IReplyCommand command, SocketMessage message,
+        ISocketMessageChannel messageChannel, MessageReference? messageReference)
+    {
+        var messageToSend = await command.Handle(message);
+        if (messageToSend.Embed != null)
+        {
+            var messageSent = await messageChannel.SendMessageAsync(embed: messageToSend.Embed,
+                messageReference: messageReference);
+            if (messageSent != null && messageToSend.Reactions != null)
+            {
+                await messageSent.AddReactionsAsync(messageToSend.Reactions);
+            }
+        }
+
+        return messageToSend;
     }
 
     private async Task HandleTwitterReaction(GuildConfiguration config, SocketMessage message)

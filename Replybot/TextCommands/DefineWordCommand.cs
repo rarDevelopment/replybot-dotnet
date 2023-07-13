@@ -5,7 +5,7 @@ using Replybot.ServiceLayer;
 
 namespace Replybot.TextCommands;
 
-public class DefineWordCommand
+public class DefineWordCommand : IReplyCommand
 {
     private readonly FreeDictionaryApi _freeDictionaryApi;
     private readonly KeywordHandler _keywordHandler;
@@ -24,7 +24,24 @@ public class DefineWordCommand
         _logger = logger;
     }
 
-    public async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
+    public bool CanHandle(string? reply)
+    {
+        return reply == _keywordHandler.BuildKeyword("DefineWord");
+    }
+
+    public async Task<MessageToSend> Handle(SocketMessage message)
+    {
+        var embed = await GetWordDefinitionEmbed(message);
+
+        return new MessageToSend
+        {
+            Embed = embed,
+            Reactions = null,
+            StopProcessing = true
+        };
+    }
+
+    private async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
     {
         var messageContent = message.Content;
         var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);

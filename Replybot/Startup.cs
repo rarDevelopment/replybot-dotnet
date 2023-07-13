@@ -97,20 +97,20 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<GuildMemberUpdatedNotificationHandler>();
     services.AddSingleton<GuildUpdatedNotificationHandler>();
 
-    services.AddSingleton<HowLongToBeatCommand>();
+    services.AddSingleton<IReplyCommand, HowLongToBeatCommand>();
     services.AddSingleton<HowLongToBeatApi>();
 
-    services.AddSingleton<DefineWordCommand>();
+    services.AddSingleton<IReplyCommand, DefineWordCommand>();
     services.AddSingleton<FreeDictionaryApi>();
     services.AddSingleton<BlueskyApi>();
 
-    services.AddSingleton<PollCommand>();
+    services.AddSingleton<IReplyCommand, PollCommand>();
 
     services.AddSingleton<FixTwitterCommand>();
     services.AddSingleton<FixInstagramCommand>();
     services.AddSingleton<FixBlueskyCommand>();
 
-    services.AddSingleton<GetFortniteShopInformationCommand>();
+    services.AddSingleton<IReplyCommand, GetFortniteShopInformationCommand>();
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
 
