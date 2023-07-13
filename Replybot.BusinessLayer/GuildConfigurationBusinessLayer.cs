@@ -13,8 +13,12 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
         _replyDataLayer = replyDataLayer;
     }
 
-    public async Task<GuildConfiguration> GetGuildConfiguration(IGuild guild)
+    public async Task<GuildConfiguration?> GetGuildConfiguration(IGuild? guild)
     {
+        if (guild == null)
+        {
+            return null;
+        }
         return await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
     }
 

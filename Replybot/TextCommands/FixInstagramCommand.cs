@@ -3,7 +3,7 @@ using Replybot.Models;
 
 namespace Replybot.TextCommands;
 
-public class FixInstagramCommand
+public class FixInstagramCommand : IReactCommand
 {
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
     private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
@@ -14,6 +14,21 @@ public class FixInstagramCommand
     public const string FixInstagramButtonEmojiName = "fixinstagram";
     private const string OriginalInstagramBaseUrl = "instagram.com";
     private const string FixedInstagramBaseUrl = "ddinstagram.com";
+
+    public bool CanHandle(string message, GuildConfiguration configuration)
+    {
+        return configuration.EnableFixInstagramReactions &&
+               (DoesMessageContainInstagramUrl(message) || DoesMessageContainDdInstagramUrl(message));
+    }
+
+    public Task<List<Emote>> Handle(SocketMessage message)
+    {
+        var emotes = new List<Emote>
+        {
+            GetFixInstagramEmote()
+        };
+        return Task.FromResult(emotes);
+    }
 
     public async Task<(string fixedMessage, MessageReference messageToReplyTo)?> GetFixedInstagramMessage(
         IUserMessage requestingMessage,
@@ -55,11 +70,11 @@ public class FixInstagramCommand
     {
         return triggerKeyword switch
         {
-            TriggerKeyword.FixInstagram => DoesMessageContainInstagramUrl(messageToFix)
+            TriggerKeyword.FixInstagram => DoesMessageContainInstagramUrl(messageToFix.Content)
                 ? (BuildFixedInstagramMessage(messageToFix, requestingUser, userWhoSentLinks),
                     new MessageReference(messageToFix.Id))
                 : noLinkFoundTuple,
-            TriggerKeyword.BreakInstagram => DoesMessageContainDdInstagramUrl(messageToFix)
+            TriggerKeyword.BreakInstagram => DoesMessageContainDdInstagramUrl(messageToFix.Content)
                 ? (BuildOriginalInstagramMessage(messageToFix, requestingUser, userWhoSentLinks),
                     new MessageReference(messageToFix.Id))
                 : noLinkFoundTuple,
@@ -91,14 +106,14 @@ public class FixInstagramCommand
         return $"{authorMentionMessage}{string.Join("\n", fixedInstagramUrls)}";
     }
 
-    public bool DoesMessageContainInstagramUrl(IMessage messageReferenced)
+    public bool DoesMessageContainInstagramUrl(string message)
     {
-        return _instagramUrlRegex.IsMatch(messageReferenced.Content);
+        return _instagramUrlRegex.IsMatch(message);
     }
 
-    public bool DoesMessageContainDdInstagramUrl(IMessage messageReferenced)
+    public bool DoesMessageContainDdInstagramUrl(string message)
     {
-        return _ddInstagramUrlRegex.IsMatch(messageReferenced.Content);
+        return _ddInstagramUrlRegex.IsMatch(message);
     }
 
     private IList<string> FixInstagramUrls(IMessage messageToFix)

@@ -1,12 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
+using Replybot.Models;
 using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
 using Embed = Discord.Embed;
 
 namespace Replybot.TextCommands;
 
-public class FixBlueskyCommand
+public class FixBlueskyCommand : IReactCommand
 {
     private readonly BlueskyApi _blueskyApi;
     private readonly IDiscordFormatter _discordFormatter;
@@ -23,9 +24,23 @@ public class FixBlueskyCommand
         _blueskyUrlRegex = new Regex(BlueskyUrlRegexPattern, RegexOptions.IgnoreCase);
     }
 
+    public bool CanHandle(string message, GuildConfiguration configuration)
+    {
+        return configuration.EnableFixBlueskyReactions && DoesMessageContainBlueskyUrl(message);
+    }
+
+    public Task<List<Emote>> Handle(SocketMessage message)
+    {
+        var emotes = new List<Emote>
+        {
+            GetFixBlueskyEmote()
+        };
+        return Task.FromResult(emotes);
+    }
+
     public async Task<List<(Embed embed, List<ImageWithMetadata>? images)>> GetFixedBlueskyMessage(IUserMessage messageToFix)
     {
-        if (DoesMessageContainBlueskyUrl(messageToFix))
+        if (DoesMessageContainBlueskyUrl(messageToFix.Content))
         {
             return await GetBlueskyEmbeds(messageToFix);
         }
@@ -36,9 +51,9 @@ public class FixBlueskyCommand
         };
     }
 
-    public bool DoesMessageContainBlueskyUrl(IMessage messageReferenced)
+    public bool DoesMessageContainBlueskyUrl(string message)
     {
-        return _blueskyUrlRegex.IsMatch(messageReferenced.Content);
+        return _blueskyUrlRegex.IsMatch(message);
     }
 
     private async Task<List<(Embed embed, List<ImageWithMetadata>? images)>> GetBlueskyEmbeds(IMessage messageToFix)

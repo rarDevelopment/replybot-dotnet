@@ -3,7 +3,7 @@ using Replybot.Models;
 
 namespace Replybot.TextCommands;
 
-public class FixTwitterCommand
+public class FixTwitterCommand : IReactCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";
@@ -14,6 +14,21 @@ public class FixTwitterCommand
     public const string FixTweetButtonEmojiName = "fixtweet";
     private const string OriginalTwitterBaseUrl = "twitter.com";
     private const string FixedTwitterBaseUrl = "vxtwitter.com";
+
+    public bool CanHandle(string message, GuildConfiguration configuration)
+    {
+        return configuration.EnableFixTweetReactions &&
+               (DoesMessageContainTwitterUrl(message) || DoesMessageContainFxTwitterUrl(message));
+    }
+
+    public Task<List<Emote>> Handle(SocketMessage message)
+    {
+        var emotes = new List<Emote>
+        {
+            GetFixTwitterEmote()
+        };
+        return Task.FromResult(emotes);
+    }
 
     public async Task<(string fixedMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(
         IUserMessage requestingMessage,
@@ -55,11 +70,11 @@ public class FixTwitterCommand
     {
         return triggerKeyword switch
         {
-            TriggerKeyword.FixTwitter => DoesMessageContainTwitterUrl(messageToFix)
+            TriggerKeyword.FixTwitter => DoesMessageContainTwitterUrl(messageToFix.Content)
                 ? (BuildFixedTweetsMessage(messageToFix, requestingUser, userWhoSentTweets),
                     new MessageReference(messageToFix.Id))
                 : noLinkFoundTuple,
-            TriggerKeyword.BreakTwitter => DoesMessageContainFxTwitterUrl(messageToFix)
+            TriggerKeyword.BreakTwitter => DoesMessageContainFxTwitterUrl(messageToFix.Content)
                 ? (BuildOriginalTweetsMessage(messageToFix, requestingUser, userWhoSentTweets),
                     new MessageReference(messageToFix.Id))
                 : noLinkFoundTuple,
@@ -91,14 +106,14 @@ public class FixTwitterCommand
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
-    public bool DoesMessageContainTwitterUrl(IMessage messageReferenced)
+    public bool DoesMessageContainTwitterUrl(string message)
     {
-        return _twitterUrlRegex.IsMatch(messageReferenced.Content);
+        return _twitterUrlRegex.IsMatch(message);
     }
 
-    public bool DoesMessageContainFxTwitterUrl(IMessage messageReferenced)
+    public bool DoesMessageContainFxTwitterUrl(string message)
     {
-        return _fxTwitterUrlRegex.IsMatch(messageReferenced.Content);
+        return _fxTwitterUrlRegex.IsMatch(message);
     }
 
     private IList<string> FixTwitterUrls(IMessage messageToFix)

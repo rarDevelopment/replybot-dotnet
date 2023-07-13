@@ -12,9 +12,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
     private readonly IEnumerable<IReplyCommand> _commands;
-    private readonly FixTwitterCommand _fixTwitterCommand;
-    private readonly FixInstagramCommand _fixInstagramCommand;
-    private readonly FixBlueskyCommand _fixBlueskyCommand;
+    private readonly IEnumerable<IReactCommand> _reactCommands;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
     private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
@@ -24,9 +22,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         KeywordHandler keywordHandler,
         IEnumerable<IReplyCommand> commands,
-        FixTwitterCommand fixTwitterCommand,
-        FixInstagramCommand fixInstagramCommand,
-        FixBlueskyCommand fixBlueskyCommand,
+        IEnumerable<IReactCommand> reactCommands,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,
@@ -36,9 +32,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _keywordHandler = keywordHandler;
         _commands = commands;
-        _fixTwitterCommand = fixTwitterCommand;
-        _fixInstagramCommand = fixInstagramCommand;
-        _fixBlueskyCommand = fixBlueskyCommand;
+        _reactCommands = reactCommands;
         _versionSettings = versionSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
@@ -63,15 +57,23 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 await HandleDiscordMessageLink(guildChannel, notification.Message);
             }
 
-            var config = guildChannel != null
-                ? await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel.Guild)
-                : null; // put the null check inside
+            var config = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
 
             if (config != null)
             {
-                await HandleTwitterReaction(config, notification.Message);
-                await HandleInstagramReaction(config, notification.Message);
-                await HandleBlueskyReaction(config, notification.Message);
+                foreach (var reactCommand in _reactCommands)
+                {
+                    if (!reactCommand.CanHandle(notification.Message.Content, config))
+                    {
+                        continue;
+                    }
+
+                    var reactionEmotes = await reactCommand.Handle(notification.Message);
+                    foreach (var emote in reactionEmotes)
+                    {
+                        await message.AddReactionAsync(emote);
+                    }
+                }
             }
 
             var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content,
@@ -97,13 +99,15 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             foreach (var command in _commands)
             {
-                if (command.CanHandle(reply))
+                if (!command.CanHandle(reply))
                 {
-                    var messageToSend = await HandleCommandForMessage(command, message, messageChannel, messageReference);
-                    if (messageToSend.StopProcessing)
-                    {
-                        return Task.CompletedTask;
-                    }
+                    continue;
+                }
+
+                var messageToSend = await HandleCommandForMessage(command, message, messageChannel, messageReference);
+                if (messageToSend.StopProcessing)
+                {
+                    return Task.CompletedTask;
                 }
             }
 
@@ -156,48 +160,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
 
         return messageToSend;
-    }
-
-    private async Task HandleTwitterReaction(GuildConfiguration config, SocketMessage message)
-    {
-        if (!config.EnableFixTweetReactions)
-        {
-            return;
-        }
-
-        var hasTwitterLink = _fixTwitterCommand.DoesMessageContainTwitterUrl(message) || _fixTwitterCommand.DoesMessageContainFxTwitterUrl(message);
-        if (hasTwitterLink)
-        {
-            await message.AddReactionAsync(_fixTwitterCommand.GetFixTwitterEmote());
-        }
-    }
-
-    private async Task HandleInstagramReaction(GuildConfiguration config, SocketMessage message)
-    {
-        if (!config.EnableFixInstagramReactions)
-        {
-            return;
-        }
-
-        var hasInstagramLink = _fixInstagramCommand.DoesMessageContainInstagramUrl(message) || _fixInstagramCommand.DoesMessageContainDdInstagramUrl(message);
-        if (hasInstagramLink)
-        {
-            await message.AddReactionAsync(_fixInstagramCommand.GetFixInstagramEmote());
-        }
-    }
-
-    private async Task HandleBlueskyReaction(GuildConfiguration config, SocketMessage message)
-    {
-        if (!config.EnableFixBlueskyReactions)
-        {
-            return;
-        }
-
-        var hasBlueskyLink = _fixBlueskyCommand.DoesMessageContainBlueskyUrl(message);
-        if (hasBlueskyLink)
-        {
-            await message.AddReactionAsync(_fixBlueskyCommand.GetFixBlueskyEmote());
-        }
     }
 
     private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)

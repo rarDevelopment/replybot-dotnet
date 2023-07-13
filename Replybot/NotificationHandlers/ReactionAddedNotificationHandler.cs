@@ -95,11 +95,11 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
 
             if (fixingTwitter)
             {
-                if (_fixTwitterCommand.DoesMessageContainTwitterUrl(message))
+                if (_fixTwitterCommand.DoesMessageContainTwitterUrl(message.Content))
                 {
                     keywordToPass = TriggerKeyword.FixTwitter;
                 }
-                else if (_fixTwitterCommand.DoesMessageContainFxTwitterUrl(message))
+                else if (_fixTwitterCommand.DoesMessageContainFxTwitterUrl(message.Content))
                 {
                     keywordToPass = TriggerKeyword.BreakTwitter;
                 }
@@ -107,11 +107,11 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
 
             if (fixingInstagram)
             {
-                if (_fixInstagramCommand.DoesMessageContainInstagramUrl(message))
+                if (_fixInstagramCommand.DoesMessageContainInstagramUrl(message.Content))
                 {
                     keywordToPass = TriggerKeyword.FixInstagram;
                 }
-                else if (_fixInstagramCommand.DoesMessageContainDdInstagramUrl(message))
+                else if (_fixInstagramCommand.DoesMessageContainDdInstagramUrl(message.Content))
                 {
                     keywordToPass = TriggerKeyword.BreakInstagram;
                 }
@@ -119,7 +119,7 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
 
             if (fixingBluesky)
             {
-                if (_fixBlueskyCommand.DoesMessageContainBlueskyUrl(message))
+                if (_fixBlueskyCommand.DoesMessageContainBlueskyUrl(message.Content))
                 {
                     keywordToPass = TriggerKeyword.FixBluesky;
                 }
