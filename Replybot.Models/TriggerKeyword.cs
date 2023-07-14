@@ -20,10 +20,4 @@ public enum TriggerKeyword
     ChannelCreateDate,
     BotName,
     Anything,
-
-    FixTwitter,
-    BreakTwitter,
-    FixInstagram,
-    BreakInstagram,
-    FixBluesky
 }
