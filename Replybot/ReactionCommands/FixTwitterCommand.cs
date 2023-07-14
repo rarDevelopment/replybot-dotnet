@@ -1,10 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using Replybot.Models;
-using Replybot.TextCommands;
 
-namespace Replybot.ReactCommands;
+namespace Replybot.ReactionCommands;
 
-public class FixTwitterCommand : IReactCommand
+public class FixTwitterCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";

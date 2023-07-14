@@ -1,10 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using Replybot.Models;
-using Replybot.TextCommands;
 
-namespace Replybot.ReactCommands;
+namespace Replybot.ReactionCommands;
 
-public class FixInstagramCommand : IReactCommand
+public class FixInstagramCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
     private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";

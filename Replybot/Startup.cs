@@ -15,7 +15,7 @@ using Replybot.BusinessLayer;
 using Replybot.DataLayer;
 using Replybot.Models;
 using Replybot.NotificationHandlers;
-using Replybot.ReactCommands;
+using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
@@ -103,9 +103,9 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, PollCommand>();
     services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
 
-    services.AddSingleton<IReactCommand, FixTwitterCommand>();
-    services.AddSingleton<IReactCommand, FixInstagramCommand>();
-    services.AddSingleton<IReactCommand, FixBlueskyCommand>();
+    services.AddSingleton<IReactionCommand, FixTwitterCommand>();
+    services.AddSingleton<IReactionCommand, FixInstagramCommand>();
+    services.AddSingleton<IReactionCommand, FixBlueskyCommand>();
 
     services.AddSingleton<FixTwitterCommand>();
     services.AddSingleton<FixInstagramCommand>();

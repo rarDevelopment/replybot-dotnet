@@ -4,9 +4,9 @@ using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands;
 
-namespace Replybot.ReactCommands;
+namespace Replybot.ReactionCommands;
 
-public class FixBlueskyCommand : IReactCommand
+public class FixBlueskyCommand : IReactionCommand
 {
     private readonly BlueskyApi _blueskyApi;
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";

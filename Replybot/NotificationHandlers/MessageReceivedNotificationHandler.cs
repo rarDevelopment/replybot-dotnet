@@ -3,7 +3,7 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
-using Replybot.ReactCommands;
+using Replybot.ReactionCommands;
 using Replybot.TextCommands;
 
 namespace Replybot.NotificationHandlers;
@@ -13,7 +13,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
     private readonly IEnumerable<ITextCommand> _commands;
-    private readonly IEnumerable<IReactCommand> _reactCommands;
+    private readonly IEnumerable<IReactionCommand> _reactCommands;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
     private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
@@ -23,7 +23,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         KeywordHandler keywordHandler,
         IEnumerable<ITextCommand> commands,
-        IEnumerable<IReactCommand> reactCommands,
+        IEnumerable<IReactionCommand> reactCommands,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,

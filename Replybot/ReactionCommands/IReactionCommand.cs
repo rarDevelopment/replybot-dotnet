@@ -1,9 +1,8 @@
 ﻿using Replybot.Models;
-using Replybot.TextCommands;
 
-namespace Replybot.ReactCommands;
+namespace Replybot.ReactionCommands;
 
-public interface IReactCommand
+public interface IReactionCommand
 {
     bool CanHandle(string message, GuildConfiguration configuration);
     Task<List<Emote>> HandleReact(SocketMessage message);

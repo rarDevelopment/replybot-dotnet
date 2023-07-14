@@ -1,18 +1,18 @@
 ﻿using MediatR;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
-using Replybot.ReactCommands;
+using Replybot.ReactionCommands;
 
 namespace Replybot.NotificationHandlers;
 
 public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAddedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _configurationBusinessLayer;
-    private readonly IEnumerable<IReactCommand> _reactCommands;
+    private readonly IEnumerable<IReactionCommand> _reactCommands;
 
     public ReactionAddedNotificationHandler(
         IGuildConfigurationBusinessLayer configurationBusinessLayer,
-        IEnumerable<IReactCommand> reactCommands)
+        IEnumerable<IReactionCommand> reactCommands)
     {
         _configurationBusinessLayer = configurationBusinessLayer;
         _reactCommands = reactCommands;
