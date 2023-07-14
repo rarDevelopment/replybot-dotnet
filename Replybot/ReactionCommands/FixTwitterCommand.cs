@@ -21,7 +21,7 @@ public class FixTwitterCommand : IReactionCommand
                (DoesMessageContainTwitterUrl(message) || DoesMessageContainFxTwitterUrl(message));
     }
 
-    public Task<List<Emote>> HandleReact(SocketMessage message)
+    public Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
@@ -82,12 +82,12 @@ public class FixTwitterCommand : IReactionCommand
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
-    public bool DoesMessageContainTwitterUrl(string message)
+    private bool DoesMessageContainTwitterUrl(string message)
     {
         return _twitterUrlRegex.IsMatch(message);
     }
 
-    public bool DoesMessageContainFxTwitterUrl(string message)
+    private bool DoesMessageContainFxTwitterUrl(string message)
     {
         return _fxTwitterUrlRegex.IsMatch(message);
     }

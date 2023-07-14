@@ -11,14 +11,13 @@ public class FixBlueskyCommand : IReactionCommand
     private readonly BlueskyApi _blueskyApi;
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
-    private readonly Regex _blueskyUrlRegex;
+    private readonly Regex _blueskyUrlRegex = new(BlueskyUrlRegexPattern, RegexOptions.IgnoreCase);
     public const string FixTweetButtonEmojiId = "1126862392941367376";
     public const string FixTweetButtonEmojiName = "fixbluesky";
 
     public FixBlueskyCommand(BlueskyApi blueskyApi)
     {
         _blueskyApi = blueskyApi;
-        _blueskyUrlRegex = new Regex(BlueskyUrlRegexPattern, RegexOptions.IgnoreCase);
     }
 
     public bool CanHandle(string message, GuildConfiguration configuration)
@@ -26,7 +25,7 @@ public class FixBlueskyCommand : IReactionCommand
         return configuration.EnableFixBlueskyReactions && DoesMessageContainBlueskyUrl(message);
     }
 
-    public Task<List<Emote>> HandleReact(SocketMessage message)
+    public Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
@@ -60,35 +59,38 @@ public class FixBlueskyCommand : IReactionCommand
             return new List<CommandResponse>();
         }
 
-        var listOfMessagesToSend = new List<CommandResponse>();
+        var commandResponses = blueskyMessages.Select(BuildCommandResponse).ToList();
 
-        foreach (var blueskyMessage in blueskyMessages)
+        return commandResponses;
+
+    }
+
+    private static CommandResponse BuildCommandResponse(BlueskyMessage blueskyMessage)
+    {
+        var fileAttachments = new List<FileAttachment>();
+        var fileDate = DateTime.Now.ToShortDateString();
+        if (blueskyMessage.Images != null && blueskyMessage.Images.Any())
         {
-            var fileAttachments = new List<FileAttachment>();
-            if (blueskyMessage.Images != null && blueskyMessage.Images.Any())
-            {
-                var index = 0;
-                var fileDate = DateTime.Now.ToShortDateString();
-                foreach (var image in blueskyMessage.Images)
-                {
-                    var fileName = $"bsky_{fileDate}_{index}.png";
-                    var fileAttachment = new FileAttachment(image.Image, fileName, image.AltText);
-                    fileAttachments.Add(fileAttachment);
-                    index++;
-                }
-
-            }
-
-            var description = $"Here's the content of that Bluesky post:\n>>> ### {blueskyMessage.Title}\n {blueskyMessage.Description}";
-            listOfMessagesToSend.Add(new CommandResponse
-            {
-                Description = description,
-                FileAttachments = fileAttachments
-            });
+            fileAttachments = blueskyMessage.Images.Select(BuildFileAttachmentFromImage(fileDate)).ToList();
         }
 
-        return listOfMessagesToSend;
+        var description =
+            $"Here's the content of that Bluesky post:\n>>> ### {blueskyMessage.Title}\n {blueskyMessage.Description}";
+        return new CommandResponse
+        {
+            Description = description,
+            FileAttachments = fileAttachments
+        };
+    }
 
+    private static Func<ImageWithMetadata, int, FileAttachment> BuildFileAttachmentFromImage(string fileDate)
+    {
+        return (image, index) =>
+        {
+            var fileName = $"bsky_{fileDate}_{index}.png";
+            var fileAttachment = new FileAttachment(image.Image, fileName, image.AltText);
+            return fileAttachment;
+        };
     }
 
     private bool DoesMessageContainBlueskyUrl(string message)

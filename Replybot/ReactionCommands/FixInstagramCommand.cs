@@ -21,7 +21,7 @@ public class FixInstagramCommand : IReactionCommand
                (DoesMessageContainInstagramUrl(message) || DoesMessageContainDdInstagramUrl(message));
     }
 
-    public Task<List<Emote>> HandleReact(SocketMessage message)
+    public Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
@@ -82,12 +82,12 @@ public class FixInstagramCommand : IReactionCommand
         return $"{authorMentionMessage}{string.Join("\n", fixedInstagramUrls)}";
     }
 
-    public bool DoesMessageContainInstagramUrl(string message)
+    private bool DoesMessageContainInstagramUrl(string message)
     {
         return _instagramUrlRegex.IsMatch(message);
     }
 
-    public bool DoesMessageContainDdInstagramUrl(string message)
+    private bool DoesMessageContainDdInstagramUrl(string message)
     {
         return _ddInstagramUrlRegex.IsMatch(message);
     }

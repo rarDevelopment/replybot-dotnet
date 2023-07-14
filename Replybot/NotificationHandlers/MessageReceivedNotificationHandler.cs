@@ -13,7 +13,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
     private readonly IEnumerable<ITextCommand> _commands;
-    private readonly IEnumerable<IReactionCommand> _reactCommands;
+    private readonly IEnumerable<IReactionCommand> _reactionCommands;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
     private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
@@ -23,7 +23,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         KeywordHandler keywordHandler,
         IEnumerable<ITextCommand> commands,
-        IEnumerable<IReactionCommand> reactCommands,
+        IEnumerable<IReactionCommand> reactionCommands,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,
@@ -33,7 +33,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _keywordHandler = keywordHandler;
         _commands = commands;
-        _reactCommands = reactCommands;
+        _reactionCommands = reactionCommands;
         _versionSettings = versionSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
@@ -60,14 +60,14 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var config = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
             if (config != null)
             {
-                foreach (var reactCommand in _reactCommands)
+                foreach (var reactionCommand in _reactionCommands)
                 {
-                    if (!reactCommand.CanHandle(notification.Message.Content, config))
+                    if (!reactionCommand.CanHandle(notification.Message.Content, config))
                     {
                         continue;
                     }
 
-                    var reactionEmotes = await reactCommand.HandleReact(notification.Message);
+                    var reactionEmotes = await reactionCommand.HandleReaction(notification.Message);
                     foreach (var emote in reactionEmotes)
                     {
                         await message.AddReactionAsync(emote);
