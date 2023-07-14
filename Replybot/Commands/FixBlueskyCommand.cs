@@ -1,26 +1,22 @@
 ﻿using System.Text.RegularExpressions;
-using DiscordDotNetUtilities.Interfaces;
 using Replybot.Models;
 using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
-using Embed = Discord.Embed;
 
 namespace Replybot.Commands;
 
 public class FixBlueskyCommand : IReactCommand
 {
     private readonly BlueskyApi _blueskyApi;
-    private readonly IDiscordFormatter _discordFormatter;
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
     private readonly Regex _blueskyUrlRegex;
     public const string FixTweetButtonEmojiId = "1126862392941367376";
     public const string FixTweetButtonEmojiName = "fixbluesky";
 
-    public FixBlueskyCommand(BlueskyApi blueskyApi, IDiscordFormatter discordFormatter)
+    public FixBlueskyCommand(BlueskyApi blueskyApi)
     {
         _blueskyApi = blueskyApi;
-        _discordFormatter = discordFormatter;
         _blueskyUrlRegex = new Regex(BlueskyUrlRegexPattern, RegexOptions.IgnoreCase);
     }
 
@@ -43,11 +39,11 @@ public class FixBlueskyCommand : IReactCommand
         return guildConfiguration.EnableFixBlueskyReactions && Equals(reactionEmote, GetFixBlueskyEmote());
     }
 
-    public async Task<List<MessageToSend>> HandleMessage(IUserMessage message)
+    public async Task<List<CommandResponse>> HandleMessage(IUserMessage message)
     {
         if (!DoesMessageContainBlueskyUrl(message.Content))
         {
-            return new List<MessageToSend>
+            return new List<CommandResponse>
             {
                 new()
                 {
@@ -56,23 +52,23 @@ public class FixBlueskyCommand : IReactCommand
             };
         }
 
-        var embeds = await GetBlueskyEmbeds(message);
+        var blueskyMessages = await GetBlueskyEmbeds(message);
 
-        if (!embeds.Any())
+        if (!blueskyMessages.Any())
         {
-            return new List<MessageToSend>();
+            return new List<CommandResponse>();
         }
 
-        var listOfMessagesToSend = new List<MessageToSend>();
+        var listOfMessagesToSend = new List<CommandResponse>();
 
-        foreach (var embedWithImages in embeds)
+        foreach (var blueskyMessage in blueskyMessages)
         {
             var fileAttachments = new List<FileAttachment>();
-            if (embedWithImages.images != null && embedWithImages.images.Any())
+            if (blueskyMessage.Images != null && blueskyMessage.Images.Any())
             {
                 var index = 0;
                 var fileDate = DateTime.Now.ToShortDateString();
-                foreach (var image in embedWithImages.images)
+                foreach (var image in blueskyMessage.Images)
                 {
                     var fileName = $"bsky_{fileDate}_{index}.png";
                     var fileAttachment = new FileAttachment(image.Image, fileName, image.AltText);
@@ -82,8 +78,8 @@ public class FixBlueskyCommand : IReactCommand
 
             }
 
-            var description = $"Okay, here's the content of that Bluesky post:\n>>> ### {embedWithImages.embed.Title}\n {embedWithImages.embed.Description}";
-            listOfMessagesToSend.Add(new MessageToSend
+            var description = $"Here's the content of that Bluesky post:\n>>> ### {blueskyMessage.Title}\n {blueskyMessage.Description}";
+            listOfMessagesToSend.Add(new CommandResponse
             {
                 Description = description,
                 FileAttachments = fileAttachments
@@ -99,10 +95,10 @@ public class FixBlueskyCommand : IReactCommand
         return _blueskyUrlRegex.IsMatch(message);
     }
 
-    private async Task<List<(Embed embed, List<ImageWithMetadata>? images)>> GetBlueskyEmbeds(IMessage messageToFix)
+    private async Task<List<BlueskyMessage>> GetBlueskyEmbeds(IMessage messageToFix)
     {
         var urlsToFix = GetBlueskyUrlsFromMessage(messageToFix.Content);
-        var blueskyEmbeds = new List<(Embed, List<ImageWithMetadata>?)>();
+        var blueskyEmbeds = new List<BlueskyMessage>();
 
         foreach (var urlToFix in urlsToFix)
         {
@@ -135,7 +131,7 @@ public class FixBlueskyCommand : IReactCommand
                 continue;
             }
 
-            var imagesToEmbed = new List<ImageWithMetadata>();
+            var imagesToSend = new List<ImageWithMetadata>();
             if (images != null && imageCount > 0)
             {
                 foreach (var image in images)
@@ -143,18 +139,17 @@ public class FixBlueskyCommand : IReactCommand
                     var blueskyImage = await _blueskyApi.GetImage(did, image.ImageData.Ref.Link);
                     if (blueskyImage != null)
                     {
-                        imagesToEmbed.Add(new ImageWithMetadata(blueskyImage, image.Alt));
+                        imagesToSend.Add(new ImageWithMetadata(blueskyImage, image.Alt));
                     }
                 }
             }
 
-            var embed = _discordFormatter.BuildRegularEmbed($"@{repo}",
-                postText,
-                new EmbedFooterBuilder
-                {
-                    Text = "Posted on Bluesky"
-                });
-            blueskyEmbeds.Add((embed, imagesToEmbed));
+            blueskyEmbeds.Add(new BlueskyMessage
+            {
+                Title = $"@{repo}",
+                Description = postText,
+                Images = imagesToSend
+            });
         }
         return blueskyEmbeds;
     }

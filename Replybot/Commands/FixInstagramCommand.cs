@@ -35,7 +35,7 @@ public class FixInstagramCommand : IReactCommand
         return guildConfiguration.EnableFixInstagramReactions && Equals(reactionEmote, GetFixInstagramEmote());
     }
 
-    public Task<List<MessageToSend>> HandleMessage(IUserMessage message)
+    public Task<List<CommandResponse>> HandleMessage(IUserMessage message)
     {
         string? fixedMessage;
         if (DoesMessageContainInstagramUrl(message.Content))
@@ -51,7 +51,7 @@ public class FixInstagramCommand : IReactCommand
             fixedMessage = NoLinkMessage;
         }
 
-        var messagesToSend = new List<MessageToSend>
+        var messagesToSend = new List<CommandResponse>
         {
             new() { Description = fixedMessage }
         };

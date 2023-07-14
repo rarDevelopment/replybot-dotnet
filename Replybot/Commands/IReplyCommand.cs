@@ -3,5 +3,5 @@
 public interface IReplyCommand
 {
     bool CanHandle(string? reply);
-    Task<MessageToSend> Handle(SocketMessage message);
+    Task<CommandResponse> Handle(SocketMessage message);
 }

@@ -36,11 +36,11 @@ public class GetFortniteShopInformationCommand : IReplyCommand
         return reply == _keywordHandler.BuildKeyword("FortniteShopInfo");
     }
 
-    public async Task<MessageToSend> Handle(SocketMessage message)
+    public async Task<CommandResponse> Handle(SocketMessage message)
     {
         var embed = await GetFortniteShopInformationEmbed(message);
 
-        return new MessageToSend
+        return new CommandResponse
         {
             Embed = embed,
             Reactions = null,

@@ -143,7 +143,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         return Task.CompletedTask;
     }
 
-    private static async Task<MessageToSend> HandleCommandForMessage(IReplyCommand command, SocketMessage message,
+    private static async Task<CommandResponse> HandleCommandForMessage(IReplyCommand command, SocketMessage message,
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
         var messageToSend = await command.Handle(message);

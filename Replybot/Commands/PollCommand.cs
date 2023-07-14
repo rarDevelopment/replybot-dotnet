@@ -21,11 +21,11 @@ public class PollCommand : IReplyCommand
         return reply == _keywordHandler.BuildKeyword("Poll");
     }
 
-    public Task<MessageToSend> Handle(SocketMessage message)
+    public Task<CommandResponse> Handle(SocketMessage message)
     {
         var embedWithReactions = BuildPollEmbed(message);
 
-        return Task.FromResult(new MessageToSend
+        return Task.FromResult(new CommandResponse
         {
             Embed = embedWithReactions.pollEmbed,
             Reactions = embedWithReactions.reactionEmotes,

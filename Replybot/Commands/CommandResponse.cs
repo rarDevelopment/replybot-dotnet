@@ -1,6 +1,6 @@
 ﻿namespace Replybot.Commands;
 
-public class MessageToSend
+public class CommandResponse
 {
     public string? Description { get; set; }
     public List<FileAttachment> FileAttachments { get; set; } = new();

@@ -29,11 +29,11 @@ public class DefineWordCommand : IReplyCommand
         return reply == _keywordHandler.BuildKeyword("DefineWord");
     }
 
-    public async Task<MessageToSend> Handle(SocketMessage message)
+    public async Task<CommandResponse> Handle(SocketMessage message)
     {
         var embed = await GetWordDefinitionEmbed(message);
 
-        return new MessageToSend
+        return new CommandResponse
         {
             Embed = embed,
             Reactions = null,

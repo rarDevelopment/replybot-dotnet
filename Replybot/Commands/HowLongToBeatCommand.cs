@@ -36,11 +36,11 @@ public class HowLongToBeatCommand : IReplyCommand
         return reply == _keywordHandler.BuildKeyword("HowLongToBeat");
     }
 
-    public async Task<MessageToSend> Handle(SocketMessage message)
+    public async Task<CommandResponse> Handle(SocketMessage message)
     {
         var embed = await GetHowLongToBeatEmbed(message);
 
-        return new MessageToSend
+        return new CommandResponse
         {
             Embed = embed,
             Reactions = null,

@@ -35,7 +35,7 @@ public class FixTwitterCommand : IReactCommand
         return guildConfiguration.EnableFixTweetReactions && Equals(reactionEmote, GetFixTwitterEmote());
     }
 
-    public Task<List<MessageToSend>> HandleMessage(IUserMessage message)
+    public Task<List<CommandResponse>> HandleMessage(IUserMessage message)
     {
         string? fixedMessage;
         if (DoesMessageContainTwitterUrl(message.Content))
@@ -51,7 +51,7 @@ public class FixTwitterCommand : IReactCommand
             fixedMessage = NoLinkMessage;
         }
 
-        var messagesToSend = new List<MessageToSend>
+        var messagesToSend = new List<CommandResponse>
         {
             new() { Description = fixedMessage }
         };
