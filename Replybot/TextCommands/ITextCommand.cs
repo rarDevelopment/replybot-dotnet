@@ -1,6 +1,6 @@
-﻿namespace Replybot.Commands;
+﻿namespace Replybot.TextCommands;
 
-public interface IReplyCommand
+public interface ITextCommand
 {
     bool CanHandle(string? reply);
     Task<CommandResponse> Handle(SocketMessage message);

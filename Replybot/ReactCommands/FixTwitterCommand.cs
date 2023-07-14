@@ -1,7 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using Replybot.Models;
+using Replybot.TextCommands;
 
-namespace Replybot.Commands;
+namespace Replybot.ReactCommands;
 
 public class FixTwitterCommand : IReactCommand
 {

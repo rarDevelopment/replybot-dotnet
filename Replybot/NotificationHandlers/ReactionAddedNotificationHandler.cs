@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Replybot.BusinessLayer;
-using Replybot.Commands;
 using Replybot.Notifications;
+using Replybot.ReactCommands;
 
 namespace Replybot.NotificationHandlers;
 

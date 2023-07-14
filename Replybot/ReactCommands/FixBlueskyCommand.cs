@@ -2,8 +2,9 @@
 using Replybot.Models;
 using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
+using Replybot.TextCommands;
 
-namespace Replybot.Commands;
+namespace Replybot.ReactCommands;
 
 public class FixBlueskyCommand : IReactCommand
 {

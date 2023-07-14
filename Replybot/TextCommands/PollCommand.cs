@@ -2,9 +2,9 @@
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 
-namespace Replybot.Commands;
+namespace Replybot.TextCommands;
 
-public class PollCommand : IReplyCommand
+public class PollCommand : ITextCommand
 {
     private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;

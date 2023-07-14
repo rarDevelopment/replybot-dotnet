@@ -3,9 +3,9 @@ using Replybot.BusinessLayer;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
 
-namespace Replybot.Commands;
+namespace Replybot.TextCommands;
 
-public class DefineWordCommand : IReplyCommand
+public class DefineWordCommand : ITextCommand
 {
     private readonly FreeDictionaryApi _freeDictionaryApi;
     private readonly KeywordHandler _keywordHandler;

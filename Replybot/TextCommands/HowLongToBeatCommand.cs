@@ -3,9 +3,9 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-namespace Replybot.Commands;
+namespace Replybot.TextCommands;
 
-public class HowLongToBeatCommand : IReplyCommand
+public class HowLongToBeatCommand : ITextCommand
 {
     private readonly HowLongToBeatSettings _howLongToBeatSettings;
     private readonly HowLongToBeatApi _howLongToBeatApi;

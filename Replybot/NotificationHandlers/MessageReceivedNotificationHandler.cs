@@ -3,7 +3,8 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
-using Replybot.Commands;
+using Replybot.ReactCommands;
+using Replybot.TextCommands;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
@@ -11,7 +12,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
-    private readonly IEnumerable<IReplyCommand> _commands;
+    private readonly IEnumerable<ITextCommand> _commands;
     private readonly IEnumerable<IReactCommand> _reactCommands;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
@@ -21,7 +22,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         KeywordHandler keywordHandler,
-        IEnumerable<IReplyCommand> commands,
+        IEnumerable<ITextCommand> commands,
         IEnumerable<IReactCommand> reactCommands,
         VersionSettings versionSettings,
         DiscordSocketClient client,
@@ -143,7 +144,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         return Task.CompletedTask;
     }
 
-    private static async Task<CommandResponse> HandleCommandForMessage(IReplyCommand command, SocketMessage message,
+    private static async Task<CommandResponse> HandleCommandForMessage(ITextCommand command, SocketMessage message,
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
         var messageToSend = await command.Handle(message);

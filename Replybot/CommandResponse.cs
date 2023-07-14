@@ -1,4 +1,4 @@
-﻿namespace Replybot.Commands;
+﻿namespace Replybot;
 
 public class CommandResponse
 {
