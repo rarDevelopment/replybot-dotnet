@@ -26,12 +26,9 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
             var user = reaction.User.GetValueOrDefault();
             var message = await notification.Message.GetOrDownloadAsync();
 
-            if (user is IGuildUser { IsBot: true })
-            {
-                return Task.CompletedTask;
-            }
-
-            if (message == null || notification.Reaction.Channel is not IGuildChannel guildChannel)
+            if (user is IGuildUser { IsBot: true } ||
+                message == null ||
+                notification.Reaction.Channel is not IGuildChannel guildChannel)
             {
                 return Task.CompletedTask;
             }
