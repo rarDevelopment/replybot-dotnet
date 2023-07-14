@@ -5,7 +5,7 @@ using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
 using Embed = Discord.Embed;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
 public class FixBlueskyCommand : IReactCommand
 {
@@ -29,7 +29,7 @@ public class FixBlueskyCommand : IReactCommand
         return configuration.EnableFixBlueskyReactions && DoesMessageContainBlueskyUrl(message);
     }
 
-    public Task<List<Emote>> Handle(SocketMessage message)
+    public Task<List<Emote>> HandleReact(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
@@ -38,20 +38,63 @@ public class FixBlueskyCommand : IReactCommand
         return Task.FromResult(emotes);
     }
 
-    public async Task<List<(Embed embed, List<ImageWithMetadata>? images)>> GetFixedBlueskyMessage(IUserMessage messageToFix)
+    public bool IsReacting(IEmote reactionEmote, GuildConfiguration guildConfiguration)
     {
-        if (DoesMessageContainBlueskyUrl(messageToFix.Content))
-        {
-            return await GetBlueskyEmbeds(messageToFix);
-        }
-
-        return new List<(Embed, List<ImageWithMetadata>?)>
-        {
-            (_discordFormatter.BuildRegularEmbed("No Link Found", NoLinkMessage, embedFooterBuilder: null), null)
-        };
+        return guildConfiguration.EnableFixBlueskyReactions && Equals(reactionEmote, GetFixBlueskyEmote());
     }
 
-    public bool DoesMessageContainBlueskyUrl(string message)
+    public async Task<List<MessageToSend>> HandleMessage(IUserMessage message)
+    {
+        if (!DoesMessageContainBlueskyUrl(message.Content))
+        {
+            return new List<MessageToSend>
+            {
+                new()
+                {
+                    Description = NoLinkMessage
+                }
+            };
+        }
+
+        var embeds = await GetBlueskyEmbeds(message);
+
+        if (!embeds.Any())
+        {
+            return new List<MessageToSend>();
+        }
+
+        var listOfMessagesToSend = new List<MessageToSend>();
+
+        foreach (var embedWithImages in embeds)
+        {
+            var fileAttachments = new List<FileAttachment>();
+            if (embedWithImages.images != null && embedWithImages.images.Any())
+            {
+                var index = 0;
+                var fileDate = DateTime.Now.ToShortDateString();
+                foreach (var image in embedWithImages.images)
+                {
+                    var fileName = $"bsky_{fileDate}_{index}.png";
+                    var fileAttachment = new FileAttachment(image.Image, fileName, image.AltText);
+                    fileAttachments.Add(fileAttachment);
+                    index++;
+                }
+
+            }
+
+            var description = $"Okay, here's the content of that Bluesky post:\n>>> ### {embedWithImages.embed.Title}\n {embedWithImages.embed.Description}";
+            listOfMessagesToSend.Add(new MessageToSend
+            {
+                Description = description,
+                FileAttachments = fileAttachments
+            });
+        }
+
+        return listOfMessagesToSend;
+
+    }
+
+    private bool DoesMessageContainBlueskyUrl(string message)
     {
         return _blueskyUrlRegex.IsMatch(message);
     }
@@ -111,7 +154,7 @@ public class FixBlueskyCommand : IReactCommand
                 {
                     Text = "Posted on Bluesky"
                 });
-            blueskyEmbeds.Add((embed, imagesToEmbed ?? null));
+            blueskyEmbeds.Add((embed, imagesToEmbed));
         }
         return blueskyEmbeds;
     }
@@ -128,7 +171,7 @@ public class FixBlueskyCommand : IReactCommand
         return matches.Select(t => t.Value).ToList();
     }
 
-    public Emote GetFixBlueskyEmote()
+    private static Emote GetFixBlueskyEmote()
     {
         return Emote.Parse($"<:{FixTweetButtonEmojiName}:{FixTweetButtonEmojiId}>");
     }

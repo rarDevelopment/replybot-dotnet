@@ -3,7 +3,7 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
 public class HowLongToBeatCommand : IReplyCommand
 {

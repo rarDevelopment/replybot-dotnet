@@ -2,7 +2,7 @@
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
 public class PollCommand : IReplyCommand
 {

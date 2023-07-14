@@ -2,8 +2,8 @@
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
-using Replybot.TextCommands;
 using System.Text.RegularExpressions;
+using Replybot.Commands;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
@@ -49,8 +49,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var messageChannel = message.Channel;
-            var guildChannel = messageChannel as SocketGuildChannel;
+            var guildChannel = message.Channel as SocketGuildChannel;
 
             if (guildChannel != null)
             {
@@ -58,7 +57,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             }
 
             var config = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
-
             if (config != null)
             {
                 foreach (var reactCommand in _reactCommands)
@@ -68,7 +66,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                         continue;
                     }
 
-                    var reactionEmotes = await reactCommand.Handle(notification.Message);
+                    var reactionEmotes = await reactCommand.HandleReact(notification.Message);
                     foreach (var emote in reactionEmotes)
                     {
                         await message.AddReactionAsync(emote);
@@ -78,7 +76,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content,
                 guildChannel?.Guild.Id.ToString(),
-                messageChannel.Id.ToString(),
+                message.Channel.Id.ToString(),
                 message.Author.Id.ToString());
 
             if (replyDefinition == null)
@@ -104,7 +102,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                     continue;
                 }
 
-                var messageToSend = await HandleCommandForMessage(command, message, messageChannel, messageReference);
+                var messageToSend = await HandleCommandForMessage(command, message, message.Channel, messageReference);
                 if (messageToSend.StopProcessing)
                 {
                     return Task.CompletedTask;
@@ -135,7 +133,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 guildChannel?.Guild,
                 guildChannel);
 
-            await messageChannel.SendMessageAsync(
+            await message.Channel.SendMessageAsync(
                 messageText,
                 messageReference: messageReference
             );
@@ -149,14 +147,16 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
         var messageToSend = await command.Handle(message);
-        if (messageToSend.Embed != null)
+        if (messageToSend.Embed == null)
         {
-            var messageSent = await messageChannel.SendMessageAsync(embed: messageToSend.Embed,
-                messageReference: messageReference);
-            if (messageSent != null && messageToSend.Reactions != null)
-            {
-                await messageSent.AddReactionsAsync(messageToSend.Reactions);
-            }
+            return messageToSend;
+        }
+
+        var messageSent = await messageChannel.SendMessageAsync(embed: messageToSend.Embed,
+            messageReference: messageReference);
+        if (messageSent != null && messageToSend.Reactions != null)
+        {
+            await messageSent.AddReactionsAsync(messageToSend.Reactions);
         }
 
         return messageToSend;
@@ -297,15 +297,13 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
     private static string? ChooseReply(GuildReplyDefinition guildReplyDefinition, SocketUser author)
     {
-        var replies = guildReplyDefinition.Replies;
-
-        if (replies == null || !replies.Any())
+        if (guildReplyDefinition.Replies == null || !guildReplyDefinition.Replies.Any())
         {
             return null;
         }
 
         var random = new Random();
-        var randomNumber = random.Next(replies.Length);
-        return replies[randomNumber];
+        var randomNumber = random.Next(guildReplyDefinition.Replies.Length);
+        return guildReplyDefinition.Replies[randomNumber];
     }
 }

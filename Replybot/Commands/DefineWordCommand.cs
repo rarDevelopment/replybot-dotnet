@@ -3,7 +3,7 @@ using Replybot.BusinessLayer;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
 public class DefineWordCommand : IReplyCommand
 {

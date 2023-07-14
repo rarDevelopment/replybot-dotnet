@@ -1,4 +1,4 @@
-﻿namespace Replybot.TextCommands;
+﻿namespace Replybot.Commands;
 
 public interface IReplyCommand
 {

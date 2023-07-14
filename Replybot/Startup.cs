@@ -12,11 +12,11 @@ using Serilog;
 using System.Reflection;
 using Fortnite_API;
 using Replybot.BusinessLayer;
+using Replybot.Commands;
 using Replybot.DataLayer;
 using Replybot.Models;
 using Replybot.NotificationHandlers;
 using Replybot.ServiceLayer;
-using Replybot.TextCommands;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();
