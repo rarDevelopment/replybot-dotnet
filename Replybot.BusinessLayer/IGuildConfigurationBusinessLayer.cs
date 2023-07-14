@@ -5,7 +5,7 @@ namespace Replybot.BusinessLayer;
 
 public interface IGuildConfigurationBusinessLayer
 {
-    Task<GuildConfiguration> GetGuildConfiguration(IGuild guild);
+    Task<GuildConfiguration?> GetGuildConfiguration(IGuild? guild);
     Task<bool> UpdateGuildConfiguration(IGuild guild);
     Task<bool> SetEnableAvatarAnnouncements(IGuild guild, bool isEnabled);
     Task<bool> SetEnableAvatarMentions(IGuild guild, bool isEnabled);

@@ -12,11 +12,11 @@ using Serilog;
 using System.Reflection;
 using Fortnite_API;
 using Replybot.BusinessLayer;
+using Replybot.Commands;
 using Replybot.DataLayer;
 using Replybot.Models;
 using Replybot.NotificationHandlers;
 using Replybot.ServiceLayer;
-using Replybot.TextCommands;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();
@@ -97,20 +97,23 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<GuildMemberUpdatedNotificationHandler>();
     services.AddSingleton<GuildUpdatedNotificationHandler>();
 
-    services.AddSingleton<HowLongToBeatCommand>();
-    services.AddSingleton<HowLongToBeatApi>();
+    services.AddSingleton<IReplyCommand, HowLongToBeatCommand>();
+    services.AddSingleton<IReplyCommand, DefineWordCommand>();
+    services.AddSingleton<IReplyCommand, PollCommand>();
+    services.AddSingleton<IReplyCommand, GetFortniteShopInformationCommand>();
 
-    services.AddSingleton<DefineWordCommand>();
-    services.AddSingleton<FreeDictionaryApi>();
-    services.AddSingleton<BlueskyApi>();
-
-    services.AddSingleton<PollCommand>();
+    services.AddSingleton<IReactCommand, FixTwitterCommand>();
+    services.AddSingleton<IReactCommand, FixInstagramCommand>();
+    services.AddSingleton<IReactCommand, FixBlueskyCommand>();
 
     services.AddSingleton<FixTwitterCommand>();
     services.AddSingleton<FixInstagramCommand>();
     services.AddSingleton<FixBlueskyCommand>();
 
-    services.AddSingleton<GetFortniteShopInformationCommand>();
+    services.AddSingleton<HowLongToBeatApi>();
+    services.AddSingleton<FreeDictionaryApi>();
+    services.AddSingleton<BlueskyApi>();
+
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
 

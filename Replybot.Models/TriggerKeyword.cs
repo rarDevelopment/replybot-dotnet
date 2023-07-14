@@ -20,14 +20,4 @@ public enum TriggerKeyword
     ChannelCreateDate,
     BotName,
     Anything,
-
-    HowLongToBeat,
-    DefineWord,
-    FortniteShopInfo,
-    Poll,
-    FixTwitter,
-    BreakTwitter,
-    FixInstagram,
-    BreakInstagram,
-    FixBluesky
 }

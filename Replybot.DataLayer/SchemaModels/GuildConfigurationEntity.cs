@@ -30,7 +30,7 @@ public class GuildConfigurationEntity
     [BsonElement("enableDefaultReplies")]
     public bool EnableDefaultReplies { get; set; }
 
-    public GuildConfiguration ToDomain()
+    public GuildConfiguration? ToDomain()
     {
         return new GuildConfiguration
         {

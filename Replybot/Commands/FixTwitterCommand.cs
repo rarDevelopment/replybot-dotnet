@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using Replybot.Models;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
-public class FixTwitterCommand
+public class FixTwitterCommand : IReactCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";
@@ -15,56 +15,47 @@ public class FixTwitterCommand
     private const string OriginalTwitterBaseUrl = "twitter.com";
     private const string FixedTwitterBaseUrl = "vxtwitter.com";
 
-    public async Task<(string fixedMessage, MessageReference messageToReplyTo)?> GetFixedTwitterMessage(
-        IUserMessage requestingMessage,
-        TriggerKeyword keyword)
+    public bool CanHandle(string message, GuildConfiguration configuration)
     {
-        var requestingUser = requestingMessage.Author;
-        IUser userWhoSent = requestingMessage.Author;
-
-        var requesterMessageReference = new MessageReference(requestingMessage.Id);
-        var noLinkFoundTuple = (NoLinkMessage, requesterMessageReference);
-
-        var fixedLinksResult = FixLinksIfFound(requestingMessage, requestingUser, userWhoSent, noLinkFoundTuple, keyword);
-        if (fixedLinksResult != noLinkFoundTuple)
-        {
-            return fixedLinksResult;
-        }
-
-        if (requestingMessage.Reference == null)
-        {
-            return noLinkFoundTuple;
-        }
-
-        var messageReferenceId = requestingMessage.Reference.MessageId.GetValueOrDefault(default);
-        if (messageReferenceId == default)
-        {
-            return noLinkFoundTuple;
-        }
-
-        var messageReferenced = await requestingMessage.Channel.GetMessageAsync(messageReferenceId);
-        return messageReferenced is null
-            ? ("I couldn't read that message for some reason, sorry!", requesterMessageReference)
-            : FixLinksIfFound(messageReferenced, requestingUser, messageReferenced.Author, noLinkFoundTuple, keyword);
+        return configuration.EnableFixTweetReactions &&
+               (DoesMessageContainTwitterUrl(message) || DoesMessageContainFxTwitterUrl(message));
     }
 
-    private (string, MessageReference) FixLinksIfFound(IMessage messageToFix,
-        IUser requestingUser,
-        IUser userWhoSentTweets,
-        (string NoLinkMessage, MessageReference) noLinkFoundTuple, TriggerKeyword triggerKeyword)
+    public Task<List<Emote>> HandleReact(SocketMessage message)
     {
-        return triggerKeyword switch
+        var emotes = new List<Emote>
         {
-            TriggerKeyword.FixTwitter => DoesMessageContainTwitterUrl(messageToFix)
-                ? (BuildFixedTweetsMessage(messageToFix, requestingUser, userWhoSentTweets),
-                    new MessageReference(messageToFix.Id))
-                : noLinkFoundTuple,
-            TriggerKeyword.BreakTwitter => DoesMessageContainFxTwitterUrl(messageToFix)
-                ? (BuildOriginalTweetsMessage(messageToFix, requestingUser, userWhoSentTweets),
-                    new MessageReference(messageToFix.Id))
-                : noLinkFoundTuple,
-            _ => (noLinkFoundTuple)
+            GetFixTwitterEmote()
         };
+        return Task.FromResult(emotes);
+    }
+
+    public bool IsReacting(IEmote reactionEmote, GuildConfiguration guildConfiguration)
+    {
+        return guildConfiguration.EnableFixTweetReactions && Equals(reactionEmote, GetFixTwitterEmote());
+    }
+
+    public Task<List<CommandResponse>> HandleMessage(IUserMessage message)
+    {
+        string? fixedMessage;
+        if (DoesMessageContainTwitterUrl(message.Content))
+        {
+            fixedMessage = BuildFixedTweetsMessage(message, message.Author, message.Author);
+        }
+        else if (DoesMessageContainFxTwitterUrl(message.Content))
+        {
+            fixedMessage = BuildOriginalTweetsMessage(message, message.Author, message.Author);
+        }
+        else
+        {
+            fixedMessage = NoLinkMessage;
+        }
+
+        var messagesToSend = new List<CommandResponse>
+        {
+            new() { Description = fixedMessage }
+        };
+        return Task.FromResult(messagesToSend);
     }
 
     private string BuildFixedTweetsMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
@@ -91,14 +82,14 @@ public class FixTwitterCommand
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
-    public bool DoesMessageContainTwitterUrl(IMessage messageReferenced)
+    public bool DoesMessageContainTwitterUrl(string message)
     {
-        return _twitterUrlRegex.IsMatch(messageReferenced.Content);
+        return _twitterUrlRegex.IsMatch(message);
     }
 
-    public bool DoesMessageContainFxTwitterUrl(IMessage messageReferenced)
+    public bool DoesMessageContainFxTwitterUrl(string message)
     {
-        return _fxTwitterUrlRegex.IsMatch(messageReferenced.Content);
+        return _fxTwitterUrlRegex.IsMatch(message);
     }
 
     private IList<string> FixTwitterUrls(IMessage messageToFix)
@@ -125,7 +116,7 @@ public class FixTwitterCommand
         return matches.Select(t => t.Value).ToList();
     }
 
-    public Emote GetFixTwitterEmote()
+    private static Emote GetFixTwitterEmote()
     {
         return Emote.Parse($"<:{FixTweetButtonEmojiName}:{FixTweetButtonEmojiId}>");
     }

@@ -6,7 +6,7 @@ public interface IReplyDataLayer
 {
     IList<GuildReplyDefinition>? GetDefaultReplies();
     Task<IList<GuildReplyDefinition>?> GetActiveRepliesForGuild(string guildId);
-    Task<GuildConfiguration> GetConfigurationForGuild(string guildId, string guildName);
+    Task<GuildConfiguration?> GetConfigurationForGuild(string guildId, string guildName);
     Task<bool> UpdateGuildConfiguration(string guildId, string guildName);
     Task<bool> SetEnableAvatarAnnouncements(string guildId, bool isEnabled);
     Task<bool> SetEnableAvatarMentions(string guildId, bool isEnabled);

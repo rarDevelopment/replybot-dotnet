@@ -3,9 +3,9 @@ using Replybot.BusinessLayer;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
-public class DefineWordCommand
+public class DefineWordCommand : IReplyCommand
 {
     private readonly FreeDictionaryApi _freeDictionaryApi;
     private readonly KeywordHandler _keywordHandler;
@@ -24,7 +24,24 @@ public class DefineWordCommand
         _logger = logger;
     }
 
-    public async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
+    public bool CanHandle(string? reply)
+    {
+        return reply == _keywordHandler.BuildKeyword("DefineWord");
+    }
+
+    public async Task<CommandResponse> Handle(SocketMessage message)
+    {
+        var embed = await GetWordDefinitionEmbed(message);
+
+        return new CommandResponse
+        {
+            Embed = embed,
+            Reactions = null,
+            StopProcessing = true
+        };
+    }
+
+    private async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
     {
         var messageContent = message.Content;
         var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);

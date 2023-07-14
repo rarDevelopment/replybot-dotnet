@@ -2,9 +2,9 @@
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
-public class PollCommand
+public class PollCommand : IReplyCommand
 {
     private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
@@ -16,7 +16,24 @@ public class PollCommand
         _discordFormatter = discordFormatter;
     }
 
-    public (Embed? pollEmbed, IReadOnlyList<IEmote>? reactionEmotes) BuildPollEmbed(SocketMessage message)
+    public bool CanHandle(string? reply)
+    {
+        return reply == _keywordHandler.BuildKeyword("Poll");
+    }
+
+    public Task<CommandResponse> Handle(SocketMessage message)
+    {
+        var embedWithReactions = BuildPollEmbed(message);
+
+        return Task.FromResult(new CommandResponse
+        {
+            Embed = embedWithReactions.pollEmbed,
+            Reactions = embedWithReactions.reactionEmotes,
+            StopProcessing = true
+        });
+    }
+
+    private (Embed? pollEmbed, IReadOnlyList<IEmote>? reactionEmotes) BuildPollEmbed(SocketMessage message)
     {
         var messageContent = message.Content;
         var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);

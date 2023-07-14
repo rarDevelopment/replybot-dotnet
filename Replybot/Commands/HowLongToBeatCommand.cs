@@ -3,9 +3,9 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-namespace Replybot.TextCommands;
+namespace Replybot.Commands;
 
-public class HowLongToBeatCommand
+public class HowLongToBeatCommand : IReplyCommand
 {
     private readonly HowLongToBeatSettings _howLongToBeatSettings;
     private readonly HowLongToBeatApi _howLongToBeatApi;
@@ -31,7 +31,24 @@ public class HowLongToBeatCommand
         _logger = logger;
     }
 
-    public async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
+    public bool CanHandle(string? reply)
+    {
+        return reply == _keywordHandler.BuildKeyword("HowLongToBeat");
+    }
+
+    public async Task<CommandResponse> Handle(SocketMessage message)
+    {
+        var embed = await GetHowLongToBeatEmbed(message);
+
+        return new CommandResponse
+        {
+            Embed = embed,
+            Reactions = null,
+            StopProcessing = true
+        };
+    }
+
+    private async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
     {
         var messageContent = message.Content;
 
@@ -102,12 +119,12 @@ public class HowLongToBeatCommand
         }
     }
 
-    private decimal ConvertSecondsToHoursForDisplay(int seconds, int decimalPlaces)
+    private static decimal ConvertSecondsToHoursForDisplay(int seconds, int decimalPlaces)
     {
         return Math.Round(ConvertSecondsToHours(seconds), decimalPlaces);
     }
 
-    private decimal ConvertSecondsToHours(int seconds)
+    private static decimal ConvertSecondsToHours(int seconds)
     {
         return seconds / 60m / 60m;
     }
