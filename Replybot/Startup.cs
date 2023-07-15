@@ -12,11 +12,12 @@ using Serilog;
 using System.Reflection;
 using Fortnite_API;
 using Replybot.BusinessLayer;
-using Replybot.Commands;
 using Replybot.DataLayer;
 using Replybot.Models;
 using Replybot.NotificationHandlers;
+using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
+using Replybot.TextCommands;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();
@@ -97,14 +98,14 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<GuildMemberUpdatedNotificationHandler>();
     services.AddSingleton<GuildUpdatedNotificationHandler>();
 
-    services.AddSingleton<IReplyCommand, HowLongToBeatCommand>();
-    services.AddSingleton<IReplyCommand, DefineWordCommand>();
-    services.AddSingleton<IReplyCommand, PollCommand>();
-    services.AddSingleton<IReplyCommand, GetFortniteShopInformationCommand>();
+    services.AddSingleton<ITextCommand, HowLongToBeatCommand>();
+    services.AddSingleton<ITextCommand, DefineWordCommand>();
+    services.AddSingleton<ITextCommand, PollCommand>();
+    services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
 
-    services.AddSingleton<IReactCommand, FixTwitterCommand>();
-    services.AddSingleton<IReactCommand, FixInstagramCommand>();
-    services.AddSingleton<IReactCommand, FixBlueskyCommand>();
+    services.AddSingleton<IReactionCommand, FixTwitterCommand>();
+    services.AddSingleton<IReactionCommand, FixInstagramCommand>();
+    services.AddSingleton<IReactionCommand, FixBlueskyCommand>();
 
     services.AddSingleton<FixTwitterCommand>();
     services.AddSingleton<FixInstagramCommand>();

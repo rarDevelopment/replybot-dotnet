@@ -2,9 +2,9 @@
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 
-namespace Replybot.Commands;
+namespace Replybot.TextCommands;
 
-public class PollCommand : IReplyCommand
+public class PollCommand : ITextCommand
 {
     private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
@@ -27,13 +27,13 @@ public class PollCommand : IReplyCommand
 
         return Task.FromResult(new CommandResponse
         {
-            Embed = embedWithReactions.pollEmbed,
-            Reactions = embedWithReactions.reactionEmotes,
+            Embed = embedWithReactions.Embed,
+            Reactions = embedWithReactions.ReactionEmotes,
             StopProcessing = true
         });
     }
 
-    private (Embed? pollEmbed, IReadOnlyList<IEmote>? reactionEmotes) BuildPollEmbed(SocketMessage message)
+    private PollEmbed BuildPollEmbed(SocketMessage message)
     {
         var messageContent = message.Content;
         var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
@@ -41,16 +41,16 @@ public class PollCommand : IReplyCommand
 
         if (messageWithoutTrigger.Length == 0)
         {
-            return (_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                "You need at least two answers in your poll", embedFooterBuilder: null), null);
+            return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
+                    "You need at least two answers in your poll", embedFooterBuilder: null));
         }
 
         var splitArgs = messageWithoutTrigger.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
 
         if (splitArgs.Count <= 2)
         {
-            return (_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                "You need at least two answers in your poll", embedFooterBuilder: null), null);
+            return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
+                "You need at least two answers in your poll", embedFooterBuilder: null));
         }
 
         var question = splitArgs[0];
@@ -58,10 +58,9 @@ public class PollCommand : IReplyCommand
 
         if (answers.Count > _pollOptionsAlphabet.Count)
         {
-            return (_discordFormatter.BuildErrorEmbed("Error Making Poll",
+            return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
                     $"You can't have more than {_pollOptionsAlphabet.Count} answers. Nobody is going to read a poll that long anyway 😌",
-                    embedFooterBuilder: null),
-                null);
+                    embedFooterBuilder: null));
         }
 
         var reactions = answers.Select((_, index) => _pollOptionsAlphabet[index]).ToList();
@@ -70,7 +69,7 @@ public class PollCommand : IReplyCommand
         var pollEmbed = _discordFormatter.BuildRegularEmbed(question, string.Join("\n", answersToDisplay), message.Author);
         var reactionEmotes = reactions.Select(e => new Emoji(e)).ToList();
 
-        return (pollEmbed, reactionEmotes);
+        return new PollEmbed(pollEmbed, reactionEmotes);
     }
 
     private static string RemoveTriggerFromMessage(string message, string trigger)

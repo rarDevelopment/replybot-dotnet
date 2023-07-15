@@ -3,7 +3,8 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
-using Replybot.Commands;
+using Replybot.ReactionCommands;
+using Replybot.TextCommands;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
@@ -11,8 +12,8 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
-    private readonly IEnumerable<IReplyCommand> _commands;
-    private readonly IEnumerable<IReactCommand> _reactCommands;
+    private readonly IEnumerable<ITextCommand> _commands;
+    private readonly IEnumerable<IReactionCommand> _reactionCommands;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
     private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
@@ -21,8 +22,8 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         KeywordHandler keywordHandler,
-        IEnumerable<IReplyCommand> commands,
-        IEnumerable<IReactCommand> reactCommands,
+        IEnumerable<ITextCommand> commands,
+        IEnumerable<IReactionCommand> reactionCommands,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,
@@ -32,7 +33,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _keywordHandler = keywordHandler;
         _commands = commands;
-        _reactCommands = reactCommands;
+        _reactionCommands = reactionCommands;
         _versionSettings = versionSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
@@ -59,14 +60,14 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var config = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
             if (config != null)
             {
-                foreach (var reactCommand in _reactCommands)
+                foreach (var reactionCommand in _reactionCommands)
                 {
-                    if (!reactCommand.CanHandle(notification.Message.Content, config))
+                    if (!reactionCommand.CanHandle(notification.Message.Content, config))
                     {
                         continue;
                     }
 
-                    var reactionEmotes = await reactCommand.HandleReact(notification.Message);
+                    var reactionEmotes = await reactionCommand.HandleReaction(notification.Message);
                     foreach (var emote in reactionEmotes)
                     {
                         await message.AddReactionAsync(emote);
@@ -143,7 +144,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         return Task.CompletedTask;
     }
 
-    private static async Task<CommandResponse> HandleCommandForMessage(IReplyCommand command, SocketMessage message,
+    private static async Task<CommandResponse> HandleCommandForMessage(ITextCommand command, SocketMessage message,
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
         var messageToSend = await command.Handle(message);

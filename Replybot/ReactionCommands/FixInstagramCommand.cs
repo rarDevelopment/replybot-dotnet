@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using Replybot.Models;
 
-namespace Replybot.Commands;
+namespace Replybot.ReactionCommands;
 
-public class FixInstagramCommand : IReactCommand
+public class FixInstagramCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
     private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
@@ -21,7 +21,7 @@ public class FixInstagramCommand : IReactCommand
                (DoesMessageContainInstagramUrl(message) || DoesMessageContainDdInstagramUrl(message));
     }
 
-    public Task<List<Emote>> HandleReact(SocketMessage message)
+    public Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
@@ -82,12 +82,12 @@ public class FixInstagramCommand : IReactCommand
         return $"{authorMentionMessage}{string.Join("\n", fixedInstagramUrls)}";
     }
 
-    public bool DoesMessageContainInstagramUrl(string message)
+    private bool DoesMessageContainInstagramUrl(string message)
     {
         return _instagramUrlRegex.IsMatch(message);
     }
 
-    public bool DoesMessageContainDdInstagramUrl(string message)
+    private bool DoesMessageContainDdInstagramUrl(string message)
     {
         return _ddInstagramUrlRegex.IsMatch(message);
     }

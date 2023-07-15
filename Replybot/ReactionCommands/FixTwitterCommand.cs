@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using Replybot.Models;
 
-namespace Replybot.Commands;
+namespace Replybot.ReactionCommands;
 
-public class FixTwitterCommand : IReactCommand
+public class FixTwitterCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";
@@ -21,7 +21,7 @@ public class FixTwitterCommand : IReactCommand
                (DoesMessageContainTwitterUrl(message) || DoesMessageContainFxTwitterUrl(message));
     }
 
-    public Task<List<Emote>> HandleReact(SocketMessage message)
+    public Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
@@ -82,12 +82,12 @@ public class FixTwitterCommand : IReactCommand
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
-    public bool DoesMessageContainTwitterUrl(string message)
+    private bool DoesMessageContainTwitterUrl(string message)
     {
         return _twitterUrlRegex.IsMatch(message);
     }
 
-    public bool DoesMessageContainFxTwitterUrl(string message)
+    private bool DoesMessageContainFxTwitterUrl(string message)
     {
         return _fxTwitterUrlRegex.IsMatch(message);
     }

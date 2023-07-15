@@ -4,9 +4,9 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 
-namespace Replybot.Commands;
+namespace Replybot.TextCommands;
 
-public class GetFortniteShopInformationCommand : IReplyCommand
+public class GetFortniteShopInformationCommand : ITextCommand
 {
     private readonly FortniteApi _fortniteApi;
     private readonly DiscordSettings _discordSettings;

@@ -1,21 +1,22 @@
 ﻿using MediatR;
 using Replybot.BusinessLayer;
-using Replybot.Commands;
+using Replybot.Models;
 using Replybot.Notifications;
+using Replybot.ReactionCommands;
 
 namespace Replybot.NotificationHandlers;
 
 public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAddedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _configurationBusinessLayer;
-    private readonly IEnumerable<IReactCommand> _reactCommands;
+    private readonly IEnumerable<IReactionCommand> _reactionCommands;
 
     public ReactionAddedNotificationHandler(
         IGuildConfigurationBusinessLayer configurationBusinessLayer,
-        IEnumerable<IReactCommand> reactCommands)
+        IEnumerable<IReactionCommand> reactionCommands)
     {
         _configurationBusinessLayer = configurationBusinessLayer;
-        _reactCommands = reactCommands;
+        _reactionCommands = reactionCommands;
     }
 
     public Task Handle(ReactionAddedNotification notification, CancellationToken cancellationToken)
@@ -26,12 +27,9 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
             var user = reaction.User.GetValueOrDefault();
             var message = await notification.Message.GetOrDownloadAsync();
 
-            if (user is IGuildUser { IsBot: true })
-            {
-                return Task.CompletedTask;
-            }
-
-            if (message == null || notification.Reaction.Channel is not IGuildChannel guildChannel)
+            if (user is IGuildUser { IsBot: true } ||
+                message == null ||
+                notification.Reaction.Channel is not IGuildChannel guildChannel)
             {
                 return Task.CompletedTask;
             }
@@ -42,36 +40,44 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                 return Task.CompletedTask;
             }
 
-            foreach (var reactCommand in _reactCommands)
+            foreach (var reactionCommand in _reactionCommands)
             {
-                ReactionMetadata? fixReaction = null;
-                if (reactCommand.IsReacting(reaction.Emote, config))
-                {
-                    fixReaction = message.Reactions.FirstOrDefault(r => reactCommand.IsReacting(r.Key, config)).Value;
-                }
-
-                if (fixReaction == null || fixReaction.Value.ReactionCount > 2)
-                {
-                    continue;
-                }
-
-                var messagesToSend = await reactCommand.HandleMessage(message);
-                foreach (var messageToSend in messagesToSend)
-                {
-                    if (messageToSend.FileAttachments.Any())
-                    {
-                        await message.Channel.SendFilesAsync(messageToSend.FileAttachments, messageToSend.Description,
-                            messageReference: new MessageReference(message.Id, failIfNotExists: false));
-                    }
-                    else
-                    {
-                        await message.ReplyAsync(messageToSend.Description);
-                    }
-                }
+                await ProcessReactions(reactionCommand, reaction, config, message);
             }
 
             return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
+    }
+
+    private static async Task ProcessReactions(IReactionCommand reactCommand,
+        IReaction reaction,
+        GuildConfiguration config,
+        IUserMessage message)
+    {
+        ReactionMetadata? fixReaction = null;
+        if (reactCommand.IsReacting(reaction.Emote, config))
+        {
+            fixReaction = message.Reactions.FirstOrDefault(r => reactCommand.IsReacting(r.Key, config)).Value;
+        }
+
+        if (fixReaction == null || fixReaction.Value.ReactionCount > 2)
+        {
+            return;
+        }
+
+        var messagesToSend = await reactCommand.HandleMessage(message);
+        foreach (var messageToSend in messagesToSend)
+        {
+            if (messageToSend.FileAttachments.Any())
+            {
+                await message.Channel.SendFilesAsync(messageToSend.FileAttachments, messageToSend.Description,
+                    messageReference: new MessageReference(message.Id, failIfNotExists: false));
+            }
+            else
+            {
+                await message.ReplyAsync(messageToSend.Description);
+            }
+        }
     }
 }
