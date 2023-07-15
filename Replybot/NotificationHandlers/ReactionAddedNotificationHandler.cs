@@ -24,10 +24,10 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
         _ = Task.Run(async () =>
         {
             var reaction = notification.Reaction;
-            var user = reaction.User.GetValueOrDefault();
+            var reactingUser = reaction.User.GetValueOrDefault();
             var message = await notification.Message.GetOrDownloadAsync();
 
-            if (user is IGuildUser { IsBot: true } ||
+            if (reactingUser is IGuildUser { IsBot: true } ||
                 message == null ||
                 notification.Reaction.Channel is not IGuildChannel guildChannel)
             {
@@ -42,7 +42,7 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
 
             foreach (var reactionCommand in _reactionCommands)
             {
-                await ProcessReactions(reactionCommand, reaction, config, message);
+                await ProcessReactions(reactionCommand, reaction, config, message, reactingUser);
             }
 
             return Task.CompletedTask;
@@ -53,7 +53,8 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
     private static async Task ProcessReactions(IReactionCommand reactCommand,
         IReaction reaction,
         GuildConfiguration config,
-        IUserMessage message)
+        IUserMessage message,
+        IUser reactingUser)
     {
         ReactionMetadata? fixReaction = null;
         if (reactCommand.IsReacting(reaction.Emote, config))
@@ -66,7 +67,7 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
             return;
         }
 
-        var messagesToSend = await reactCommand.HandleMessage(message);
+        var messagesToSend = await reactCommand.HandleMessage(message, reactingUser);
         foreach (var messageToSend in messagesToSend)
         {
             if (messageToSend.FileAttachments.Any())
