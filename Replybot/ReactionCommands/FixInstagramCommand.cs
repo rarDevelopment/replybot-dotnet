@@ -35,16 +35,16 @@ public class FixInstagramCommand : IReactionCommand
         return guildConfiguration.EnableFixInstagramReactions && Equals(reactionEmote, GetFixInstagramEmote());
     }
 
-    public Task<List<CommandResponse>> HandleMessage(IUserMessage message)
+    public Task<List<CommandResponse>> HandleMessage(IUserMessage message, IUser reactingUser)
     {
         string? fixedMessage;
         if (DoesMessageContainInstagramUrl(message.Content))
         {
-            fixedMessage = BuildFixedInstagramMessage(message, message.Author, message.Author);
+            fixedMessage = BuildFixedInstagramMessage(message, reactingUser, message.Author);
         }
         else if (DoesMessageContainDdInstagramUrl(message.Content))
         {
-            fixedMessage = BuildOriginalInstagramMessage(message, message.Author, message.Author);
+            fixedMessage = BuildOriginalInstagramMessage(message, reactingUser, message.Author);
         }
         else
         {

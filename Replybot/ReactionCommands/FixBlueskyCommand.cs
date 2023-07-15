@@ -2,7 +2,6 @@
 using Replybot.Models;
 using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
-using Replybot.TextCommands;
 
 namespace Replybot.ReactionCommands;
 
@@ -39,7 +38,7 @@ public class FixBlueskyCommand : IReactionCommand
         return guildConfiguration.EnableFixBlueskyReactions && Equals(reactionEmote, GetFixBlueskyEmote());
     }
 
-    public async Task<List<CommandResponse>> HandleMessage(IUserMessage message)
+    public async Task<List<CommandResponse>> HandleMessage(IUserMessage message, IUser reactingUser)
     {
         if (!DoesMessageContainBlueskyUrl(message.Content))
         {
@@ -59,13 +58,13 @@ public class FixBlueskyCommand : IReactionCommand
             return new List<CommandResponse>();
         }
 
-        var commandResponses = blueskyMessages.Select(BuildCommandResponse).ToList();
+        var commandResponses = blueskyMessages.Select(blueskyMessage => BuildCommandResponse(blueskyMessage, reactingUser)).ToList();
 
         return commandResponses;
 
     }
 
-    private static CommandResponse BuildCommandResponse(BlueskyMessage blueskyMessage)
+    private static CommandResponse BuildCommandResponse(BlueskyMessage blueskyMessage, IUser reactingUser)
     {
         var fileAttachments = new List<FileAttachment>();
         var fileDate = DateTime.Now.ToShortDateString();
@@ -75,7 +74,7 @@ public class FixBlueskyCommand : IReactionCommand
         }
 
         var description =
-            $"Here's the content of that Bluesky post:\n>>> ### {blueskyMessage.Title}\n {blueskyMessage.Description}";
+            $"{reactingUser.Mention} Here's the Bluesky post content you requested:\n>>> ### {blueskyMessage.Title}\n {blueskyMessage.Description}";
         return new CommandResponse
         {
             Description = description,

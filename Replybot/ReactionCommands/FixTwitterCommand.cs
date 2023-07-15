@@ -35,16 +35,16 @@ public class FixTwitterCommand : IReactionCommand
         return guildConfiguration.EnableFixTweetReactions && Equals(reactionEmote, GetFixTwitterEmote());
     }
 
-    public Task<List<CommandResponse>> HandleMessage(IUserMessage message)
+    public Task<List<CommandResponse>> HandleMessage(IUserMessage message, IUser reactingUser)
     {
         string? fixedMessage;
         if (DoesMessageContainTwitterUrl(message.Content))
         {
-            fixedMessage = BuildFixedTweetsMessage(message, message.Author, message.Author);
+            fixedMessage = BuildFixedTweetsMessage(message, reactingUser, message.Author);
         }
         else if (DoesMessageContainFxTwitterUrl(message.Content))
         {
-            fixedMessage = BuildOriginalTweetsMessage(message, message.Author, message.Author);
+            fixedMessage = BuildOriginalTweetsMessage(message, reactingUser, message.Author);
         }
         else
         {
