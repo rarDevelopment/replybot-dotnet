@@ -59,7 +59,6 @@ public class DefineWordCommand : ITextCommand
 
         try
         {
-
             var definition = await _freeDictionaryApi.GetDefinition(splitWords[0]);
             if (definition == null)
             {
