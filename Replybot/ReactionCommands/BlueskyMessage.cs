@@ -1,6 +1,6 @@
 ﻿using Replybot.Models.Bluesky;
 
-namespace Replybot.TextCommands;
+namespace Replybot.ReactionCommands;
 
 public class BlueskyMessage
 {
