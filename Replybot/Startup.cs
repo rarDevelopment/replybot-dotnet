@@ -18,6 +18,7 @@ using Replybot.NotificationHandlers;
 using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands;
+using Replybot.TextCommands.Models;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();

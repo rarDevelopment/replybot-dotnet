@@ -4,7 +4,7 @@ using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
 using Replybot.ReactionCommands;
-using Replybot.TextCommands;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
@@ -57,6 +57,28 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 await HandleDiscordMessageLink(guildChannel, notification.Message);
             }
 
+            IGuild? guild = guildChannel?.Guild;
+            var guildUsers = guild != null ? await guild.GetUsersAsync() : null;
+
+            foreach (var command in _textCommands)
+            {
+                var replyCriteria = new TextCommandReplyCriteria(notification.Message.Content)
+                {
+                    IsBotNameMentioned = IsBotMentioned(message, guildUsers)
+                };
+
+                if (!command.CanHandle(replyCriteria))
+                {
+                    continue;
+                }
+
+                var messageToSend = await HandleCommandForMessage(command, message, message.Channel, new MessageReference(message.Id));
+                if (messageToSend.StopProcessing)
+                {
+                    return Task.CompletedTask;
+                }
+            }
+
             var config = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
             if (config != null)
             {
@@ -85,8 +107,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var isBotMentioned = await IsBotMentioned(message, guildChannel);
-            if (replyDefinition.RequiresBotName && !isBotMentioned)
+            if (replyDefinition.RequiresBotName && !IsBotMentioned(message, guildUsers))
             {
                 return Task.CompletedTask;
             }
@@ -95,20 +116,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
-
-            foreach (var command in _textCommands)
-            {
-                if (!command.CanHandle(new TextCommandReplyCriteria { MessageText = reply }))
-                {
-                    continue;
-                }
-
-                var messageToSend = await HandleCommandForMessage(command, message, message.Channel, messageReference);
-                if (messageToSend.StopProcessing)
-                {
-                    return Task.CompletedTask;
-                }
-            }
 
             //this handles skipping if the above features haven't triggered and if the default reply isn't a special feature otherwise (manually specified)
             var defaultRepliesEnabled = config?.EnableDefaultReplies ?? true;
@@ -249,16 +256,19 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
     }
 
-    private async Task<bool> IsBotMentioned(SocketMessage message, IGuildChannel? channel)
+    private bool IsBotMentioned(SocketMessage message, IReadOnlyCollection<IGuildUser>? guildUsers)
     {
         var isBotMentioned = false;
 
-        var botUserInGuild = (message.Author as SocketGuildUser)?.Guild.CurrentUser;
         var isDm = message.Channel is SocketDMChannel;
 
-        if (botUserInGuild != null)
+        if (guildUsers != null)
         {
-            isBotMentioned = await _replyBusinessLayer.IsBotNameMentioned(message, channel?.Guild, botUserInGuild.Id);
+            var botUserInGuild = (message.Author as SocketGuildUser)?.Guild.CurrentUser;
+            if (botUserInGuild != null)
+            {
+                isBotMentioned = _replyBusinessLayer.IsBotNameMentioned(message, botUserInGuild.Id, guildUsers);
+            }
         }
         else if (isDm)
         {

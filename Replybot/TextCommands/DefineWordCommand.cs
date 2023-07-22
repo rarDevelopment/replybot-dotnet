@@ -2,23 +2,27 @@
 using Replybot.BusinessLayer;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
 public class DefineWordCommand : ITextCommand
 {
     private readonly FreeDictionaryApi _freeDictionaryApi;
+    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private readonly string[] _triggers = { "define" };
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
+        IReplyBusinessLayer replyBusinessLayer,
         KeywordHandler keywordHandler,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _freeDictionaryApi = freeDictionaryApi;
+        _replyBusinessLayer = replyBusinessLayer;
         _keywordHandler = keywordHandler;
         _discordFormatter = discordFormatter;
         _logger = logger;
@@ -26,7 +30,7 @@ public class DefineWordCommand : ITextCommand
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return replyCriteria.MessageText == _keywordHandler.BuildKeyword("DefineWord");
+        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)

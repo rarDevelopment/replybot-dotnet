@@ -56,7 +56,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
             (r.UserIds == null || !r.UserIds.Any() || r.UserIds.Contains(userId)));
     }
 
-    private bool GetWordMatch(string triggerTerm, string input)
+    public bool GetWordMatch(string triggerTerm, string input)
     {
         if (triggerTerm == _keywordHandler.BuildKeyword(TriggerKeyword.Anything))
         {
@@ -70,13 +70,13 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
         return regex.IsMatch(input.ToLower());
     }
 
-    public async Task<bool> IsBotNameMentioned(SocketMessage message, IGuild? guild, ulong botUserId)
+    public bool IsBotNameMentioned(SocketMessage message, ulong botUserId, IReadOnlyCollection<IGuildUser>? guildUsers)
     {
-        if (guild == null)
+        if (guildUsers == null)
         {
             return true; // if not in a guild, this should be a DM directly to the bot, so return true
         }
-        var guildUsers = await guild.GetUsersAsync();
+
         var botUser = guildUsers.First(x => x.Id == botUserId);
         var botNickname = botUser.Nickname;
         var botNameInMessage = _keywordHandler.GetBotNameInMessage(message.Content, botNickname);

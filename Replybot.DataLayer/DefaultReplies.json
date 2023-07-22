@@ -1,13 +1,6 @@
 {
   "defaultReplies": [
     {
-      "triggers": [ "poll" ],
-      "replies": [ "{{POLL}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "{{BOTNAME}} secretly say", "{{BOTNAME}} silently say" ],
       "replies": [ "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}" ],
       "requiresBotName": true,
@@ -124,27 +117,6 @@
       "mentionAuthor": true,
       "requiresBotName": true,
       "reactions": [ "🎬" ],
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "hltb" ],
-      "replies": [ "{{HOWLONGTOBEAT}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "define" ],
-      "replies": [ "{{DEFINEWORD}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "fortnite shop" ],
-      "replies": [ "{{FORTNITESHOPINFO}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
       "isSpecialFeature": true
     },
     {
