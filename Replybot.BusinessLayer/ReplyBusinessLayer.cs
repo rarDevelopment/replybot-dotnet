@@ -80,4 +80,16 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
         var botNameInMessage = KeywordHandler.GetBotNameInMessage(message.Content, botNickname);
         return message.MentionedUsers.Any(u => u.Id == botUserId) || !string.IsNullOrEmpty(botNameInMessage);
     }
+
+    public string? ChooseReply(string[]? replies)
+    {
+        if (replies == null || !replies.Any())
+        {
+            return null;
+        }
+
+        var random = new Random();
+        var randomNumber = random.Next(replies.Length);
+        return replies[randomNumber];
+    }
 }

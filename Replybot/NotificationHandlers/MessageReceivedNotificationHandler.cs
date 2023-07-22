@@ -109,7 +109,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var reply = ChooseReply(replyDefinition, message.Author);
+            var reply = _replyBusinessLayer.ChooseReply(replyDefinition.Replies);
 
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
@@ -299,17 +299,5 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
 
         return wasDeleted;
-    }
-
-    private static string? ChooseReply(GuildReplyDefinition guildReplyDefinition, SocketUser author)
-    {
-        if (guildReplyDefinition.Replies == null || !guildReplyDefinition.Replies.Any())
-        {
-            return null;
-        }
-
-        var random = new Random();
-        var randomNumber = random.Next(guildReplyDefinition.Replies.Length);
-        return guildReplyDefinition.Replies[randomNumber];
     }
 }

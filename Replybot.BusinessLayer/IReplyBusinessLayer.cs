@@ -9,4 +9,5 @@ public interface IReplyBusinessLayer
     Task<GuildReplyDefinition?> GetReplyDefinition(string message, string? guildId, string? channelId = null, string? userId = null);
     bool IsBotNameMentioned(SocketMessage message, ulong botUserId, IReadOnlyCollection<IGuildUser> guildUsers);
     bool GetWordMatch(string triggerTerm, string input);
+    string? ChooseReply(string[]? replies);
 }

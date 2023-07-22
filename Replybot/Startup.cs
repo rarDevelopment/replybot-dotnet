@@ -108,6 +108,8 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, GetGuildBannerCommand>();
     services.AddSingleton<ITextCommand, GetAvatarCommand>();
     services.AddSingleton<ITextCommand, GetGuildIconCommand>();
+    services.AddSingleton<ITextCommand, YesOrNoCommand>();
+    services.AddSingleton<ITextCommand, FlipACoinCommand>();
 
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();
     services.AddSingleton<IReactionCommand, FixInstagramCommand>();
