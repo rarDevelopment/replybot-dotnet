@@ -34,7 +34,7 @@ public class SearchCommand : ITextCommand
     {
         var searchToUse = GetSearchToUse(message.Content);
 
-        var messageEncodedWithoutTriggers = message.Content.RemoveTriggersFromMessage(searchToUse.Triggers.ToArray());
+        var messageEncodedWithoutTriggers = message.Content.RemoveTriggersFromMessage(searchToUse.Triggers.ToArray()).UrlEncode();
 
         return Task.FromResult(new CommandResponse
         {

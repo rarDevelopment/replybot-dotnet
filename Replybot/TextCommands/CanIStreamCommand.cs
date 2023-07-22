@@ -49,7 +49,7 @@ public class CanIStreamCommand : ITextCommand
 
     private Embed GetStreamLinksEmbed(SocketMessage message)
     {
-        var messageEncodedWithoutTriggers = message.Content.RemoveTriggersFromMessage(_triggers);
+        var messageEncodedWithoutTriggers = message.Content.RemoveTriggersFromMessage(_triggers).UrlEncode();
 
         var embedFieldBuilders = _streamLinkMappings.Select(streamLinkUrlMap => new EmbedFieldBuilder
         {

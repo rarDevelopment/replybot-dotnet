@@ -36,6 +36,11 @@ public static class KeywordHandler
             .Replace(BuildKeyword(TriggerKeyword.DeleteMessage), "");
     }
 
+    public static string UrlEncode(this string text)
+    {
+        return HttpUtility.UrlPathEncode(text);
+    }
+
     public static string RemoveTriggersFromMessage(this string messageContent, string[] triggersToRemove)
     {
         var messageWithoutTrigger = messageContent;

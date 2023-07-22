@@ -22,7 +22,7 @@ public class SongLinkCommand : ITextCommand
 
     public Task<CommandResponse> Handle(SocketMessage message)
     {
-        var messageEncodedWithoutTriggers = message.Content.RemoveTriggersFromMessage(_triggers);
+        var messageEncodedWithoutTriggers = message.Content.RemoveTriggersFromMessage(_triggers).UrlEncode();
 
         return Task.FromResult(new CommandResponse
         {
