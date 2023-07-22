@@ -14,6 +14,7 @@ public enum TriggerKeyword
     MessageEncodedWithoutTrigger,
     MessageWithoutTrigger,
     MentionedUserAvatar,
+    MentionedUserServerAvatar,
     ServerIcon,
     ServerBanner,
     MemberCount,

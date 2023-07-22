@@ -12,7 +12,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
     private readonly KeywordHandler _keywordHandler;
-    private readonly IEnumerable<ITextCommand> _commands;
+    private readonly IEnumerable<ITextCommand> _textCommands;
     private readonly IEnumerable<IReactionCommand> _reactionCommands;
     private readonly VersionSettings _versionSettings;
     private readonly DiscordSocketClient _client;
@@ -22,7 +22,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         KeywordHandler keywordHandler,
-        IEnumerable<ITextCommand> commands,
+        IEnumerable<ITextCommand> textCommands,
         IEnumerable<IReactionCommand> reactionCommands,
         VersionSettings versionSettings,
         DiscordSocketClient client,
@@ -32,7 +32,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _replyBusinessLayer = replyBusinessLayer;
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
         _keywordHandler = keywordHandler;
-        _commands = commands;
+        _textCommands = textCommands;
         _reactionCommands = reactionCommands;
         _versionSettings = versionSettings;
         _client = client;
@@ -96,7 +96,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
-            foreach (var command in _commands)
+            foreach (var command in _textCommands)
             {
                 if (!command.CanHandle(reply))
                 {

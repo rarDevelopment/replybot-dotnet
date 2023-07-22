@@ -38,7 +38,9 @@ public class KeywordHandler
             .Replace(BuildKeyword(TriggerKeyword.MessageUpperCase),
                 messageContent.ToUpper())
             .Replace(BuildKeyword(TriggerKeyword.MentionedUserAvatar),
-                GetAvatarsFromUsersAsString(mentionedUsers))
+                GetUserAvatarsAsString(mentionedUsers))
+            .Replace(BuildKeyword(TriggerKeyword.MentionedUserServerAvatar),
+                GetUserServerAvatarsAsString(mentionedUsers))
             .Replace(BuildKeyword(TriggerKeyword.ServerIcon),
                 GetGuildIcon(guild))
             .Replace(BuildKeyword(TriggerKeyword.ServerBanner),
@@ -144,9 +146,15 @@ public class KeywordHandler
         return string.IsNullOrEmpty(guild?.IconUrl) ? "No icon." : guild.IconUrl;
     }
 
-    private string? GetAvatarsFromUsersAsString(IReadOnlyList<SocketUser> mentionedUsers)
+    private string GetUserAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
     {
         var avatarUrls = mentionedUsers.Select(u => u.GetAvatarUrl(ImageFormat.Png));
+        return string.Join("\n", avatarUrls);
+    }
+
+    private string GetUserServerAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
+    {
+        var avatarUrls = mentionedUsers.Select(u => (u as IGuildUser)?.GetDisplayAvatarUrl() ?? u.GetAvatarUrl(ImageFormat.Png));
         return string.Join("\n", avatarUrls);
     }
 
