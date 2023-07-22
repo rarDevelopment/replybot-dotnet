@@ -11,7 +11,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 {
     private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly KeywordHandler _keywordHandler;
     private readonly IEnumerable<ITextCommand> _textCommands;
     private readonly IEnumerable<IReactionCommand> _reactionCommands;
     private readonly VersionSettings _versionSettings;
@@ -21,7 +20,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
-        KeywordHandler keywordHandler,
         IEnumerable<ITextCommand> textCommands,
         IEnumerable<IReactionCommand> reactionCommands,
         VersionSettings versionSettings,
@@ -31,7 +29,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     {
         _replyBusinessLayer = replyBusinessLayer;
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _keywordHandler = keywordHandler;
         _textCommands = textCommands;
         _reactionCommands = reactionCommands;
         _versionSettings = versionSettings;
@@ -72,8 +69,8 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                     continue;
                 }
 
-                var messageToSend = await HandleCommandForMessage(command, message, message.Channel, new MessageReference(message.Id));
-                if (messageToSend.StopProcessing)
+                var commandResponse = await HandleCommandForMessage(command, message, message.Channel, new MessageReference(message.Id));
+                if (commandResponse.StopProcessing)
                 {
                     return Task.CompletedTask;
                 }
@@ -131,7 +128,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var messageText = _keywordHandler.ReplaceKeywords(reply,
+            var messageText = KeywordHandler.ReplaceKeywords(reply,
                 message.Author.Username,
                 message.Author.Id,
                 _versionSettings.VersionNumber,
@@ -154,20 +151,21 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private static async Task<CommandResponse> HandleCommandForMessage(ITextCommand command, SocketMessage message,
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
-        var messageToSend = await command.Handle(message);
-        if (messageToSend.Embed == null)
+        var commandResponse = await command.Handle(message);
+        if (commandResponse.Embed == null && string.IsNullOrEmpty(commandResponse.Description))
         {
-            return messageToSend;
+            return commandResponse;
         }
 
-        var messageSent = await messageChannel.SendMessageAsync(embed: messageToSend.Embed,
+        var messageSent = await messageChannel.SendMessageAsync(text: commandResponse.Description,
+            embed: commandResponse.Embed,
             messageReference: messageReference);
-        if (messageSent != null && messageToSend.Reactions != null)
+        if (messageSent != null && commandResponse.Reactions != null)
         {
-            await messageSent.AddReactionsAsync(messageToSend.Reactions);
+            await messageSent.AddReactionsAsync(commandResponse.Reactions);
         }
 
-        return messageToSend;
+        return commandResponse;
     }
 
     private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)
@@ -286,7 +284,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
 
         var wasDeleted = false;
-        if (!reply.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
+        if (!reply.Contains(KeywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
         {
             return wasDeleted;
         }

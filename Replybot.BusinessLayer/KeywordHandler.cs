@@ -7,23 +7,23 @@ using Replybot.Models;
 
 namespace Replybot.BusinessLayer;
 
-public class KeywordHandler
+public static class KeywordHandler
 {
-    public string EscapeRegExp(string text)
+    public static string EscapeRegExp(string text)
     {
         var regex = new Regex("[.*+?^${}()|[\\]\\\\]");
         var escapedText = regex.Replace(text, "\\$&");
         return escapedText;
     }
 
-    public string ReplaceKeywords(string replyText,
+    public static string ReplaceKeywords(string replyText,
         string username,
         ulong userId,
         string? versionNumber,
         string messageContent,
         GuildReplyDefinition guildReplyDefinition,
         IReadOnlyList<SocketUser> mentionedUsers,
-        IGuild? guild, SocketGuildChannel? socketGuildChannel)
+        IGuild? guild)
     {
         var userTag = BuildUserTag(userId);
         var messageWithoutReplybot = RemoveBotName(messageContent);
@@ -45,25 +45,34 @@ public class KeywordHandler
                 GetGuildIcon(guild))
             .Replace(BuildKeyword(TriggerKeyword.ServerBanner),
                 GetGuildBanner(guild))
-            //.Replace(BuildKeyword(TriggerKeyword.MemberCount),
-            //    GetGuildMemberCount(guild)?.ToString())
-            //.Replace(BuildKeyword(TriggerKeyword.ChannelCreateDate), GetChannelAgeString(socketGuildChannel))
             .Replace(BuildKeyword(TriggerKeyword.DeleteMessage), "");
     }
 
-    private static string GetChannelAgeString(SocketGuildChannel? socketGuildChannel)
+    public static string RemoveTriggersFromMessage(this string messageContent, string[] triggersToRemove)
     {
-        if (socketGuildChannel == null)
+        var messageWithoutTrigger = messageContent;
+        foreach (var triggerToUse in triggersToRemove)
         {
-            return "...this is not a channel.";
+            var triggerWithReplacedKeywords = triggerToUse;
+            var botNameInTrigger = GetBotNameInMessage(messageWithoutTrigger);
+            if (!string.IsNullOrEmpty(botNameInTrigger))
+            {
+                triggerWithReplacedKeywords =
+                    triggerToUse.Replace(BuildKeyword(TriggerKeyword.BotName), botNameInTrigger);
+            }
+
+            var indexOfTrigger = messageWithoutTrigger.ToLower().IndexOf(triggerWithReplacedKeywords.ToLower(), StringComparison.InvariantCultureIgnoreCase);
+            if (indexOfTrigger != -1)
+            {
+                messageWithoutTrigger = messageWithoutTrigger
+                    .Substring(indexOfTrigger + triggerWithReplacedKeywords.Length).Trim();
+            }
         }
 
-        var createdAtDate = socketGuildChannel.CreatedAt;
-        var timeAgo = DateTime.UtcNow - createdAtDate;
-        return $"{createdAtDate} ({timeAgo:d'd 'h'h 'm'm 's's'} ago)";
+        return messageWithoutTrigger;
     }
 
-    private string RemoveTriggerFromMessage(string messageContent, GuildReplyDefinition guildReplyDefinitions)
+    private static string RemoveTriggerFromMessage(string messageContent, GuildReplyDefinition guildReplyDefinitions)
     {
         var messageWithoutTrigger = messageContent;
         foreach (var triggerToUse in guildReplyDefinitions.Triggers)
@@ -87,7 +96,7 @@ public class KeywordHandler
         return messageWithoutTrigger;
     }
 
-    public string? GetBotNameInMessage(string messageContent, string? botNickname = null)
+    public static string? GetBotNameInMessage(string messageContent, string? botNickname = null)
     {
         string? botNameFound = null;
         var namesToCheck = BotNames.Names.ToList();
@@ -114,7 +123,7 @@ public class KeywordHandler
         return botNameFound;
     }
 
-    public string RemoveBotName(string messageContent)
+    public static string RemoveBotName(string messageContent)
     {
         var messageWithoutBotName = messageContent;
         foreach (var botName in BotNames.Names)
@@ -126,39 +135,34 @@ public class KeywordHandler
         return messageWithoutBotName;
     }
 
-    private string BuildUserTag(ulong userId)
+    private static string BuildUserTag(ulong userId)
     {
         return $"<@!{userId}>";
     }
 
-    private int? GetGuildMemberCount(IGuild? guild)
-    {
-        return guild?.ApproximateMemberCount;
-    }
-
-    private string? GetGuildBanner(IGuild? guild)
+    private static string? GetGuildBanner(IGuild? guild)
     {
         return string.IsNullOrEmpty(guild?.BannerUrl) ? "No banner." : guild.BannerUrl;
     }
 
-    private string? GetGuildIcon(IGuild? guild)
+    private static string? GetGuildIcon(IGuild? guild)
     {
         return string.IsNullOrEmpty(guild?.IconUrl) ? "No icon." : guild.IconUrl;
     }
 
-    private string GetUserAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
+    private static string GetUserAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
     {
         var avatarUrls = mentionedUsers.Select(u => u.GetAvatarUrl(ImageFormat.Png));
         return string.Join("\n", avatarUrls);
     }
 
-    private string GetUserServerAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
+    private static string GetUserServerAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
     {
         var avatarUrls = mentionedUsers.Select(u => (u as IGuildUser)?.GetDisplayAvatarUrl() ?? u.GetAvatarUrl(ImageFormat.Png));
         return string.Join("\n", avatarUrls);
     }
 
-    private string Spongebobify(string text) // sponch
+    private static string Spongebobify(string text) // sponch
     {
         var splitWords = text.Split(" ");
         var spongebobifiedWords = new List<string>();
@@ -189,7 +193,7 @@ public class KeywordHandler
         return newWord;
     }
 
-    public string CleanMessageForTrigger(string message)
+    public static string CleanMessageForTrigger(string message)
     {
         string cleanedMessage = message.Replace(BuildKeyword(TriggerKeyword.BotName), "", StringComparison.InvariantCultureIgnoreCase);
         foreach (var botName in BotNames.Names)
@@ -200,12 +204,12 @@ public class KeywordHandler
         return cleanedMessage;
     }
 
-    public string BuildKeyword(TriggerKeyword keyword)
+    public static string BuildKeyword(TriggerKeyword keyword)
     {
         return BuildKeyword(keyword.ToString());
     }
 
-    public string BuildKeyword(string keyword)
+    public static string BuildKeyword(string keyword)
     {
         return $"{{{{{keyword.ToUpper(CultureInfo.InvariantCulture)}}}}}";
     }

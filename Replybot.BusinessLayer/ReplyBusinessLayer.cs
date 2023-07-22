@@ -10,12 +10,10 @@ namespace Replybot.BusinessLayer;
 public class ReplyBusinessLayer : IReplyBusinessLayer
 {
     private readonly IReplyDataLayer _replyDataLayer;
-    private readonly KeywordHandler _keywordHandler;
 
-    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, KeywordHandler keywordHandler)
+    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer)
     {
         _replyDataLayer = replyDataLayer;
-        _keywordHandler = keywordHandler;
     }
 
     public async Task<GuildReplyDefinition?> GetReplyDefinition(string message,
@@ -46,7 +44,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
             return null;
         }
 
-        var cleanedMessage = _keywordHandler.CleanMessageForTrigger(message);
+        var cleanedMessage = KeywordHandler.CleanMessageForTrigger(message);
 
         var matches = replyData.Where(r =>
             r.Triggers.FirstOrDefault(triggerTerm => GetWordMatch(triggerTerm, cleanedMessage)) != null).ToList();
@@ -58,13 +56,13 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
 
     public bool GetWordMatch(string triggerTerm, string input)
     {
-        if (triggerTerm == _keywordHandler.BuildKeyword(TriggerKeyword.Anything))
+        if (triggerTerm == KeywordHandler.BuildKeyword(TriggerKeyword.Anything))
         {
             return true;
         }
 
         var trigger = triggerTerm.ToLower(CultureInfo.InvariantCulture).Trim();
-        trigger = _keywordHandler.EscapeRegExp(trigger);
+        trigger = KeywordHandler.EscapeRegExp(trigger);
         var pattern = $"(^|(?<!\\w)){trigger}(\\b|(?!\\w))";
         var regex = new Regex(pattern);
         return regex.IsMatch(input.ToLower());
@@ -79,7 +77,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
 
         var botUser = guildUsers.First(x => x.Id == botUserId);
         var botNickname = botUser.Nickname;
-        var botNameInMessage = _keywordHandler.GetBotNameInMessage(message.Content, botNickname);
+        var botNameInMessage = KeywordHandler.GetBotNameInMessage(message.Content, botNickname);
         return message.MentionedUsers.Any(u => u.Id == botUserId) || !string.IsNullOrEmpty(botNameInMessage);
     }
 }

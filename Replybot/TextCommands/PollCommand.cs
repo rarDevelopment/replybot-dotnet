@@ -8,15 +8,13 @@ namespace Replybot.TextCommands;
 public class PollCommand : ITextCommand
 {
     private readonly IReplyBusinessLayer _replyBusinessLayer;
-    private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IReadOnlyList<string> _pollOptionsAlphabet = new[] { "🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯", "🇰", "🇱", "🇲", "🇳", "🇴", "🇵", "🇶", "🇷", "🇸", "🇹" };
     private readonly string[] _triggers = { "poll" };
 
-    public PollCommand(IReplyBusinessLayer replyBusinessLayer, KeywordHandler keywordHandler, IDiscordFormatter discordFormatter)
+    public PollCommand(IReplyBusinessLayer replyBusinessLayer, IDiscordFormatter discordFormatter)
     {
         _replyBusinessLayer = replyBusinessLayer;
-        _keywordHandler = keywordHandler;
         _discordFormatter = discordFormatter;
     }
 
@@ -39,7 +37,7 @@ public class PollCommand : ITextCommand
 
     private PollEmbed BuildPollEmbed(SocketMessage message)
     {
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(message.Content);
+        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
         var messageWithoutTrigger = RemoveTriggerFromMessage(messageWithoutBotName, _triggers[0]);
 
         if (messageWithoutTrigger.Length == 0)

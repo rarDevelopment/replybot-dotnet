@@ -10,7 +10,6 @@ public class HowLongToBeatCommand : ITextCommand
 {
     private readonly HowLongToBeatSettings _howLongToBeatSettings;
     private readonly HowLongToBeatApi _howLongToBeatApi;
-    private readonly KeywordHandler _keywordHandler;
     private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
@@ -23,14 +22,12 @@ public class HowLongToBeatCommand : ITextCommand
 
     public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
         HowLongToBeatApi howLongToBeatApi,
-        KeywordHandler keywordHandler,
         IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _howLongToBeatSettings = howLongToBeatSettings;
         _howLongToBeatApi = howLongToBeatApi;
-        _keywordHandler = keywordHandler;
         _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
         _logger = logger;
@@ -55,7 +52,7 @@ public class HowLongToBeatCommand : ITextCommand
 
     private async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
     {
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(message.Content);
+        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
         var messageWithoutTrigger =
             messageWithoutBotName.Replace(_triggers[0], "", StringComparison.InvariantCultureIgnoreCase);
         var searchText = messageWithoutTrigger.Trim();

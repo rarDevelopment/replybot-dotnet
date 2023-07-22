@@ -10,20 +10,17 @@ public class DefineWordCommand : ITextCommand
 {
     private readonly FreeDictionaryApi _freeDictionaryApi;
     private readonly IReplyBusinessLayer _replyBusinessLayer;
-    private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private readonly string[] _triggers = { "define" };
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
         IReplyBusinessLayer replyBusinessLayer,
-        KeywordHandler keywordHandler,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _freeDictionaryApi = freeDictionaryApi;
         _replyBusinessLayer = replyBusinessLayer;
-        _keywordHandler = keywordHandler;
         _discordFormatter = discordFormatter;
         _logger = logger;
     }
@@ -48,7 +45,7 @@ public class DefineWordCommand : ITextCommand
     private async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
     {
         var messageContent = message.Content;
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
+        var messageWithoutBotName = KeywordHandler.RemoveBotName(messageContent);
 
         var messageWithoutTrigger = ReplaceTriggerInMessage(messageWithoutBotName);
 

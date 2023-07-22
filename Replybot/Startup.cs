@@ -89,7 +89,6 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
     services.AddSingleton<InteractionHandler>();
 
-    services.AddSingleton<KeywordHandler>();
     services.AddSingleton<SystemChannelPoster>();
     services.AddSingleton<LogChannelPoster>();
     services.AddSingleton<ExistingMessageEmbedBuilder>();
@@ -105,6 +104,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
     services.AddSingleton<ITextCommand, GetMemberCountCommand>();
     services.AddSingleton<ITextCommand, GetChannelAgeCommand>();
+    services.AddSingleton<ITextCommand, CanIStreamCommand>();
 
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();
     services.AddSingleton<IReactionCommand, FixInstagramCommand>();
