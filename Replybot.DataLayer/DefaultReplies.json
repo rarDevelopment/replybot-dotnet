@@ -98,13 +98,6 @@
       "isSpecialFeature": true
     },
     {
-      "triggers": [ "songlink", "song link" ],
-      "replies": [ "https://song.link/{{MESSAGEENCODEDWITHOUTTRIGGER}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "template test" ],
       "replies": [ "I don't think this is for you." ],
       "userReplies": [
