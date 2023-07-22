@@ -71,16 +71,6 @@
       ]
     },
     {
-      "triggers": [ "how many members", "how many people" ],
-      "replies": [
-        "Hmm, approximately {{MEMBERCOUNT}} member(s) in this Discord.",
-        "I think there's about {{MEMBERCOUNT}} member(s) in this Discord."
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "channel age", "how old is this channel" ],
       "replies": [
         "This channel was created on {{CHANNELCREATEDATE}}"
