@@ -55,9 +55,7 @@ public class HowLongToBeatCommand : ITextCommand
 
     private async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
     {
-        var messageContent = message.Content;
-
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
+        var messageWithoutBotName = _keywordHandler.RemoveBotName(message.Content);
         var messageWithoutTrigger =
             messageWithoutBotName.Replace(_triggers[0], "", StringComparison.InvariantCultureIgnoreCase);
         var searchText = messageWithoutTrigger.Trim();

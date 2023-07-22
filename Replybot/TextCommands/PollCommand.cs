@@ -39,9 +39,8 @@ public class PollCommand : ITextCommand
 
     private PollEmbed BuildPollEmbed(SocketMessage message)
     {
-        var messageContent = message.Content;
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
-        var messageWithoutTrigger = RemoveTriggerFromMessage(messageWithoutBotName, "poll");
+        var messageWithoutBotName = _keywordHandler.RemoveBotName(message.Content);
+        var messageWithoutTrigger = RemoveTriggerFromMessage(messageWithoutBotName, _triggers[0]);
 
         if (messageWithoutTrigger.Length == 0)
         {
