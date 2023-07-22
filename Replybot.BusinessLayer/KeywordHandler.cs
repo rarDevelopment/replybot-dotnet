@@ -45,9 +45,9 @@ public class KeywordHandler
                 GetGuildIcon(guild))
             .Replace(BuildKeyword(TriggerKeyword.ServerBanner),
                 GetGuildBanner(guild))
-            .Replace(BuildKeyword(TriggerKeyword.MemberCount),
-                GetGuildMemberCount(guild)?.ToString())
-            .Replace(BuildKeyword(TriggerKeyword.ChannelCreateDate), GetChannelAgeString(socketGuildChannel))
+            //.Replace(BuildKeyword(TriggerKeyword.MemberCount),
+            //    GetGuildMemberCount(guild)?.ToString())
+            //.Replace(BuildKeyword(TriggerKeyword.ChannelCreateDate), GetChannelAgeString(socketGuildChannel))
             .Replace(BuildKeyword(TriggerKeyword.DeleteMessage), "");
     }
 

@@ -104,6 +104,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, PollCommand>();
     services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
     services.AddSingleton<ITextCommand, GetMemberCountCommand>();
+    services.AddSingleton<ITextCommand, GetChannelAgeCommand>();
 
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();
     services.AddSingleton<IReactionCommand, FixInstagramCommand>();

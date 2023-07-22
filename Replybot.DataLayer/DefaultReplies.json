@@ -71,15 +71,6 @@
       ]
     },
     {
-      "triggers": [ "channel age", "how old is this channel" ],
-      "replies": [
-        "This channel was created on {{CHANNELCREATEDATE}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "yes or no", "yes/no", "yes / no", "y/n", "y/n", "y or n" ],
       "replies": [ "Yes 👍🏼", "No 👎🏼" ],
       "mentionAuthor": true,
