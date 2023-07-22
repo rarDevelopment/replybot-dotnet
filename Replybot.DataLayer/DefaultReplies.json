@@ -416,6 +416,13 @@
       "requiresBotName": true
     },
     {
+      "triggers": [ "server avatar" ],
+      "replies": [ "{{MENTIONEDUSERSERVERAVATAR}}" ],
+      "mentionAuthor": false,
+      "requiresBotName": true,
+      "isSpecialFeature": true
+    },
+    {
       "triggers": [ "avatar" ],
       "replies": [ "{{MENTIONEDUSERAVATAR}}" ],
       "mentionAuthor": false,
