@@ -1,24 +1,26 @@
 ﻿using System.Globalization;
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
 public class PollCommand : ITextCommand
 {
-    private readonly KeywordHandler _keywordHandler;
+    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IReadOnlyList<string> _pollOptionsAlphabet = new[] { "🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯", "🇰", "🇱", "🇲", "🇳", "🇴", "🇵", "🇶", "🇷", "🇸", "🇹" };
+    private readonly string[] _triggers = { "poll" };
 
-    public PollCommand(KeywordHandler keywordHandler, IDiscordFormatter discordFormatter)
+    public PollCommand(IReplyBusinessLayer replyBusinessLayer, IDiscordFormatter discordFormatter)
     {
-        _keywordHandler = keywordHandler;
+        _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
     }
 
-    public bool CanHandle(string? reply)
+    public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return reply == _keywordHandler.BuildKeyword("Poll");
+        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
     public Task<CommandResponse> Handle(SocketMessage message)
@@ -35,9 +37,8 @@ public class PollCommand : ITextCommand
 
     private PollEmbed BuildPollEmbed(SocketMessage message)
     {
-        var messageContent = message.Content;
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
-        var messageWithoutTrigger = RemoveTriggerFromMessage(messageWithoutBotName, "poll");
+        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
+        var messageWithoutTrigger = RemoveTriggerFromMessage(messageWithoutBotName, _triggers[0]);
 
         if (messageWithoutTrigger.Length == 0)
         {

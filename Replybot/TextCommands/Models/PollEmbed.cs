@@ -1,4 +1,4 @@
-﻿namespace Replybot.TextCommands;
+﻿namespace Replybot.TextCommands.Models;
 
 public class PollEmbed
 {

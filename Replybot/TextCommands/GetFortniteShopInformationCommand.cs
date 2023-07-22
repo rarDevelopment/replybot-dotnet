@@ -3,37 +3,39 @@ using Fortnite_API.Objects.V2;
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
 public class GetFortniteShopInformationCommand : ITextCommand
 {
     private readonly FortniteApi _fortniteApi;
+    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly DiscordSettings _discordSettings;
-    private readonly KeywordHandler _keywordHandler;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
 
     private const string MoreText = "\n(see shop for more)";
     private const string SectionSeparator = "\n";
+    private readonly string[] _triggers = { "fortnite shop" };
 
     public GetFortniteShopInformationCommand(
         FortniteApi fortniteApi,
+        IReplyBusinessLayer replyBusinessLayer,
         DiscordSettings discordSettings,
-        KeywordHandler keywordHandler,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _fortniteApi = fortniteApi;
+        _replyBusinessLayer = replyBusinessLayer;
         _discordSettings = discordSettings;
-        _keywordHandler = keywordHandler;
         _discordFormatter = discordFormatter;
         _logger = logger;
     }
 
-    public bool CanHandle(string? reply)
+    public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return reply == _keywordHandler.BuildKeyword("FortniteShopInfo");
+        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)

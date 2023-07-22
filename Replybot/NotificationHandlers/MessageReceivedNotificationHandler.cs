@@ -4,14 +4,13 @@ using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
 using Replybot.ReactionCommands;
-using Replybot.TextCommands;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
 {
     private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly KeywordHandler _keywordHandler;
     private readonly IEnumerable<ITextCommand> _textCommands;
     private readonly IEnumerable<IReactionCommand> _reactionCommands;
     private readonly VersionSettings _versionSettings;
@@ -21,7 +20,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
-        KeywordHandler keywordHandler,
         IEnumerable<ITextCommand> textCommands,
         IEnumerable<IReactionCommand> reactionCommands,
         VersionSettings versionSettings,
@@ -31,7 +29,6 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     {
         _replyBusinessLayer = replyBusinessLayer;
         _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _keywordHandler = keywordHandler;
         _textCommands = textCommands;
         _reactionCommands = reactionCommands;
         _versionSettings = versionSettings;
@@ -55,6 +52,28 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             if (guildChannel != null)
             {
                 await HandleDiscordMessageLink(guildChannel, notification.Message);
+            }
+
+            IGuild? guild = guildChannel?.Guild;
+            var guildUsers = guild != null ? await guild.GetUsersAsync() : null;
+
+            foreach (var command in _textCommands)
+            {
+                var replyCriteria = new TextCommandReplyCriteria(notification.Message.Content)
+                {
+                    IsBotNameMentioned = IsBotMentioned(message, guildUsers)
+                };
+
+                if (!command.CanHandle(replyCriteria))
+                {
+                    continue;
+                }
+
+                var commandResponse = await HandleCommandForMessage(command, message, message.Channel, new MessageReference(message.Id));
+                if (commandResponse.StopProcessing)
+                {
+                    return Task.CompletedTask;
+                }
             }
 
             var config = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
@@ -85,30 +104,15 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var isBotMentioned = await IsBotMentioned(message, guildChannel);
-            if (replyDefinition.RequiresBotName && !isBotMentioned)
+            if (replyDefinition.RequiresBotName && !IsBotMentioned(message, guildUsers))
             {
                 return Task.CompletedTask;
             }
 
-            var reply = ChooseReply(replyDefinition, message.Author);
+            var reply = _replyBusinessLayer.ChooseReply(replyDefinition.Replies);
 
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
-
-            foreach (var command in _textCommands)
-            {
-                if (!command.CanHandle(reply))
-                {
-                    continue;
-                }
-
-                var messageToSend = await HandleCommandForMessage(command, message, message.Channel, messageReference);
-                if (messageToSend.StopProcessing)
-                {
-                    return Task.CompletedTask;
-                }
-            }
 
             //this handles skipping if the above features haven't triggered and if the default reply isn't a special feature otherwise (manually specified)
             var defaultRepliesEnabled = config?.EnableDefaultReplies ?? true;
@@ -124,15 +128,12 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var messageText = _keywordHandler.ReplaceKeywords(reply,
+            var messageText = KeywordHandler.ReplaceKeywords(reply,
                 message.Author.Username,
                 message.Author.Id,
                 _versionSettings.VersionNumber,
                 message.Content,
-                replyDefinition,
-                message.MentionedUsers.ToList(),
-                guildChannel?.Guild,
-                guildChannel);
+                replyDefinition);
 
             await message.Channel.SendMessageAsync(
                 messageText,
@@ -147,20 +148,21 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private static async Task<CommandResponse> HandleCommandForMessage(ITextCommand command, SocketMessage message,
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
-        var messageToSend = await command.Handle(message);
-        if (messageToSend.Embed == null)
+        var commandResponse = await command.Handle(message);
+        if (commandResponse.Embed == null && string.IsNullOrEmpty(commandResponse.Description))
         {
-            return messageToSend;
+            return commandResponse;
         }
 
-        var messageSent = await messageChannel.SendMessageAsync(embed: messageToSend.Embed,
+        var messageSent = await messageChannel.SendMessageAsync(text: commandResponse.Description,
+            embed: commandResponse.Embed,
             messageReference: messageReference);
-        if (messageSent != null && messageToSend.Reactions != null)
+        if (messageSent != null && commandResponse.Reactions != null)
         {
-            await messageSent.AddReactionsAsync(messageToSend.Reactions);
+            await messageSent.AddReactionsAsync(commandResponse.Reactions);
         }
 
-        return messageToSend;
+        return commandResponse;
     }
 
     private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)
@@ -249,16 +251,19 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
     }
 
-    private async Task<bool> IsBotMentioned(SocketMessage message, IGuildChannel? channel)
+    private bool IsBotMentioned(SocketMessage message, IReadOnlyCollection<IGuildUser>? guildUsers)
     {
         var isBotMentioned = false;
 
-        var botUserInGuild = (message.Author as SocketGuildUser)?.Guild.CurrentUser;
         var isDm = message.Channel is SocketDMChannel;
 
-        if (botUserInGuild != null)
+        if (guildUsers != null)
         {
-            isBotMentioned = await _replyBusinessLayer.IsBotNameMentioned(message, channel?.Guild, botUserInGuild.Id);
+            var botUserInGuild = (message.Author as SocketGuildUser)?.Guild.CurrentUser;
+            if (botUserInGuild != null)
+            {
+                isBotMentioned = _replyBusinessLayer.IsBotNameMentioned(message, botUserInGuild.Id, guildUsers);
+            }
         }
         else if (isDm)
         {
@@ -276,7 +281,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
 
         var wasDeleted = false;
-        if (!reply.Contains(_keywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
+        if (!reply.Contains(KeywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
         {
             return wasDeleted;
         }
@@ -294,17 +299,5 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
 
         return wasDeleted;
-    }
-
-    private static string? ChooseReply(GuildReplyDefinition guildReplyDefinition, SocketUser author)
-    {
-        if (guildReplyDefinition.Replies == null || !guildReplyDefinition.Replies.Any())
-        {
-            return null;
-        }
-
-        var random = new Random();
-        var randomNumber = random.Next(guildReplyDefinition.Replies.Length);
-        return guildReplyDefinition.Replies[randomNumber];
     }
 }

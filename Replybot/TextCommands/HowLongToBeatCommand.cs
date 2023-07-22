@@ -2,6 +2,7 @@
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
@@ -9,7 +10,7 @@ public class HowLongToBeatCommand : ITextCommand
 {
     private readonly HowLongToBeatSettings _howLongToBeatSettings;
     private readonly HowLongToBeatApi _howLongToBeatApi;
-    private readonly KeywordHandler _keywordHandler;
+    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private const string UrlKeyword = "{{URL}}";
@@ -17,23 +18,24 @@ public class HowLongToBeatCommand : ITextCommand
     private const string GameIdKeyword = "{{GAME_ID}}";
     private const string SearchUrlTemplate = $"{UrlKeyword}?q={QueryKeyword}#search";
     private const string GameUrlTemplate = $"{UrlKeyword}game?id={GameIdKeyword}";
+    private readonly string[] _triggers = { "hltb" };
 
     public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
         HowLongToBeatApi howLongToBeatApi,
-        KeywordHandler keywordHandler,
+        IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _howLongToBeatSettings = howLongToBeatSettings;
         _howLongToBeatApi = howLongToBeatApi;
-        _keywordHandler = keywordHandler;
+        _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
         _logger = logger;
     }
 
-    public bool CanHandle(string? reply)
+    public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return reply == _keywordHandler.BuildKeyword("HowLongToBeat");
+        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -50,11 +52,9 @@ public class HowLongToBeatCommand : ITextCommand
 
     private async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
     {
-        var messageContent = message.Content;
-
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
+        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
         var messageWithoutTrigger =
-            messageWithoutBotName.Replace("hltb", "", StringComparison.InvariantCultureIgnoreCase);
+            messageWithoutBotName.Replace(_triggers[0], "", StringComparison.InvariantCultureIgnoreCase);
         var searchText = messageWithoutTrigger.Trim();
 
         var searchUrl =

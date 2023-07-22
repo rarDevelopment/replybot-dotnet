@@ -18,6 +18,7 @@ using Replybot.NotificationHandlers;
 using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands;
+using Replybot.TextCommands.Models;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();
@@ -88,7 +89,6 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
     services.AddSingleton<InteractionHandler>();
 
-    services.AddSingleton<KeywordHandler>();
     services.AddSingleton<SystemChannelPoster>();
     services.AddSingleton<LogChannelPoster>();
     services.AddSingleton<ExistingMessageEmbedBuilder>();
@@ -102,6 +102,17 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, DefineWordCommand>();
     services.AddSingleton<ITextCommand, PollCommand>();
     services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
+    services.AddSingleton<ITextCommand, GetMemberCountCommand>();
+    services.AddSingleton<ITextCommand, GetChannelAgeCommand>();
+    services.AddSingleton<ITextCommand, CanIStreamCommand>();
+    services.AddSingleton<ITextCommand, GetGuildBannerCommand>();
+    services.AddSingleton<ITextCommand, GetAvatarCommand>();
+    services.AddSingleton<ITextCommand, GetGuildIconCommand>();
+    services.AddSingleton<ITextCommand, YesOrNoCommand>();
+    services.AddSingleton<ITextCommand, FlipACoinCommand>();
+    services.AddSingleton<ITextCommand, Magic8BallCommand>();
+    services.AddSingleton<ITextCommand, SongLinkCommand>();
+    services.AddSingleton<ITextCommand, SearchCommand>();
 
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();
     services.AddSingleton<IReactionCommand, FixInstagramCommand>();

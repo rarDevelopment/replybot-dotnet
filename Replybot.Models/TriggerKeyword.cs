@@ -13,12 +13,6 @@ public enum TriggerKeyword
     MessageEncoded,
     MessageEncodedWithoutTrigger,
     MessageWithoutTrigger,
-    MentionedUserAvatar,
-    MentionedUserServerAvatar,
-    ServerIcon,
-    ServerBanner,
-    MemberCount,
-    ChannelCreateDate,
     BotName,
     Anything,
 }

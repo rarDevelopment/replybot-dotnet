@@ -2,31 +2,32 @@
 using Replybot.BusinessLayer;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
 public class DefineWordCommand : ITextCommand
 {
     private readonly FreeDictionaryApi _freeDictionaryApi;
-    private readonly KeywordHandler _keywordHandler;
+    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private readonly string[] _triggers = { "define" };
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
-        KeywordHandler keywordHandler,
+        IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _freeDictionaryApi = freeDictionaryApi;
-        _keywordHandler = keywordHandler;
+        _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
         _logger = logger;
     }
 
-    public bool CanHandle(string? reply)
+    public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return reply == _keywordHandler.BuildKeyword("DefineWord");
+        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -44,7 +45,7 @@ public class DefineWordCommand : ITextCommand
     private async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
     {
         var messageContent = message.Content;
-        var messageWithoutBotName = _keywordHandler.RemoveBotName(messageContent);
+        var messageWithoutBotName = KeywordHandler.RemoveBotName(messageContent);
 
         var messageWithoutTrigger = ReplaceTriggerInMessage(messageWithoutBotName);
 

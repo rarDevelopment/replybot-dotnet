@@ -1,13 +1,6 @@
 {
   "defaultReplies": [
     {
-      "triggers": [ "poll" ],
-      "replies": [ "{{POLL}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "{{BOTNAME}} secretly say", "{{BOTNAME}} silently say" ],
       "replies": [ "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}" ],
       "requiresBotName": true,
@@ -76,154 +69,6 @@
         "You can't hide from me!",
         "That's a clever trick, but it won't work."
       ]
-    },
-    {
-      "triggers": [ "how many members", "how many people" ],
-      "replies": [
-        "Hmm, approximately {{MEMBERCOUNT}} member(s) in this Discord.",
-        "I think there's about {{MEMBERCOUNT}} member(s) in this Discord."
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "channel age", "how old is this channel" ],
-      "replies": [
-        "This channel was created on {{CHANNELCREATEDATE}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "yes or no", "yes/no", "yes / no", "y/n", "y/n", "y or n" ],
-      "replies": [ "Yes 👍🏼", "No 👎🏼" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "flip a coin", "🪙" ],
-      "replies": [ "Heads 🪙", "Tails 🪙" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [
-        "stream",
-        "can i watch",
-        "can I stream",
-        "justwatch",
-        "just watch"
-      ],
-      "replies": [
-        "US: https://www.justwatch.com/us/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nCA: https://www.justwatch.com/ca/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nUK: https://www.justwatch.com/uk/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\n\nFor other countries, click one of these links and change your country on the website!"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "reactions": [ "🎬" ],
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "hltb" ],
-      "replies": [ "{{HOWLONGTOBEAT}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "define" ],
-      "replies": [ "{{DEFINEWORD}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "fortnite shop" ],
-      "replies": [ "{{FORTNITESHOPINFO}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "search", "look up" ],
-      "replies": [
-        "https://duckduckgo.com/?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "google" ],
-      "replies": [
-        "https://www.google.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "bing" ],
-      "replies": [
-        "https://www.bing.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "songlink", "song link" ],
-      "replies": [ "https://song.link/{{MESSAGEENCODEDWITHOUTTRIGGER}}" ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "8-ball", "8ball", "8 ball", "🎱" ],
-      "replies": [
-        "It is certain.",
-        "It is decidedly so.",
-        "Without a doubt.",
-        "Yes, definitely",
-        "You can count on it.",
-        "As I see it, yes.",
-        "Most likely.",
-        "Outlook good.",
-        "Yes.",
-        "Signs point to yes.",
-        "Reply hazy, try again.",
-        "Ask again later.",
-        "Better not tell you now.",
-        "Cannot predict now.",
-        "Concentrate and ask again.",
-        "Don't count on it.",
-        "My reply is no.",
-        "My sources say no.",
-        "Outlook not so good.",
-        "Very doubtful.",
-        "Better believe it!"
-      ],
-      "mentionAuthor": true,
-      "reactions": [ "🎱" ],
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "template test" ],
-      "replies": [ "I don't think this is for you." ],
-      "userReplies": [
-        {
-          "userId": 234356032099450890,
-          "replies": [
-            "User Name: {{USERNAME}}\nUser Mention: {{USERTAG}}\nVersion Number: {{VERSIONNUMBER}}\nMessage Content: {{MESSAGE}}\nMessage Without Replybot: {{MESSAGEWITHOUTREPLYBOT}}\nMessage Without Trigger: {{MESSAGEWITHOUTTRIGGER}}\nMessage Spongebob: {{MESSAGESPONGEBOB}}\nMessage Uppercase: {{MESSAGEUPPERCASE}}"
-          ]
-        }
-      ],
-      "requiresBotName": true,
-      "isSpecialFeature": true
     },
     {
       "triggers": [ "test" ],
@@ -414,34 +259,6 @@
         "https://duckduckgo.com/?q={{MESSAGEENCODED}}"
       ],
       "requiresBotName": true
-    },
-    {
-      "triggers": [ "server avatar" ],
-      "replies": [ "{{MENTIONEDUSERSERVERAVATAR}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "avatar" ],
-      "replies": [ "{{MENTIONEDUSERAVATAR}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "server icon" ],
-      "replies": [ "{{SERVERICON}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "server banner" ],
-      "replies": [ "{{SERVERBANNER}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
     },
     {
       "triggers": [ "{{BOTNAME}} knows" ],

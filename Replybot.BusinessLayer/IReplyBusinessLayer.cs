@@ -7,5 +7,7 @@ namespace Replybot.BusinessLayer;
 public interface IReplyBusinessLayer
 {
     Task<GuildReplyDefinition?> GetReplyDefinition(string message, string? guildId, string? channelId = null, string? userId = null);
-    Task<bool> IsBotNameMentioned(SocketMessage message, IGuild? guild, ulong botUserId);
+    bool IsBotNameMentioned(SocketMessage message, ulong botUserId, IReadOnlyCollection<IGuildUser> guildUsers);
+    bool GetWordMatch(string triggerTerm, string input);
+    string? ChooseReply(string[]? replies);
 }
