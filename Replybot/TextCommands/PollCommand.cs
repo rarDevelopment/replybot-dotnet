@@ -16,9 +16,9 @@ public class PollCommand : ITextCommand
         _discordFormatter = discordFormatter;
     }
 
-    public bool CanHandle(string? reply)
+    public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return reply == _keywordHandler.BuildKeyword("Poll");
+        return replyCriteria.MessageText == _keywordHandler.BuildKeyword("Poll");
     }
 
     public Task<CommandResponse> Handle(SocketMessage message)

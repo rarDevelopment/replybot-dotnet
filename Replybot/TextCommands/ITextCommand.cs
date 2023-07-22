@@ -2,6 +2,6 @@
 
 public interface ITextCommand
 {
-    bool CanHandle(string? reply);
+    bool CanHandle(TextCommandReplyCriteria replyCriteria);
     Task<CommandResponse> Handle(SocketMessage message);
 }

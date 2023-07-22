@@ -24,9 +24,9 @@ public class DefineWordCommand : ITextCommand
         _logger = logger;
     }
 
-    public bool CanHandle(string? reply)
+    public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return reply == _keywordHandler.BuildKeyword("DefineWord");
+        return replyCriteria.MessageText == _keywordHandler.BuildKeyword("DefineWord");
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)

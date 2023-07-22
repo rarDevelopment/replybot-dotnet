@@ -31,9 +31,9 @@ public class GetFortniteShopInformationCommand : ITextCommand
         _logger = logger;
     }
 
-    public bool CanHandle(string? reply)
+    public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return reply == _keywordHandler.BuildKeyword("FortniteShopInfo");
+        return replyCriteria.MessageText == _keywordHandler.BuildKeyword("FortniteShopInfo");
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)

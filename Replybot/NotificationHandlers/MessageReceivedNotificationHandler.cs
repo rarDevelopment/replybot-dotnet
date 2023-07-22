@@ -98,7 +98,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             foreach (var command in _textCommands)
             {
-                if (!command.CanHandle(reply))
+                if (!command.CanHandle(new TextCommandReplyCriteria { MessageText = reply }))
                 {
                     continue;
                 }
