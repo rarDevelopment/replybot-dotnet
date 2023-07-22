@@ -105,36 +105,6 @@
       "isSpecialFeature": true
     },
     {
-      "triggers": [ "8-ball", "8ball", "8 ball", "🎱" ],
-      "replies": [
-        "It is certain.",
-        "It is decidedly so.",
-        "Without a doubt.",
-        "Yes, definitely",
-        "You can count on it.",
-        "As I see it, yes.",
-        "Most likely.",
-        "Outlook good.",
-        "Yes.",
-        "Signs point to yes.",
-        "Reply hazy, try again.",
-        "Ask again later.",
-        "Better not tell you now.",
-        "Cannot predict now.",
-        "Concentrate and ask again.",
-        "Don't count on it.",
-        "My reply is no.",
-        "My sources say no.",
-        "Outlook not so good.",
-        "Very doubtful.",
-        "Better believe it!"
-      ],
-      "mentionAuthor": true,
-      "reactions": [ "🎱" ],
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "template test" ],
       "replies": [ "I don't think this is for you." ],
       "userReplies": [
