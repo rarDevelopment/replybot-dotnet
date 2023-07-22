@@ -71,47 +71,6 @@
       ]
     },
     {
-      "triggers": [ "search", "look up" ],
-      "replies": [
-        "https://duckduckgo.com/?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "google" ],
-      "replies": [
-        "https://www.google.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "bing" ],
-      "replies": [
-        "https://www.bing.com/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "template test" ],
-      "replies": [ "I don't think this is for you." ],
-      "userReplies": [
-        {
-          "userId": 234356032099450890,
-          "replies": [
-            "User Name: {{USERNAME}}\nUser Mention: {{USERTAG}}\nVersion Number: {{VERSIONNUMBER}}\nMessage Content: {{MESSAGE}}\nMessage Without Replybot: {{MESSAGEWITHOUTREPLYBOT}}\nMessage Without Trigger: {{MESSAGEWITHOUTTRIGGER}}\nMessage Spongebob: {{MESSAGESPONGEBOB}}\nMessage Uppercase: {{MESSAGEUPPERCASE}}"
-          ]
-        }
-      ],
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "test" ],
       "replies": [ "I don't think this is for you." ],
       "userReplies": [
