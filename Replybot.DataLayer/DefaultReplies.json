@@ -85,22 +85,6 @@
       "isSpecialFeature": true
     },
     {
-      "triggers": [
-        "stream",
-        "can i watch",
-        "can I stream",
-        "justwatch",
-        "just watch"
-      ],
-      "replies": [
-        "US: https://www.justwatch.com/us/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nCA: https://www.justwatch.com/ca/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\nUK: https://www.justwatch.com/uk/search?q={{MESSAGEENCODEDWITHOUTTRIGGER}}\n\nFor other countries, click one of these links and change your country on the website!"
-      ],
-      "mentionAuthor": true,
-      "requiresBotName": true,
-      "reactions": [ "🎬" ],
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [ "search", "look up" ],
       "replies": [
         "https://duckduckgo.com/?q={{MESSAGEENCODEDWITHOUTTRIGGER}}"
@@ -367,34 +351,6 @@
         "https://duckduckgo.com/?q={{MESSAGEENCODED}}"
       ],
       "requiresBotName": true
-    },
-    {
-      "triggers": [ "server avatar" ],
-      "replies": [ "{{MENTIONEDUSERSERVERAVATAR}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "avatar" ],
-      "replies": [ "{{MENTIONEDUSERAVATAR}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "server icon" ],
-      "replies": [ "{{SERVERICON}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "server banner" ],
-      "replies": [ "{{SERVERBANNER}}" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
     },
     {
       "triggers": [ "{{BOTNAME}} knows" ],

@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Web;
-using Discord;
-using Discord.WebSocket;
 using Replybot.Models;
 
 namespace Replybot.BusinessLayer;
@@ -21,9 +19,7 @@ public static class KeywordHandler
         ulong userId,
         string? versionNumber,
         string messageContent,
-        GuildReplyDefinition guildReplyDefinition,
-        IReadOnlyList<SocketUser> mentionedUsers,
-        IGuild? guild)
+        GuildReplyDefinition guildReplyDefinition)
     {
         var userTag = BuildUserTag(userId);
         var messageWithoutReplybot = RemoveBotName(messageContent);
@@ -37,14 +33,6 @@ public static class KeywordHandler
             .Replace(BuildKeyword(TriggerKeyword.MessageEncodedWithoutTrigger), HttpUtility.UrlPathEncode(messageWithoutTrigger), StringComparison.InvariantCultureIgnoreCase)
             .Replace(BuildKeyword(TriggerKeyword.MessageUpperCase),
                 messageContent.ToUpper())
-            .Replace(BuildKeyword(TriggerKeyword.MentionedUserAvatar),
-                GetUserAvatarsAsString(mentionedUsers))
-            .Replace(BuildKeyword(TriggerKeyword.MentionedUserServerAvatar),
-                GetUserServerAvatarsAsString(mentionedUsers))
-            .Replace(BuildKeyword(TriggerKeyword.ServerIcon),
-                GetGuildIcon(guild))
-            .Replace(BuildKeyword(TriggerKeyword.ServerBanner),
-                GetGuildBanner(guild))
             .Replace(BuildKeyword(TriggerKeyword.DeleteMessage), "");
     }
 
@@ -138,28 +126,6 @@ public static class KeywordHandler
     private static string BuildUserTag(ulong userId)
     {
         return $"<@!{userId}>";
-    }
-
-    private static string? GetGuildBanner(IGuild? guild)
-    {
-        return string.IsNullOrEmpty(guild?.BannerUrl) ? "No banner." : guild.BannerUrl;
-    }
-
-    private static string? GetGuildIcon(IGuild? guild)
-    {
-        return string.IsNullOrEmpty(guild?.IconUrl) ? "No icon." : guild.IconUrl;
-    }
-
-    private static string GetUserAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
-    {
-        var avatarUrls = mentionedUsers.Select(u => u.GetAvatarUrl(ImageFormat.Png));
-        return string.Join("\n", avatarUrls);
-    }
-
-    private static string GetUserServerAvatarsAsString(IReadOnlyList<SocketUser> mentionedUsers)
-    {
-        var avatarUrls = mentionedUsers.Select(u => (u as IGuildUser)?.GetDisplayAvatarUrl() ?? u.GetAvatarUrl(ImageFormat.Png));
-        return string.Join("\n", avatarUrls);
     }
 
     private static string Spongebobify(string text) // sponch

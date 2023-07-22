@@ -133,9 +133,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 message.Author.Id,
                 _versionSettings.VersionNumber,
                 message.Content,
-                replyDefinition,
-                message.MentionedUsers.ToList(),
-                guildChannel?.Guild);
+                replyDefinition);
 
             await message.Channel.SendMessageAsync(
                 messageText,
