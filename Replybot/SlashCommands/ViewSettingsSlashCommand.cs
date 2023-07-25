@@ -28,6 +28,14 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
         {
             var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(Context.Guild);
 
+            if (guildConfig == null)
+            {
+                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed("Oops!",
+                    "There was a problem reading the configuration for this server. That shouldn't happen, so maybe try again later.",
+                    Context.User));
+                return;
+            }
+
             var message = "";
             message += $"Default Replies: {GetEnabledText(guildConfig.EnableDefaultReplies)}\n";
             message += $"Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarAnnouncements)}\n";

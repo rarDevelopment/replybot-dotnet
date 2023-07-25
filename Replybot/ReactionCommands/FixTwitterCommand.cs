@@ -8,8 +8,8 @@ public class FixTwitterCommand : IReactionCommand
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private readonly Regex _twitterUrlRegex = new(TwitterUrlRegexPattern, RegexOptions.IgnoreCase);
-    private const string FxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(vxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
-    private readonly Regex _fxTwitterUrlRegex = new(FxTwitterUrlRegexPattern, RegexOptions.IgnoreCase);
+    private const string VxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(vxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
+    private readonly Regex _vxTwitterUrlRegex = new(VxTwitterUrlRegexPattern, RegexOptions.IgnoreCase);
     public const string FixTweetButtonEmojiId = "1110617858892894248";
     public const string FixTweetButtonEmojiName = "fixtweet";
     private const string OriginalTwitterBaseUrl = "twitter.com";
@@ -18,7 +18,7 @@ public class FixTwitterCommand : IReactionCommand
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
         return configuration.EnableFixTweetReactions &&
-               (DoesMessageContainTwitterUrl(message) || DoesMessageContainFxTwitterUrl(message));
+               (DoesMessageContainTwitterUrl(message) || DoesMessageContainVxTwitterUrl(message));
     }
 
     public Task<List<Emote>> HandleReaction(SocketMessage message)
@@ -42,7 +42,7 @@ public class FixTwitterCommand : IReactionCommand
         {
             fixedMessage = BuildFixedTweetsMessage(message, reactingUser, message.Author);
         }
-        else if (DoesMessageContainFxTwitterUrl(message.Content))
+        else if (DoesMessageContainVxTwitterUrl(message.Content))
         {
             fixedMessage = BuildOriginalTweetsMessage(message, reactingUser, message.Author);
         }
@@ -72,7 +72,7 @@ public class FixTwitterCommand : IReactionCommand
 
     private string BuildOriginalTweetsMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
     {
-        var fixedTweets = FixFxTwitterUrls(message);
+        var fixedTweets = FixVxTwitterUrls(message);
         var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
         var isAre = fixedTweets.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
@@ -87,9 +87,9 @@ public class FixTwitterCommand : IReactionCommand
         return _twitterUrlRegex.IsMatch(message);
     }
 
-    private bool DoesMessageContainFxTwitterUrl(string message)
+    private bool DoesMessageContainVxTwitterUrl(string message)
     {
-        return _fxTwitterUrlRegex.IsMatch(message);
+        return _vxTwitterUrlRegex.IsMatch(message);
     }
 
     private IList<string> FixTwitterUrls(IMessage messageToFix)
@@ -98,9 +98,9 @@ public class FixTwitterCommand : IReactionCommand
         return urlsFromMessage.Select(url => url.Replace(OriginalTwitterBaseUrl, FixedTwitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
-    private IList<string> FixFxTwitterUrls(IMessage messageToFix)
+    private IList<string> FixVxTwitterUrls(IMessage messageToFix)
     {
-        var urlsFromMessage = GetFxTwitterUrlsFromMessage(messageToFix.Content);
+        var urlsFromMessage = GetVxTwitterUrlsFromMessage(messageToFix.Content);
         return urlsFromMessage.Select(url => url.Replace(FixedTwitterBaseUrl, OriginalTwitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
@@ -110,9 +110,9 @@ public class FixTwitterCommand : IReactionCommand
         return matches.Select(t => t.Value).ToList();
     }
 
-    private IEnumerable<string> GetFxTwitterUrlsFromMessage(string text)
+    private IEnumerable<string> GetVxTwitterUrlsFromMessage(string text)
     {
-        var matches = _fxTwitterUrlRegex.Matches(text);
+        var matches = _vxTwitterUrlRegex.Matches(text);
         return matches.Select(t => t.Value).ToList();
     }
 
