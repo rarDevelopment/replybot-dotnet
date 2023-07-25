@@ -116,7 +116,7 @@ public class FixInstagramCommand : IReactionCommand
         return matches.Select(t => t.Value).ToList();
     }
 
-    public Emote GetFixInstagramEmote()
+    private static Emote GetFixInstagramEmote()
     {
         return Emote.Parse($"<:{FixInstagramButtonEmojiName}:{FixInstagramButtonEmojiId}>");
     }
