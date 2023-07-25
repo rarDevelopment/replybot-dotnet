@@ -1,4 +1,5 @@
-﻿using DiscordDotNetUtilities.Interfaces;
+﻿using System.Text.RegularExpressions;
+using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
@@ -13,6 +14,7 @@ public class DefineWordCommand : ITextCommand
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private readonly string[] _triggers = { "define" };
+    private readonly Regex _triggerRegex = new("what does [a-z0-9 ]* mean", RegexOptions.IgnoreCase);
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
         IReplyBusinessLayer replyBusinessLayer,
@@ -27,7 +29,9 @@ public class DefineWordCommand : ITextCommand
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
+        return replyCriteria.IsBotNameMentioned &&
+               (_triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText)) ||
+                _triggerRegex.IsMatch(replyCriteria.MessageText));
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -47,7 +51,17 @@ public class DefineWordCommand : ITextCommand
         var messageContent = message.Content;
         var messageWithoutBotName = KeywordHandler.RemoveBotName(messageContent);
 
-        var messageWithoutTrigger = ReplaceTriggerInMessage(messageWithoutBotName);
+        string messageWithoutTrigger;
+        if (_triggerRegex.IsMatch(messageWithoutBotName))
+        {
+            messageWithoutTrigger = messageWithoutBotName.ToLower().Replace("what does", "");
+            var indexOfMean = messageWithoutTrigger.LastIndexOf("mean", StringComparison.InvariantCultureIgnoreCase);
+            messageWithoutTrigger = messageWithoutTrigger.Substring(0, indexOfMean > 0 ? indexOfMean : messageWithoutTrigger.Length - 1);
+        }
+        else
+        {
+            messageWithoutTrigger = messageWithoutBotName.ReplaceTriggerInMessage(_triggers);
+        }
 
         var splitWords = messageWithoutTrigger.Trim().Split(' ').Where(w => !string.IsNullOrEmpty(w)).ToList();
 
@@ -85,23 +99,6 @@ public class DefineWordCommand : ITextCommand
                 "There was an error retrieving that definition, please try again later.",
                 message.Author);
         }
-    }
-
-    private string ReplaceTriggerInMessage(string text)
-    {
-        var replacedText = text;
-        for (int replacementsDone = 0, index = 0; replacementsDone == 0 && index < _triggers.Length; index++)
-        {
-            var indexOfTrigger = text.IndexOf(_triggers[index], StringComparison.InvariantCultureIgnoreCase);
-            if (indexOfTrigger == -1)
-            {
-                continue;
-            }
-            replacedText = text.Remove(indexOfTrigger, _triggers[index].Length);
-            replacementsDone++;
-        }
-
-        return replacedText;
     }
 
     private static List<EmbedFieldBuilder> BuildDefinitionFields(FreeDictionaryResponse definition)

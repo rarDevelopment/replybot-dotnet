@@ -18,7 +18,7 @@ public class HowLongToBeatCommand : ITextCommand
     private const string GameIdKeyword = "{{GAME_ID}}";
     private const string SearchUrlTemplate = $"{UrlKeyword}?q={QueryKeyword}#search";
     private const string GameUrlTemplate = $"{UrlKeyword}game?id={GameIdKeyword}";
-    private readonly string[] _triggers = { "hltb" };
+    private readonly string[] _triggers = { "hltb", "how long to beat", "how long is" };
 
     public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
         HowLongToBeatApi howLongToBeatApi,
@@ -53,8 +53,7 @@ public class HowLongToBeatCommand : ITextCommand
     private async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
     {
         var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
-        var messageWithoutTrigger =
-            messageWithoutBotName.Replace(_triggers[0], "", StringComparison.InvariantCultureIgnoreCase);
+        var messageWithoutTrigger = messageWithoutBotName.ReplaceTriggerInMessage(_triggers);
         var searchText = messageWithoutTrigger.Trim();
 
         var searchUrl =
