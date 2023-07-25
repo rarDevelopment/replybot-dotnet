@@ -1,4 +1,5 @@
-﻿using DiscordDotNetUtilities.Interfaces;
+﻿using System.Text.RegularExpressions;
+using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
@@ -18,7 +19,9 @@ public class HowLongToBeatCommand : ITextCommand
     private const string GameIdKeyword = "{{GAME_ID}}";
     private const string SearchUrlTemplate = $"{UrlKeyword}?q={QueryKeyword}#search";
     private const string GameUrlTemplate = $"{UrlKeyword}game?id={GameIdKeyword}";
-    private readonly string[] _triggers = { "hltb", "how long to beat", "how long is" };
+    private const string SearchTermKey = "searchTerm";
+    private const string TriggerRegexPattern = $"(hltb|how long to beat|how long is) (?<{SearchTermKey}>([a-z0-9\\'\\!:. ]*))\\??";
+    private readonly TimeSpan _matchTimeout;
 
     public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
         HowLongToBeatApi howLongToBeatApi,
@@ -31,11 +34,16 @@ public class HowLongToBeatCommand : ITextCommand
         _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
         _logger = logger;
+        _matchTimeout = TimeSpan.FromMinutes(1);
     }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
+        return replyCriteria.IsBotNameMentioned &&
+               Regex.IsMatch(replyCriteria.MessageText,
+                   TriggerRegexPattern,
+                   RegexOptions.IgnoreCase,
+                   _matchTimeout);
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -53,69 +61,79 @@ public class HowLongToBeatCommand : ITextCommand
     private async Task<Embed?> GetHowLongToBeatEmbed(SocketMessage message)
     {
         var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
-        var messageWithoutTrigger = messageWithoutBotName.ReplaceTriggerInMessage(_triggers);
-        var searchText = messageWithoutTrigger.Trim();
 
-        var searchUrl =
-            SearchUrlTemplate
-                .Replace(UrlKeyword, _howLongToBeatSettings.BaseUrl)
-                .Replace(QueryKeyword, Uri.EscapeDataString(searchText));
-
-        try
+        var match = Regex.Match(messageWithoutBotName, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        if (match.Success)
         {
-            var howLongToBeatInfo = await _howLongToBeatApi.GetHowLongToBeatInformation(searchText);
-            if (howLongToBeatInfo == null)
-            {
-                return null;
-            }
-
-            var gamesToProcess = howLongToBeatInfo.Data.Take(2);
-
-            var embedFieldBuilders = new List<EmbedFieldBuilder>();
-
-            foreach (var game in gamesToProcess)
-            {
-                var mainStoryHours = ConvertSecondsToHoursForDisplay(game.CompMain, 1);
-                var mainStoryPlusSides = ConvertSecondsToHoursForDisplay(game.CompPlus, 1);
-                var completionist = ConvertSecondsToHoursForDisplay(game.Comp100, 1);
-                var allStyles = ConvertSecondsToHoursForDisplay(game.CompAll, 1);
-
-                var gameUrl = GameUrlTemplate
+            var searchText = match.Groups[SearchTermKey].Value;
+            var searchUrl =
+                SearchUrlTemplate
                     .Replace(UrlKeyword, _howLongToBeatSettings.BaseUrl)
-                    .Replace(GameIdKeyword, game.GameId.ToString());
+                    .Replace(QueryKeyword, Uri.EscapeDataString(searchText));
 
-                var messageForField = $"Main Story: {mainStoryHours} hours\nMain + Extra: {mainStoryPlusSides} hours\n Completionist: {completionist} hours\n All Styles: {allStyles} hours\n[More Info]({gameUrl})";
+            try
+            {
+                var howLongToBeatInfo = await _howLongToBeatApi.GetHowLongToBeatInformation(searchText);
+                if (howLongToBeatInfo == null)
+                {
+                    return null;
+                }
 
+                var gamesToProcess = howLongToBeatInfo.Data.Take(2);
+
+                var embedFieldBuilders = new List<EmbedFieldBuilder>();
+
+                foreach (var game in gamesToProcess)
+                {
+                    var mainStoryHours = ConvertSecondsToHoursForDisplay(game.CompMain, 1);
+                    var mainStoryPlusSides = ConvertSecondsToHoursForDisplay(game.CompPlus, 1);
+                    var completionist = ConvertSecondsToHoursForDisplay(game.Comp100, 1);
+                    var allStyles = ConvertSecondsToHoursForDisplay(game.CompAll, 1);
+
+                    var gameUrl = GameUrlTemplate
+                        .Replace(UrlKeyword, _howLongToBeatSettings.BaseUrl)
+                        .Replace(GameIdKeyword, game.GameId.ToString());
+
+                    var messageForField =
+                        $"Main Story: {mainStoryHours} hours\nMain + Extra: {mainStoryPlusSides} hours\n Completionist: {completionist} hours\n All Styles: {allStyles} hours\n[More Info]({gameUrl})";
+
+                    embedFieldBuilders.Add(new EmbedFieldBuilder
+                    {
+                        Name = game.GameName,
+                        Value = messageForField,
+                        IsInline = false
+                    });
+                }
+
+                var searchLinkTitle = embedFieldBuilders.Count > 0
+                    ? "Not what you were looking for?"
+                    : "I didn't find anything, but...";
                 embedFieldBuilders.Add(new EmbedFieldBuilder
                 {
-                    Name = game.GameName,
-                    Value = messageForField,
+                    Name = searchLinkTitle,
+                    Value = $"[Click here for more results]({searchUrl})",
                     IsInline = false
                 });
+
+                return _discordFormatter.BuildRegularEmbed("How Long To Beat",
+                    "",
+                    message.Author,
+                    embedFieldBuilders,
+                    searchUrl);
             }
-
-            var searchLinkTitle = embedFieldBuilders.Count > 0
-                ? "Not what you were looking for?"
-                : "I didn't find anything, but...";
-            embedFieldBuilders.Add(new EmbedFieldBuilder
+            catch (Exception ex)
             {
-                Name = searchLinkTitle,
-                Value = $"[Click here for more results]({searchUrl})",
-                IsInline = false
-            });
+                _logger.Log(LogLevel.Error, "Error in HowLongToBeat command - {0}", ex.Message);
+                return _discordFormatter.BuildErrorEmbed("How Long To Beat",
+                    $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}",
+                    embedFooterBuilder: null);
+            }
+        }
 
-            return _discordFormatter.BuildRegularEmbed("How Long To Beat",
-                "",
-                message.Author,
-                embedFieldBuilders,
-                searchUrl);
-        }
-        catch (Exception ex)
-        {
-            _logger.Log(LogLevel.Error, "Error in HowLongToBeat command - {0}", ex.Message);
-            return _discordFormatter.BuildErrorEmbed("How Long To Beat",
-                $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}", embedFooterBuilder: null);
-        }
+        _logger.Log(LogLevel.Error, $"Error in HowLongToBeatCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return _discordFormatter.BuildErrorEmbed("Error Defining Word",
+            "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
+            message.Author);
     }
 
     private static decimal ConvertSecondsToHoursForDisplay(int seconds, int decimalPlaces)

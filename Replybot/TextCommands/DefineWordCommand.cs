@@ -10,20 +10,17 @@ namespace Replybot.TextCommands;
 public class DefineWordCommand : ITextCommand
 {
     private readonly FreeDictionaryApi _freeDictionaryApi;
-    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
-    private readonly string[] _triggers = { "define" };
-    private const string TriggerRegexPattern = "what does (?<searchTerm>[a-z0-9 ]*) mean\\??";
+    private const string SearchTermKey = "searchTerm";
+    private const string TriggerRegexPattern = $"define (?<{SearchTermKey}>([a-z0-9 ])*)|what does (?<{SearchTermKey}>([a-z0-9 ]*)) mean\\??";
     private readonly TimeSpan _matchTimeout;
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
-        IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _freeDictionaryApi = freeDictionaryApi;
-        _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
         _logger = logger;
         _matchTimeout = TimeSpan.FromMinutes(1);
@@ -32,8 +29,10 @@ public class DefineWordCommand : ITextCommand
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
         return replyCriteria.IsBotNameMentioned &&
-               (_triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText)) ||
-                Regex.IsMatch(replyCriteria.MessageText, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout));
+               Regex.IsMatch(replyCriteria.MessageText,
+                   TriggerRegexPattern,
+                   RegexOptions.IgnoreCase,
+                   _matchTimeout);
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -50,58 +49,56 @@ public class DefineWordCommand : ITextCommand
 
     private async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
     {
-        var messageContent = message.Content;
-        var messageWithoutBotName = KeywordHandler.RemoveBotName(messageContent);
-
-        string messageWithoutTrigger;
+        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
 
         var match = Regex.Match(messageWithoutBotName, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         if (match.Success)
         {
-            var matchedGroup = match.Groups["searchTerm"];
-            messageWithoutTrigger = matchedGroup.Value;
-        }
-        else
-        {
-            messageWithoutTrigger = messageWithoutBotName.ReplaceTriggerInMessage(_triggers);
-        }
+            var matchedGroup = match.Groups[SearchTermKey];
+            var messageWithoutTrigger = matchedGroup.Value;
 
-        var splitWords = messageWithoutTrigger.Trim().Split(' ').Where(w => !string.IsNullOrEmpty(w)).ToList();
+            var splitWords = messageWithoutTrigger.Trim().Split(' ').Where(w => !string.IsNullOrEmpty(w)).ToList();
 
-        if (splitWords.Count <= 0)
-        {
-            return _discordFormatter.BuildErrorEmbed("No Word Provided",
-                "What would you like me to define?",
-                message.Author);
-        }
-
-        try
-        {
-            var definition = await _freeDictionaryApi.GetDefinition(splitWords[0]);
-            if (definition == null)
+            if (splitWords.Count <= 0)
             {
-                return _discordFormatter.BuildErrorEmbed("No Definition Found",
-                    "I couldn't find a definition for that word.",
+                return _discordFormatter.BuildErrorEmbed("No Word Provided",
+                    "What would you like me to define?",
                     message.Author);
             }
 
-            var origin = !string.IsNullOrEmpty(definition.Origin) ? $"Origin: {definition.Origin}" : "";
+            try
+            {
+                var definition = await _freeDictionaryApi.GetDefinition(splitWords[0]);
+                if (definition == null)
+                {
+                    return _discordFormatter.BuildErrorEmbed("No Definition Found",
+                        "I couldn't find a definition for that word.",
+                        message.Author);
+                }
 
-            var embedFieldBuilders = BuildDefinitionFields(definition);
+                var origin = !string.IsNullOrEmpty(definition.Origin) ? $"Origin: {definition.Origin}" : "";
 
-            return _discordFormatter.BuildRegularEmbed(
-                definition.Word,
-                origin,
-                message.Author,
-                embedFieldBuilders);
+                var embedFieldBuilders = BuildDefinitionFields(definition);
+
+                return _discordFormatter.BuildRegularEmbed(
+                    definition.Word,
+                    origin,
+                    message.Author,
+                    embedFieldBuilders);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.Log(LogLevel.Error, "Error in DefineWordCommand: {0}", ex.Message);
+                return _discordFormatter.BuildErrorEmbed("Error Defining Word",
+                    "There was an error retrieving that definition, please try again later.",
+                    message.Author);
+            }
         }
-        catch (HttpRequestException ex)
-        {
-            _logger.Log(LogLevel.Error, "Error in DefineWordCommand: {0}", ex.Message);
-            return _discordFormatter.BuildErrorEmbed("Error Defining Word",
-                "There was an error retrieving that definition, please try again later.",
-                message.Author);
-        }
+
+        _logger.Log(LogLevel.Error, $"Error in DefineWordCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return _discordFormatter.BuildErrorEmbed("Error Defining Word",
+            "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
+            message.Author);
     }
 
     private static List<EmbedFieldBuilder> BuildDefinitionFields(FreeDictionaryResponse definition)
@@ -120,7 +117,7 @@ public class DefineWordCommand : ITextCommand
                 IsInline = false
             };
         }).ToList();
-        
+
         return embedFieldBuilders;
     }
 
