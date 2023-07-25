@@ -14,7 +14,8 @@ public class DefineWordCommand : ITextCommand
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private readonly string[] _triggers = { "define" };
-    private readonly Regex _triggerRegex = new("what does [a-z0-9 ]* mean", RegexOptions.IgnoreCase);
+    private const string TriggerRegexPattern = "what does (?<searchTerm>[a-z0-9 ]*) mean\\??";
+    private readonly TimeSpan _matchTimeout;
 
     public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
         IReplyBusinessLayer replyBusinessLayer,
@@ -25,13 +26,14 @@ public class DefineWordCommand : ITextCommand
         _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
         _logger = logger;
+        _matchTimeout = TimeSpan.FromMinutes(1);
     }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
         return replyCriteria.IsBotNameMentioned &&
                (_triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText)) ||
-                _triggerRegex.IsMatch(replyCriteria.MessageText));
+                Regex.IsMatch(replyCriteria.MessageText, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout));
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -52,11 +54,12 @@ public class DefineWordCommand : ITextCommand
         var messageWithoutBotName = KeywordHandler.RemoveBotName(messageContent);
 
         string messageWithoutTrigger;
-        if (_triggerRegex.IsMatch(messageWithoutBotName))
+
+        var match = Regex.Match(messageWithoutBotName, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        if (match.Success)
         {
-            messageWithoutTrigger = messageWithoutBotName.ToLower().Replace("what does", "");
-            var indexOfMean = messageWithoutTrigger.LastIndexOf("mean", StringComparison.InvariantCultureIgnoreCase);
-            messageWithoutTrigger = messageWithoutTrigger.Substring(0, indexOfMean > 0 ? indexOfMean : messageWithoutTrigger.Length - 1);
+            var matchedGroup = match.Groups["searchTerm"];
+            messageWithoutTrigger = matchedGroup.Value;
         }
         else
         {
@@ -103,22 +106,21 @@ public class DefineWordCommand : ITextCommand
 
     private static List<EmbedFieldBuilder> BuildDefinitionFields(FreeDictionaryResponse definition)
     {
-        var embedFieldBuilders = new List<EmbedFieldBuilder>();
-        foreach (var meaning in definition.Meanings)
+        var embedFieldBuilders = definition.Meanings.Select(meaning =>
         {
             var definitions = meaning.Definitions
                 .Take(3)
                 .Select((def, index) =>
                     BuildDefinitionString(index, def));
 
-            embedFieldBuilders.Add(new EmbedFieldBuilder
+            return new EmbedFieldBuilder
             {
                 Name = meaning.PartOfSpeech,
                 Value = string.Join("\n", definitions),
                 IsInline = false
-            });
-        }
-
+            };
+        }).ToList();
+        
         return embedFieldBuilders;
     }
 
