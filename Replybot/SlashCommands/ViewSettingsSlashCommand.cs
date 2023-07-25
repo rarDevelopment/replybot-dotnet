@@ -44,7 +44,7 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
             message += $"Fix Tweet Reactions: {GetEnabledText(guildConfig.EnableFixTweetReactions)}\n";
             message += $"Fix Instagram Reactions: {GetEnabledText(guildConfig.EnableFixInstagramReactions)}\n";
             message += $"Fix Bluesky Reactions: {GetEnabledText(guildConfig.EnableFixBlueskyReactions)}\n";
-            message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (Note: Administrators are not shown here)\n";
+            message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (+ any users with the Administrator permission)\n";
 
             await RespondAsync(embed: _discordFormatter.BuildRegularEmbed($"Settings for {Context.Guild.Name}",
                 message,
