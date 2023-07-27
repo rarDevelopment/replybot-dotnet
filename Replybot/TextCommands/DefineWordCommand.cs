@@ -23,7 +23,7 @@ public class DefineWordCommand : ITextCommand
         _freeDictionaryApi = freeDictionaryApi;
         _discordFormatter = discordFormatter;
         _logger = logger;
-        _matchTimeout = TimeSpan.FromMinutes(1);
+        _matchTimeout = TimeSpan.FromMilliseconds(100);
     }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)

@@ -11,7 +11,6 @@ public class HowLongToBeatCommand : ITextCommand
 {
     private readonly HowLongToBeatSettings _howLongToBeatSettings;
     private readonly HowLongToBeatApi _howLongToBeatApi;
-    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private const string UrlKeyword = "{{URL}}";
@@ -20,21 +19,19 @@ public class HowLongToBeatCommand : ITextCommand
     private const string SearchUrlTemplate = $"{UrlKeyword}?q={QueryKeyword}#search";
     private const string GameUrlTemplate = $"{UrlKeyword}game?id={GameIdKeyword}";
     private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"(hltb|how long to beat|how long is) (?<{SearchTermKey}>([a-z0-9\\'\\!:. ]*))\\??";
+    private const string TriggerRegexPattern = $"(hltb|how long to beat|how long is) (?<{SearchTermKey}>(.*))\\??";
     private readonly TimeSpan _matchTimeout;
 
     public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
         HowLongToBeatApi howLongToBeatApi,
-        IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _howLongToBeatSettings = howLongToBeatSettings;
         _howLongToBeatApi = howLongToBeatApi;
-        _replyBusinessLayer = replyBusinessLayer;
         _discordFormatter = discordFormatter;
         _logger = logger;
-        _matchTimeout = TimeSpan.FromMinutes(1);
+        _matchTimeout = TimeSpan.FromMilliseconds(100);
     }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
