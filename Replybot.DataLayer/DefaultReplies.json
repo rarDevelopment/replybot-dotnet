@@ -118,6 +118,27 @@
     },
     {
       "triggers": [
+        "happy birthday",
+        "happy birth",
+        "hbd",
+        "happy belated"
+      ],
+      "replies": [
+        "Thank you! 😊",
+        "Aww thanks!",
+        "Thanks friend!",
+        "You too! ... wait no...",
+        "Yay thank you!",
+        "Thanks!",
+        "🙏🏼 thank you!"
+      ],
+      "mentionAuthor": true,
+      "reactions": [ "🎂" ],
+      "requiresBotName": true,
+      "isSpecialFeature": false
+    },
+    {
+      "triggers": [
         "love you",
         "love u",
         "love {{BOTNAME}}",
