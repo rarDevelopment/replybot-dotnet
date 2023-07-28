@@ -3,21 +3,12 @@
     {
       "triggers": [ "{{BOTNAME}} secretly say", "{{BOTNAME}} silently say" ],
       "replies": [ "{{DELETEMESSAGE}}{{MESSAGEWITHOUTTRIGGER}}" ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} say" ],
       "replies": [ "{{MESSAGEWITHOUTTRIGGER}}" ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
-    },
-    {
-      "triggers": [ "testing" ],
-      "replies": [ "it's working" ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -30,8 +21,7 @@
         "shut your god damn mouth"
       ],
       "reactions": [ "🤐" ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -71,29 +61,6 @@
       ]
     },
     {
-      "triggers": [ "test" ],
-      "replies": [ "I don't think this is for you." ],
-      "userReplies": [
-        {
-          "userId": 234356032099450890,
-          "replies": [ "It's working, boss!" ]
-        }
-      ],
-      "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
-      "triggers": [ "-v", "version", "what version" ],
-      "replies": [
-        "I am {{VERSIONNUMBER}} versions old.",
-        "That's kind of private, but if you must know, I'm at v{{VERSIONNUMBER}}.",
-        "I'm at v{{VERSIONNUMBER}}, what version are you at?"
-      ],
-      "requiresBotName": true,
-      "isSpecialFeature": true
-    },
-    {
       "triggers": [
         "trans",
         "transgender",
@@ -102,8 +69,7 @@
       "replies": [
         "trans rights are human rights!"
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -113,8 +79,7 @@
         "My pronouns are He/Him!"
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -134,8 +99,7 @@
       ],
       "mentionAuthor": true,
       "reactions": [ "🎂" ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -160,8 +124,7 @@
       ],
       "mentionAuthor": true,
       "reactions": [ "❤️" ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -192,8 +155,7 @@
         "I would never say that to you."
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -220,8 +182,7 @@
         "Meh. I've had better days.",
         "I'm really feeling it!"
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "how many" ],
@@ -239,8 +200,7 @@
         "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086",
         "I'm not good with numbers."
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} how" ],
@@ -255,8 +215,7 @@
         "Ugh so many questions..."
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} why", "{{BOTNAME}}, why" ],
@@ -268,8 +227,7 @@
         "They once asked why we yeet. Then they asked why we dab. I guess now they're asking \"{{MESSAGEWITHOUTREPLYBOT}}\" 🙄",
         "Always with the damn questions."
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} what", "{{BOTNAME}}, what" ],
@@ -291,8 +249,7 @@
         "🤓"
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} I'll", "{{BOTNAME}}, I'll" ],
@@ -302,8 +259,7 @@
         "What are you waiting for?"
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} who", "{{BOTNAME}}, who" ],
@@ -317,8 +273,7 @@
         "All of us."
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} when", "{{BOTNAME}}, when" ],
@@ -331,8 +286,7 @@
         "I'm sleeping now, maybe later.",
         "Please wait just a bit longer."
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} where", "{{BOTNAME}}, where" ],
@@ -341,8 +295,7 @@
         "Closer than you think.",
         "You see those mountains off in the distance? Go there."
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -367,8 +320,7 @@
         "I'm trying my best out here."
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "keep it up", "good work", "good job" ],
@@ -380,8 +332,7 @@
         "And it's all thanks to you!"
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -410,8 +361,7 @@
         "de rien"
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} ban" ],
@@ -424,8 +374,7 @@
         "Busy right now, ask me later."
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} can" ],
@@ -436,8 +385,7 @@
         "I mean I can, but will I?"
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{BOTNAME}} is", "{{BOTNAME}}'s", "{{BOTNAME}} was" ],
@@ -448,8 +396,7 @@
         "That _feels_ rude.",
         "I don't really think that's true."
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -489,8 +436,7 @@
         "Yeah probably."
       ],
       "mentionAuthor": true,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [
@@ -516,8 +462,7 @@
         ":yawning_face:",
         "Bonjour"
       ],
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     },
     {
       "triggers": [ "{{ANYTHING}}" ],
@@ -538,8 +483,7 @@
         "{{MESSAGESPONGEBOB}}"
       ],
       "mentionAuthor": false,
-      "requiresBotName": true,
-      "isSpecialFeature": false
+      "requiresBotName": true
     }
   ]
 }

@@ -114,9 +114,8 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
 
-            //this handles skipping if the above features haven't triggered and if the default reply isn't a special feature otherwise (manually specified)
             var defaultRepliesEnabled = config?.EnableDefaultReplies ?? true;
-            if (!defaultRepliesEnabled && replyDefinition is { IsDefaultReply: true, IsSpecialFeature: false })
+            if (!defaultRepliesEnabled && replyDefinition is { IsDefaultReply: true })
             {
                 return Task.CompletedTask;
             }
