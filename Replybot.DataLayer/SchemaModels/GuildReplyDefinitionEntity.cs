@@ -42,8 +42,6 @@ public class GuildReplyDefinitionEntity
     public decimal Priority { get; set; }
     [BsonElement("isActive")]
     public bool IsActive { get; set; }
-    [BsonIgnore]
-    public bool IsSpecialFeature { get; set; }
 
     public GuildReplyDefinition ToDomain()
     {
@@ -56,8 +54,7 @@ public class GuildReplyDefinitionEntity
             RequiresBotName,
             Reactions,
             Priority,
-            IsActive,
-            IsSpecialFeature)
+            IsActive)
         {
             Id = Id
         };
