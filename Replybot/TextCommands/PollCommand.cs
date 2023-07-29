@@ -31,7 +31,8 @@ public class PollCommand : ITextCommand
         {
             Embed = embedWithReactions.Embed,
             Reactions = embedWithReactions.ReactionEmotes,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 

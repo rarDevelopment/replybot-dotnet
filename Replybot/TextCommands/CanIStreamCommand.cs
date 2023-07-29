@@ -43,7 +43,8 @@ public class CanIStreamCommand : ITextCommand
         {
             Embed = embed,
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 

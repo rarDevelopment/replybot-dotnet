@@ -78,7 +78,8 @@ public class FixBlueskyCommand : IReactionCommand
         return new CommandResponse
         {
             Description = description,
-            FileAttachments = fileAttachments
+            FileAttachments = fileAttachments,
+            NotifyWhenReplying = false,
         };
     }
 

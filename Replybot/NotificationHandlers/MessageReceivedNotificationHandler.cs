@@ -153,9 +153,16 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             return commandResponse;
         }
 
+        var allowedMentions = new AllowedMentions
+        {
+            AllowedTypes = AllowedMentionTypes.Users | AllowedMentionTypes.Roles | AllowedMentionTypes.Everyone,
+            MentionRepliedUser = commandResponse.NotifyWhenReplying
+        };
+
         var messageSent = await messageChannel.SendMessageAsync(text: commandResponse.Description,
             embed: commandResponse.Embed,
-            messageReference: messageReference);
+            messageReference: messageReference,
+            allowedMentions: allowedMentions);
         if (messageSent != null && commandResponse.Reactions != null)
         {
             await messageSent.AddReactionsAsync(commandResponse.Reactions);

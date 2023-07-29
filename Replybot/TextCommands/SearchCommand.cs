@@ -40,7 +40,8 @@ public class SearchCommand : ITextCommand
         {
             Description = $"{searchToUse.Url}{messageEncodedWithoutTriggers}",
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 

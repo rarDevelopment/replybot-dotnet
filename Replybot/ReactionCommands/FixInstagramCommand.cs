@@ -53,7 +53,7 @@ public class FixInstagramCommand : IReactionCommand
 
         var messagesToSend = new List<CommandResponse>
         {
-            new() { Description = fixedMessage }
+            new() { Description = fixedMessage, NotifyWhenReplying = false}
         };
         return Task.FromResult(messagesToSend);
     }
@@ -64,7 +64,7 @@ public class FixInstagramCommand : IReactionCommand
         var describeText = fixedInstagramUrls.Count == 1 ? "post" : "posts";
         var isAre = fixedInstagramUrls.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSent.Id
-            ? $" (in {userWhoSent.Mention}'s message)"
+            ? $" (in {userWhoSent.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the fixed Instagram {describeText}{differentUserText}:\n";
         return $"{authorMentionMessage}{string.Join("\n", fixedInstagramUrls)}";
@@ -76,7 +76,7 @@ public class FixInstagramCommand : IReactionCommand
         var describeText = fixedInstagramUrls.Count == 1 ? "post" : "posts";
         var isAre = fixedInstagramUrls.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSent.Id
-            ? $" (in {userWhoSent.Mention}'s message)"
+            ? $" (in {userWhoSent.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {describeText}{differentUserText}: \n";
         return $"{authorMentionMessage}{string.Join("\n", fixedInstagramUrls)}";

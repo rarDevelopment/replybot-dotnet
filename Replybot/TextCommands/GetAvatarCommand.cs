@@ -31,7 +31,8 @@ public class GetAvatarCommand : ITextCommand
             {
                 Embed = _discordFormatter.BuildErrorEmbed("Not a Server",
                     "This command can only be used in a Discord server, it will not work in a DM.", message.Author),
-                StopProcessing = true
+                StopProcessing = true,
+                NotifyWhenReplying = true,
             });
         }
 
@@ -46,7 +47,8 @@ public class GetAvatarCommand : ITextCommand
         {
             Description = string.Join("\n", userAvatars),
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 

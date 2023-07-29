@@ -67,17 +67,22 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
             return;
         }
 
-        var messagesToSend = await reactCommand.HandleMessage(message, reactingUser);
-        foreach (var messageToSend in messagesToSend)
+        var commandResponses = await reactCommand.HandleMessage(message, reactingUser);
+        foreach (var commandResponse in commandResponses)
         {
-            if (messageToSend.FileAttachments.Any())
+            var allowedMentions = new AllowedMentions
             {
-                await message.Channel.SendFilesAsync(messageToSend.FileAttachments, messageToSend.Description,
-                    messageReference: new MessageReference(message.Id, failIfNotExists: false));
+                AllowedTypes = AllowedMentionTypes.Users | AllowedMentionTypes.Roles | AllowedMentionTypes.Everyone,
+                MentionRepliedUser = commandResponse.NotifyWhenReplying
+            };
+            if (commandResponse.FileAttachments.Any())
+            {
+                await message.Channel.SendFilesAsync(commandResponse.FileAttachments, commandResponse.Description,
+                    messageReference: new MessageReference(message.Id, failIfNotExists: false), allowedMentions: allowedMentions);
             }
             else
             {
-                await message.ReplyAsync(messageToSend.Description);
+                await message.ReplyAsync(commandResponse.Description, allowedMentions: allowedMentions);
             }
         }
     }

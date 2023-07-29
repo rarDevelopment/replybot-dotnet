@@ -31,7 +31,8 @@ public class GetGuildIconCommand : ITextCommand
             {
                 Embed = _discordFormatter.BuildErrorEmbed("Not a Server",
                     "This command can only be used in a Discord server, it will not work in a DM.", message.Author),
-                StopProcessing = true
+                StopProcessing = true,
+                NotifyWhenReplying = true,
             });
         }
 
@@ -39,7 +40,8 @@ public class GetGuildIconCommand : ITextCommand
         {
             Description = string.IsNullOrEmpty(guild?.IconUrl) ? "No icon." : guild.IconUrl,
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 }

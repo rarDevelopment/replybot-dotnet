@@ -33,7 +33,8 @@ public class GetChannelAgeCommand : ITextCommand
         {
             Embed = embed,
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 
