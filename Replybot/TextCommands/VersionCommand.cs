@@ -34,7 +34,8 @@ public class VersionCommand : ITextCommand
         {
             Description = _replyBusinessLayer.ChooseReply(_replies)?.Replace(VersionNumberKeyword, _versionSettings.VersionNumber),
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 }

@@ -28,7 +28,8 @@ public class SongLinkCommand : ITextCommand
         {
             Description = $"{SongLinkBaseUrl}{messageEncodedWithoutTriggers}",
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 }

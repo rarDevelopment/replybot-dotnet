@@ -53,7 +53,7 @@ public class FixTwitterCommand : IReactionCommand
 
         var messagesToSend = new List<CommandResponse>
         {
-            new() { Description = fixedMessage }
+            new() { Description = fixedMessage, NotifyWhenReplying = false }
         };
         return Task.FromResult(messagesToSend);
     }
@@ -64,7 +64,7 @@ public class FixTwitterCommand : IReactionCommand
         var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
         var isAre = fixedTweets.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
-            ? $" (in {userWhoSentTweets.Mention}'s message)"
+            ? $" (in {userWhoSentTweets.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the fixed {tweetDescribeText}{differentUserText}:\n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
@@ -76,7 +76,7 @@ public class FixTwitterCommand : IReactionCommand
         var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
         var isAre = fixedTweets.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
-            ? $" (in {userWhoSentTweets.Mention}'s message)"
+            ? $" (in {userWhoSentTweets.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {tweetDescribeText}{differentUserText}: \n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";

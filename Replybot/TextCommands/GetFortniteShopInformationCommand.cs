@@ -46,7 +46,8 @@ public class GetFortniteShopInformationCommand : ITextCommand
         {
             Embed = embed,
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = false
         };
     }
 

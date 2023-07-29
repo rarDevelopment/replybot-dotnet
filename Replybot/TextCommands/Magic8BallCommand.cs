@@ -46,7 +46,8 @@ public class Magic8BallCommand : ITextCommand
         {
             Description = _replyBusinessLayer.ChooseReply(_replies),
             Reactions = new List<IEmote> { new Emoji("🎱") },
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true,
         });
     }
 }

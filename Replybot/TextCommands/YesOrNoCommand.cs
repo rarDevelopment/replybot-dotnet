@@ -26,7 +26,8 @@ public class YesOrNoCommand : ITextCommand
         {
             Description = _replyBusinessLayer.ChooseReply(_replies),
             Reactions = null,
-            StopProcessing = true
+            StopProcessing = true,
+            NotifyWhenReplying = true
         });
     }
 }
