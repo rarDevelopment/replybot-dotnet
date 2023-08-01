@@ -93,7 +93,13 @@ public class HowLongToBeatCommand : ITextCommand
                         .Replace(GameIdKeyword, game.GameId.ToString());
 
                     var messageForField =
-                        $"Main Story: {mainStoryHours} hours\nMain + Extra: {mainStoryPlusSides} hours\n Completionist: {completionist} hours\n All Styles: {allStyles} hours\n[More Info]({gameUrl})";
+                        $"Main Story: {FormatHoursForDisplay(mainStoryHours)}\nMain + Extra: {FormatHoursForDisplay(mainStoryPlusSides)}\n Completionist: {FormatHoursForDisplay(completionist)}\n All Styles: {FormatHoursForDisplay(allStyles)}\n[More Info]({gameUrl})";
+
+                    if (mainStoryHours == 0 && mainStoryPlusSides == 0 && completionist == 0 && allStyles == 0)
+                    {
+                        messageForField =
+                            $"_It looks like this game might not have any information (yet?)_\n{messageForField}";
+                    }
 
                     embedFieldBuilders.Add(new EmbedFieldBuilder
                     {
@@ -132,6 +138,11 @@ public class HowLongToBeatCommand : ITextCommand
         return _discordFormatter.BuildErrorEmbed("Error Defining Word",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
+    }
+
+    private static string FormatHoursForDisplay(decimal mainStoryHours)
+    {
+        return mainStoryHours == 0 ? "-" : $"{mainStoryHours} hours";
     }
 
     private static decimal ConvertSecondsToHoursForDisplay(int seconds, int decimalPlaces)
