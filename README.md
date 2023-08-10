@@ -71,6 +71,10 @@ Instagram links posted in Discord don't preview at all! Similar to the above, To
 
 Use `Toby hltb [game here]` and Toby will tell you how long that game is.
 
+## Movie Runtimes (using [The Movie Database (TMDB)](https://themoviedb.org/))
+
+Use `Toby how long is [movie here]` or `Toby how long to watch [movie here]` or `Toby hltw [movie here]` and Toby will tell you how long that movie is (if that information is present in TMDB).
+
 ## Find Where Movies/TV Shows Are Streaming (using [JustWatch](https://justwatch.com))
 
 If you're looking to watch something, `Toby can I stream [movie or show here]` will give you US, Canada, and UK links to justWatch, where you can find where it's streaming (if at all). If you need another location, you can change the country on the site itself.
