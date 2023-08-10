@@ -12,7 +12,7 @@ public class HowLongIsMovieCommand : ITextCommand
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"(how long is the movie|movie duration|film duration|movie runtime|film runtime) (?<{SearchTermKey}>(.*))\\??";
+    private const string TriggerRegexPattern = $"(how long is|hltw|how long to watch|movie duration|film duration|movie runtime|film runtime) (?<{SearchTermKey}>(.*))\\??";
     private const int MaxMoviesToShow = 3;
     private readonly TimeSpan _matchTimeout;
 
@@ -63,21 +63,21 @@ public class HowLongIsMovieCommand : ITextCommand
 
                 var moviesToProcess = movieSearchResults.Results.Take(MaxMoviesToShow);
 
-
                 var embedFieldBuilders = new List<EmbedFieldBuilder>();
 
                 foreach (var movieResult in moviesToProcess)
                 {
                     var movie = await _theMovieDbApi.GetMovie(movieResult.Id);
+                    var releaseYear = movie.ReleaseDate?.Year;
                     var director = movie.Credits.Crew.FirstOrDefault(c => c.Job.ToLower() == "director")?.Name ?? "No director found.";
                     var castMembers = movie.Credits.Cast.Take(3).Select(c => c.Name).ToList();
                     var castText = castMembers.Count > 0 ? string.Join(", ", castMembers) : "No star(s) found";
 
-                    var runtimeText = movie.Runtime != null ? $"{ConvertMinutesToDisplayTime(movie.Runtime.Value)}" : "No runtime found.";
+                    var runtimeText = movie.Runtime is > 0 ? $"{ConvertMinutesToDisplayTime(movie.Runtime.Value)}" : "No runtime found.";
 
                     embedFieldBuilders.Add(new EmbedFieldBuilder
                     {
-                        Name = movie.Title,
+                        Name = movie.Title + (releaseYear != null ? $" ({releaseYear})" : ""),
                         Value = $"Directed By: {director}\nStarring: {castText}\nRuntime: {runtimeText}",
                         IsInline = false
                     });
