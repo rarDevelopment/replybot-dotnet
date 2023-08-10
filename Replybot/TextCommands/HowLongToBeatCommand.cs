@@ -19,7 +19,7 @@ public class HowLongToBeatCommand : ITextCommand
     private const string SearchUrlTemplate = $"{UrlKeyword}?q={QueryKeyword}#search";
     private const string GameUrlTemplate = $"{UrlKeyword}game?id={GameIdKeyword}";
     private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"(hltb|how long to beat|how long is) (?<{SearchTermKey}>(.*))\\??";
+    private const string TriggerRegexPattern = $"(hltb|how long to beat|how long is the game|game length) (?<{SearchTermKey}>(.*))\\??";
     private readonly TimeSpan _matchTimeout;
 
     public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
@@ -135,7 +135,7 @@ public class HowLongToBeatCommand : ITextCommand
         }
 
         _logger.Log(LogLevel.Error, $"Error in HowLongToBeatCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbed("Error Defining Word",
+        return _discordFormatter.BuildErrorEmbed("Error Finding Game",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }

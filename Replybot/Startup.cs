@@ -19,6 +19,7 @@ using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands;
 using Replybot.TextCommands.Models;
+using TMDbLib.Client;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
 
 var builder = new HostBuilder();
@@ -99,6 +100,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<GuildUpdatedNotificationHandler>();
 
     services.AddSingleton<ITextCommand, HowLongToBeatCommand>();
+    services.AddSingleton<ITextCommand, HowLongIsMovieCommand>();
     services.AddSingleton<ITextCommand, DefineWordCommand>();
     services.AddSingleton<ITextCommand, PollCommand>();
     services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
@@ -129,6 +131,9 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
+
+    services.AddSingleton<TheMovieDbApi>();
+    services.AddSingleton(_ => new TMDbClient(host.Configuration["TheMovieDB:ApiKey"]));
 
     services.AddScoped<RoleHelper>();
 
