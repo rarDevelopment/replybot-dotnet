@@ -6,17 +6,20 @@ using Replybot.ReactionCommands;
 
 namespace Replybot.NotificationHandlers;
 
-public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAddedNotification>
+public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInteractionContext>, INotificationHandler<ReactionAddedNotification>
 {
     private readonly IGuildConfigurationBusinessLayer _configurationBusinessLayer;
     private readonly IEnumerable<IReactionCommand> _reactionCommands;
+    private readonly ILogger<DiscordBot> _logger;
 
     public ReactionAddedNotificationHandler(
         IGuildConfigurationBusinessLayer configurationBusinessLayer,
-        IEnumerable<IReactionCommand> reactionCommands)
+        IEnumerable<IReactionCommand> reactionCommands,
+        ILogger<DiscordBot> logger)
     {
         _configurationBusinessLayer = configurationBusinessLayer;
         _reactionCommands = reactionCommands;
+        _logger = logger;
     }
 
     public Task Handle(ReactionAddedNotification notification, CancellationToken cancellationToken)
@@ -75,15 +78,50 @@ public class ReactionAddedNotificationHandler : INotificationHandler<ReactionAdd
                 AllowedTypes = AllowedMentionTypes.Users | AllowedMentionTypes.Roles | AllowedMentionTypes.Everyone,
                 MentionRepliedUser = commandResponse.NotifyWhenReplying
             };
+
+            var buttonBuilder = new ComponentBuilder()
+                .WithButton("Delete This", $"deleteFixedItem", emote: new Emoji("❌"));
+
             if (commandResponse.FileAttachments.Any())
             {
                 await message.Channel.SendFilesAsync(commandResponse.FileAttachments, commandResponse.Description,
-                    messageReference: new MessageReference(message.Id, failIfNotExists: false), allowedMentions: allowedMentions);
+                    messageReference: new MessageReference(message.Id,
+                        failIfNotExists: false),
+                    allowedMentions: allowedMentions,
+                    components: buttonBuilder.Build());
             }
             else
             {
-                await message.ReplyAsync(commandResponse.Description, allowedMentions: allowedMentions);
+                await message.ReplyAsync(commandResponse.Description, allowedMentions: allowedMentions, components: buttonBuilder.Build());
             }
+        }
+    }
+
+    [ComponentInteraction("deleteFixedItem")]
+    public async Task DeleteButton()
+    {
+        try
+        {
+            await DeferAsync();
+            if (Context.Interaction is IComponentInteraction interaction)
+            {
+                var mentions = interaction.Message.MentionedUserIds;
+                if (mentions.FirstOrDefault() == Context.Interaction.User.Id)
+                {
+                    await DeleteOriginalResponseAsync();
+                }
+                else
+                {
+                    await FollowupAsync(
+                        $"You can only delete that if you're the person who requested it {Context.User.Mention}!");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error Deleting Message Using DeleteButton - {ex.Message}");
+            await FollowupAsync(
+                $"Sorry {Context.User.Mention}, there was an error trying to delete that.");
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Replybot.ReactionCommands;
 public class FixTwitterCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
-    private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com|t.co)\\/[a-z0-9_]+\\/status\\/[0-9]+";
+    private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private readonly Regex _twitterUrlRegex = new(TwitterUrlRegexPattern, RegexOptions.IgnoreCase);
     private const string VxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(vxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private readonly Regex _vxTwitterUrlRegex = new(VxTwitterUrlRegexPattern, RegexOptions.IgnoreCase);
