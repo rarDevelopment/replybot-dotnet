@@ -73,14 +73,25 @@ public class HowLongIsMovieCommand : ITextCommand
                     var castMembers = movie.Credits.Cast.Take(3).Select(c => c.Name).ToList();
                     var castText = castMembers.Count > 0 ? string.Join(", ", castMembers) : "No star(s) found";
 
+                    var imdbLink = !string.IsNullOrEmpty(movie.ImdbId)
+                        ? $"https://www.imdb.com/title/{movie.ImdbId}"
+                        : "No IMDB page found.";
+
                     var runtimeText = movie.Runtime is > 0 ? $"{ConvertMinutesToDisplayTime(movie.Runtime.Value)}" : "No runtime found.";
 
                     embedFieldBuilders.Add(new EmbedFieldBuilder
                     {
                         Name = movie.Title + (releaseYear != null ? $" ({releaseYear})" : ""),
-                        Value = $"Directed By: {director}\nStarring: {castText}\nRuntime: {runtimeText}",
+                        Value = $"Directed By: {director}\nStarring: {castText}\nRuntime: {runtimeText}\nLink: [IMDB]({imdbLink})",
                         IsInline = false
                     });
+                }
+
+                if (embedFieldBuilders.Count == 0)
+                {
+                    return _discordFormatter.BuildRegularEmbed("No Movie Found",
+                        "Sorry, I couldn't find any movies that matched your search.",
+                        message.Author);
                 }
 
                 return _discordFormatter.BuildRegularEmbed("Movie Duration(s)",
