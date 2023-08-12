@@ -79,8 +79,9 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
                 MentionRepliedUser = commandResponse.NotifyWhenReplying
             };
 
-            var buttonBuilder = new ComponentBuilder()
-                .WithButton("Delete This", $"deleteFixedItem", emote: new Emoji("❌"));
+            var buttonBuilder = commandResponse.AllowDeleteButton
+                ? new ComponentBuilder().WithButton("Delete This", "deleteFixedItem", emote: new Emoji("❌"))
+                : null;
 
             if (commandResponse.FileAttachments.Any())
             {
@@ -92,7 +93,7 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
             }
             else
             {
-                await message.ReplyAsync(commandResponse.Description, allowedMentions: allowedMentions, components: buttonBuilder.Build());
+                await message.ReplyAsync(commandResponse.Description, allowedMentions: allowedMentions, components: buttonBuilder?.Build());
             }
         }
     }
@@ -102,7 +103,7 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
     {
         try
         {
-            await DeferAsync();
+            await DeferAsync(ephemeral: true);
             if (Context.Interaction is IComponentInteraction interaction)
             {
                 var mentions = interaction.Message.MentionedUserIds;
@@ -113,7 +114,8 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
                 else
                 {
                     await FollowupAsync(
-                        $"You can only delete that if you're the person who requested it {Context.User.Mention}!");
+                        $"You can only delete that if you're the person who requested it {Context.User.Mention}!", ephemeral: true);
+                    await interaction.Message.AddReactionAsync(new Emoji("❌"));
                 }
             }
         }
@@ -121,7 +123,7 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
         {
             _logger.LogError(ex, $"Error Deleting Message Using DeleteButton - {ex.Message}");
             await FollowupAsync(
-                $"Sorry {Context.User.Mention}, there was an error trying to delete that.");
+                $"Sorry {Context.User.Mention}, there was an error trying to delete that.", ephemeral: true);
         }
     }
 }

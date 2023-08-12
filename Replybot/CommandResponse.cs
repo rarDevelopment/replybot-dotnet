@@ -8,4 +8,5 @@ public class CommandResponse
     public IReadOnlyList<IEmote>? Reactions { get; set; }
     public bool StopProcessing { get; set; }
     public bool NotifyWhenReplying { get; set; }
+    public bool AllowDeleteButton { get; set; }
 }
