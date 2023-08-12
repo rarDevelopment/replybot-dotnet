@@ -6,14 +6,19 @@ namespace Replybot.ReactionCommands;
 public class FixTwitterCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
-    private const string TwitterUrlRegexPattern = "https?:\\/\\/(www.)?(twitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
-    private readonly Regex _twitterUrlRegex = new(TwitterUrlRegexPattern, RegexOptions.IgnoreCase);
+    private const string MatchedDomainKey = "matchedDomain";
+    private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|t.co|x.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private const string VxTwitterUrlRegexPattern = "https?:\\/\\/(www.)?(vxtwitter.com)\\/[a-z0-9_]+\\/status\\/[0-9]+";
-    private readonly Regex _vxTwitterUrlRegex = new(VxTwitterUrlRegexPattern, RegexOptions.IgnoreCase);
     public const string FixTweetButtonEmojiId = "1110617858892894248";
     public const string FixTweetButtonEmojiName = "fixtweet";
-    private const string OriginalTwitterBaseUrl = "twitter.com";
+    private const string OriginalTwitterBaseUrl = "x.com";
     private const string FixedTwitterBaseUrl = "vxtwitter.com";
+    private readonly TimeSpan _matchTimeout;
+
+    public FixTwitterCommand()
+    {
+        _matchTimeout = TimeSpan.FromMilliseconds(100);
+    }
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
@@ -84,18 +89,24 @@ public class FixTwitterCommand : IReactionCommand
 
     private bool DoesMessageContainTwitterUrl(string message)
     {
-        return _twitterUrlRegex.IsMatch(message);
+        return Regex.IsMatch(message, TwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
     }
 
     private bool DoesMessageContainVxTwitterUrl(string message)
     {
-        return _vxTwitterUrlRegex.IsMatch(message);
+        return Regex.IsMatch(message, VxTwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
     }
 
     private IList<string> FixTwitterUrls(IMessage messageToFix)
     {
         var urlsFromMessage = GetTwitterUrlsFromMessage(messageToFix.Content);
-        return urlsFromMessage.Select(url => url.Replace(OriginalTwitterBaseUrl, FixedTwitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        return urlsFromMessage.Select(url =>
+        {
+            var match = Regex.Match(url, TwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+            var originalUrl = match.Groups[MatchedDomainKey].Value;
+            return url.Replace(originalUrl, FixedTwitterBaseUrl,
+                StringComparison.InvariantCultureIgnoreCase);
+        }).ToList();
     }
 
     private IList<string> FixVxTwitterUrls(IMessage messageToFix)
@@ -106,13 +117,13 @@ public class FixTwitterCommand : IReactionCommand
 
     private IEnumerable<string> GetTwitterUrlsFromMessage(string text)
     {
-        var matches = _twitterUrlRegex.Matches(text);
+        var matches = Regex.Matches(text, TwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         return matches.Select(t => t.Value).ToList();
     }
 
     private IEnumerable<string> GetVxTwitterUrlsFromMessage(string text)
     {
-        var matches = _vxTwitterUrlRegex.Matches(text);
+        var matches = Regex.Matches(text, VxTwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         return matches.Select(t => t.Value).ToList();
     }
 
