@@ -80,6 +80,7 @@ public class FixBlueskyCommand : IReactionCommand
             Description = description,
             FileAttachments = fileAttachments,
             NotifyWhenReplying = false,
+            AllowDeleteButton = true,
         };
     }
 

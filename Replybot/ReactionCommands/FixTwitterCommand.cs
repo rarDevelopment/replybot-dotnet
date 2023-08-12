@@ -53,7 +53,7 @@ public class FixTwitterCommand : IReactionCommand
 
         var messagesToSend = new List<CommandResponse>
         {
-            new() { Description = fixedMessage, NotifyWhenReplying = false }
+            new() { Description = fixedMessage, NotifyWhenReplying = false, AllowDeleteButton = true }
         };
         return Task.FromResult(messagesToSend);
     }
