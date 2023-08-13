@@ -10,10 +10,12 @@ namespace Replybot.BusinessLayer;
 public class ReplyBusinessLayer : IReplyBusinessLayer
 {
     private readonly IReplyDataLayer _replyDataLayer;
+    private readonly TimeSpan _matchTimeout;
 
-    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer)
+    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, BotSettings botSettings)
     {
         _replyDataLayer = replyDataLayer;
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
     public async Task<GuildReplyDefinition?> GetReplyDefinition(string message,
@@ -62,10 +64,9 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
         }
 
         var trigger = triggerTerm.ToLower(CultureInfo.InvariantCulture).Trim();
-        trigger = KeywordHandler.EscapeRegExp(trigger);
+        trigger = KeywordHandler.EscapeRegExp(trigger, _matchTimeout);
         var pattern = $"(^|(?<!\\w)){trigger}(\\b|(?!\\w))";
-        var regex = new Regex(pattern);
-        return regex.IsMatch(input.ToLower());
+        return Regex.IsMatch(input, pattern, RegexOptions.IgnoreCase, _matchTimeout);
     }
 
     public bool IsBotNameMentioned(SocketMessage message, ulong botUserId, IReadOnlyCollection<IGuildUser>? guildUsers)

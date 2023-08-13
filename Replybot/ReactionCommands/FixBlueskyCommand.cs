@@ -2,6 +2,7 @@
 using Replybot.Models;
 using Replybot.Models.Bluesky;
 using Replybot.ServiceLayer;
+using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.ReactionCommands;
 
@@ -9,14 +10,15 @@ public class FixBlueskyCommand : IReactionCommand
 {
     private readonly BlueskyApi _blueskyApi;
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
+    private readonly TimeSpan _matchTimeout;
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
-    private readonly Regex _blueskyUrlRegex = new(BlueskyUrlRegexPattern, RegexOptions.IgnoreCase);
     public const string FixTweetButtonEmojiId = "1126862392941367376";
     public const string FixTweetButtonEmojiName = "fixbluesky";
 
-    public FixBlueskyCommand(BlueskyApi blueskyApi)
+    public FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi)
     {
         _blueskyApi = blueskyApi;
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
     public bool CanHandle(string message, GuildConfiguration configuration)
@@ -94,10 +96,7 @@ public class FixBlueskyCommand : IReactionCommand
         };
     }
 
-    private bool DoesMessageContainBlueskyUrl(string message)
-    {
-        return _blueskyUrlRegex.IsMatch(message);
-    }
+    private bool DoesMessageContainBlueskyUrl(string message) => IsMatch(message, BlueskyUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
 
     private async Task<List<BlueskyMessage>> GetBlueskyEmbeds(IMessage messageToFix)
     {
@@ -166,7 +165,7 @@ public class FixBlueskyCommand : IReactionCommand
 
     private IEnumerable<string> GetBlueskyUrlsFromMessage(string text)
     {
-        var matches = _blueskyUrlRegex.Matches(text);
+        var matches = Matches(text, BlueskyUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         return matches.Select(t => t.Value).ToList();
     }
 

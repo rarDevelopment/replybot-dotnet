@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Replybot.Models;
+using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.ReactionCommands;
 
@@ -7,13 +8,17 @@ public class FixInstagramCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
     private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
-    private readonly Regex _instagramUrlRegex = new(InstagramUrlRegexPattern, RegexOptions.IgnoreCase);
     private const string DdInstagramUrlRegexPattern = "https?:\\/\\/(www.)?(ddinstagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
-    private readonly Regex _ddInstagramUrlRegex = new(DdInstagramUrlRegexPattern, RegexOptions.IgnoreCase);
+    private readonly TimeSpan _matchTimeout;
     public const string FixInstagramButtonEmojiId = "1116574189592260658";
     public const string FixInstagramButtonEmojiName = "fixinstagram";
     private const string OriginalInstagramBaseUrl = "instagram.com";
     private const string FixedInstagramBaseUrl = "ddinstagram.com";
+
+    public FixInstagramCommand(BotSettings botSettings)
+    {
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
+    }
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
@@ -84,12 +89,12 @@ public class FixInstagramCommand : IReactionCommand
 
     private bool DoesMessageContainInstagramUrl(string message)
     {
-        return _instagramUrlRegex.IsMatch(message);
+        return IsMatch(message, InstagramUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
     }
 
     private bool DoesMessageContainDdInstagramUrl(string message)
     {
-        return _ddInstagramUrlRegex.IsMatch(message);
+        return IsMatch(message, DdInstagramUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
     }
 
     private IList<string> FixInstagramUrls(IMessage messageToFix)
@@ -106,13 +111,13 @@ public class FixInstagramCommand : IReactionCommand
 
     private IEnumerable<string> GetInstagramUrlsFromMessage(string text)
     {
-        var matches = _instagramUrlRegex.Matches(text);
+        var matches = Matches(text, InstagramUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         return matches.Select(t => t.Value).ToList();
     }
 
     private IEnumerable<string> GetDdInstagramUrlsFromMessage(string text)
     {
-        var matches = _ddInstagramUrlRegex.Matches(text);
+        var matches = Matches(text, DdInstagramUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         return matches.Select(t => t.Value).ToList();
     }
 

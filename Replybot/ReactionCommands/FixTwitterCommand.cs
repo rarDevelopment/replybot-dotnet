@@ -15,9 +15,9 @@ public class FixTwitterCommand : IReactionCommand
     private const string FixedTwitterBaseUrl = "vxtwitter.com";
     private readonly TimeSpan _matchTimeout;
 
-    public FixTwitterCommand()
+    public FixTwitterCommand(BotSettings botSettings)
     {
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
+        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     }
 
     public bool CanHandle(string message, GuildConfiguration configuration)

@@ -7,10 +7,10 @@ namespace Replybot.BusinessLayer;
 
 public static class KeywordHandler
 {
-    public static string EscapeRegExp(string text)
+    public static string EscapeRegExp(string text, TimeSpan matchTimeout)
     {
-        var regex = new Regex("[.*+?^${}()|[\\]\\\\]");
-        var escapedText = regex.Replace(text, "\\$&");
+        var pattern = "[.*+?^${}()|[\\]\\\\]";
+        var escapedText = Regex.Replace(text, pattern, "\\$&", RegexOptions.None, matchTimeout);
         return escapedText;
     }
 
