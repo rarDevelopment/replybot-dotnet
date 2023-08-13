@@ -59,6 +59,8 @@ builder.ConfigureServices((host, services) =>
 
     var versionSettings = new VersionSettings(host.Configuration["Version:VersionNumber"]!);
 
+    var botSettings = new BotSettings(regexTimeoutMilliseconds: Convert.ToInt32(host.Configuration["Bot:RegexTimeoutMilliseconds"]));
+
     var discordSettings = new DiscordSettings(botToken: host.Configuration["Discord:BotToken"]!,
         avatarBaseUrl: host.Configuration["Discord:AvatarBaseUrl"]!,
         maxCharacters: Convert.ToInt32(host.Configuration["Discord:MaxCharacters"]));
@@ -73,13 +75,17 @@ builder.ConfigureServices((host, services) =>
     var howLongToBeatSettings = new HowLongToBeatSettings(host.Configuration["HowLongToBeat:BaseUrl"]!,
         host.Configuration["HowLongToBeat:Referer"]!);
 
+    var theMovieDbSettings = new TheMovieDbSettings(host.Configuration["TheMovieDB:ImdbBaseUrl"]!);
+
     var dictionarySettings = new DictionarySettings(host.Configuration["FreeDictionary:BaseUrl"]!);
     var blueskySettings = new BlueskySettings(host.Configuration["Bluesky:BaseUrl"]!);
 
     services.AddSingleton(versionSettings);
+    services.AddSingleton(botSettings);
     services.AddSingleton(discordSettings);
     services.AddSingleton(databaseSettings);
     services.AddSingleton(howLongToBeatSettings);
+    services.AddSingleton(theMovieDbSettings);
     services.AddSingleton(blueskySettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();

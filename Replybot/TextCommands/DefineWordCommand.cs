@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
+using Replybot.Models;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
@@ -16,14 +17,15 @@ public class DefineWordCommand : ITextCommand
     private const string TriggerRegexPattern = $"define (?<{SearchTermKey}>([a-z0-9 ])*)|what does (?<{SearchTermKey}>([a-z0-9 ]*)) mean\\??";
     private readonly TimeSpan _matchTimeout;
 
-    public DefineWordCommand(FreeDictionaryApi freeDictionaryApi,
+    public DefineWordCommand(BotSettings botSettings,
+        FreeDictionaryApi freeDictionaryApi,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _freeDictionaryApi = freeDictionaryApi;
         _discordFormatter = discordFormatter;
         _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
+        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutMilliseconds);
     }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)

@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
+using Replybot.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
 
@@ -9,6 +10,7 @@ namespace Replybot.TextCommands;
 public class HowLongIsMovieCommand : ITextCommand
 {
     private readonly TheMovieDbApi _theMovieDbApi;
+    private readonly TheMovieDbSettings _theMovieDbSettings;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
@@ -17,10 +19,12 @@ public class HowLongIsMovieCommand : ITextCommand
     private readonly TimeSpan _matchTimeout;
 
     public HowLongIsMovieCommand(TheMovieDbApi theMovieDbApi,
+        TheMovieDbSettings theMovieDbSettings,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _theMovieDbApi = theMovieDbApi;
+        _theMovieDbSettings = theMovieDbSettings;
         _discordFormatter = discordFormatter;
         _logger = logger;
         _matchTimeout = TimeSpan.FromMilliseconds(100);
@@ -74,7 +78,7 @@ public class HowLongIsMovieCommand : ITextCommand
                     var castText = castMembers.Count > 0 ? string.Join(", ", castMembers) : "No star(s) found";
 
                     var imdbLink = !string.IsNullOrEmpty(movie.ImdbId)
-                        ? $"https://www.imdb.com/title/{movie.ImdbId}"
+                        ? $"{_theMovieDbSettings.ImdbBaseUrl}{movie.ImdbId}"
                         : "No IMDB page found.";
 
                     var runtimeText = movie.Runtime is > 0 ? $"{ConvertMinutesToDisplayTime(movie.Runtime.Value)}" : "No runtime found.";

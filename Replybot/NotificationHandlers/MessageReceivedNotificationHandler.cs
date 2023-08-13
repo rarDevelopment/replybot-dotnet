@@ -5,6 +5,7 @@ using Replybot.Notifications;
 using System.Text.RegularExpressions;
 using Replybot.ReactionCommands;
 using Replybot.TextCommands.Models;
+using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
@@ -17,11 +18,13 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly DiscordSocketClient _client;
     private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
     private readonly ILogger<DiscordBot> _logger;
+    private readonly TimeSpan _matchTimeout;
 
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         IEnumerable<ITextCommand> textCommands,
         IEnumerable<IReactionCommand> reactionCommands,
+        BotSettings botSettings,
         VersionSettings versionSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,
@@ -35,6 +38,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _client = client;
         _logMessageBuilder = logMessageBuilder;
         _logger = logger;
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutMilliseconds);
     }
 
     public Task Handle(MessageReceivedNotification notification, CancellationToken cancellationToken)
@@ -173,12 +177,9 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
     private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)
     {
-        var discordLinkRegex =
-            new Regex(
-                @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)",
-                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        const string pattern = @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)";
 
-        var discordLinkMatches = discordLinkRegex.Matches(messageWithLink.Content);
+        var discordLinkMatches = Matches(messageWithLink.Content, pattern, RegexOptions.IgnoreCase, _matchTimeout);
         if (discordLinkMatches.Any())
         {
             foreach (Match match in discordLinkMatches)
