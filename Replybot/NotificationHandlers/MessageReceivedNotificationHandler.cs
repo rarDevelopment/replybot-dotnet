@@ -38,7 +38,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _client = client;
         _logMessageBuilder = logMessageBuilder;
         _logger = logger;
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutMilliseconds);
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
     public Task Handle(MessageReceivedNotification notification, CancellationToken cancellationToken)

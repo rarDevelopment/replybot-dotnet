@@ -25,7 +25,7 @@ public class DefineWordCommand : ITextCommand
         _freeDictionaryApi = freeDictionaryApi;
         _discordFormatter = discordFormatter;
         _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutMilliseconds);
+        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)

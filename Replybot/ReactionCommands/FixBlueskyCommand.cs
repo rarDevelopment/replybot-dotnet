@@ -18,7 +18,7 @@ public class FixBlueskyCommand : IReactionCommand
     public FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi)
     {
         _blueskyApi = blueskyApi;
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutMilliseconds);
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
     public bool CanHandle(string message, GuildConfiguration configuration)

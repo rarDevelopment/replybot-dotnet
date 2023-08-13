@@ -15,7 +15,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
     public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, BotSettings botSettings)
     {
         _replyDataLayer = replyDataLayer;
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutMilliseconds);
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
     public async Task<GuildReplyDefinition?> GetReplyDefinition(string message,

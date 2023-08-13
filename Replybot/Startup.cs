@@ -59,11 +59,11 @@ builder.ConfigureServices((host, services) =>
 
     var versionSettings = new VersionSettings(host.Configuration["Version:VersionNumber"]!);
 
-    var botSettings = new BotSettings(regexTimeoutMilliseconds: Convert.ToInt32(host.Configuration["Bot:RegexTimeoutMilliseconds"]));
+    var botSettings = new BotSettings(Convert.ToInt32(host.Configuration["Bot:RegexTimeoutTicks"]));
 
-    var discordSettings = new DiscordSettings(botToken: host.Configuration["Discord:BotToken"]!,
-        avatarBaseUrl: host.Configuration["Discord:AvatarBaseUrl"]!,
-        maxCharacters: Convert.ToInt32(host.Configuration["Discord:MaxCharacters"]));
+    var discordSettings = new DiscordSettings(host.Configuration["Discord:BotToken"]!,
+        host.Configuration["Discord:AvatarBaseUrl"]!,
+        Convert.ToInt32(host.Configuration["Discord:MaxCharacters"]));
 
     var databaseSettings = new DatabaseSettings(
         host.Configuration["Database:Cluster"]!,

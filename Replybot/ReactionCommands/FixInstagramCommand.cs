@@ -17,7 +17,7 @@ public class FixInstagramCommand : IReactionCommand
 
     public FixInstagramCommand(BotSettings botSettings)
     {
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutMilliseconds);
+        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
     public bool CanHandle(string message, GuildConfiguration configuration)

@@ -17,7 +17,7 @@ public class FixTwitterCommand : IReactionCommand
 
     public FixTwitterCommand(BotSettings botSettings)
     {
-        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutMilliseconds);
+        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     }
 
     public bool CanHandle(string message, GuildConfiguration configuration)

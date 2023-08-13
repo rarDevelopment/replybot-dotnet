@@ -2,10 +2,10 @@
 
 public class BotSettings
 {
-    public BotSettings(int regexTimeoutMilliseconds)
+    public BotSettings(int regexTimeoutTicks)
     {
-        RegexTimeoutMilliseconds = regexTimeoutMilliseconds;
+        RegexTimeoutTicks = regexTimeoutTicks;
     }
 
-    public int RegexTimeoutMilliseconds { get; set; }
+    public int RegexTimeoutTicks { get; set; }
 }
