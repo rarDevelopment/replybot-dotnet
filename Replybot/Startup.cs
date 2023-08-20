@@ -126,10 +126,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();
     services.AddSingleton<IReactionCommand, FixInstagramCommand>();
     services.AddSingleton<IReactionCommand, FixBlueskyCommand>();
-
-    services.AddSingleton<FixTwitterCommand>();
-    services.AddSingleton<FixInstagramCommand>();
-    services.AddSingleton<FixBlueskyCommand>();
+    services.AddSingleton<IReactionCommand, FixNitterCommand>();
 
     services.AddSingleton<HowLongToBeatApi>();
     services.AddSingleton<FreeDictionaryApi>();
