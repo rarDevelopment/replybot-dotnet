@@ -89,11 +89,11 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
                     messageReference: new MessageReference(message.Id,
                         failIfNotExists: false),
                     allowedMentions: allowedMentions,
-                    components: buttonBuilder.Build());
+                    components: buttonBuilder?.Build());
             }
             else
             {
-                await message.ReplyAsync(commandResponse.Description, allowedMentions: allowedMentions, components: buttonBuilder?.Build());
+                await message.ReplyAsync(commandResponse.Description, allowedMentions: allowedMentions, components: buttonBuilder?.Build(), embed: commandResponse.Embed);
             }
         }
     }
