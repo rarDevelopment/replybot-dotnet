@@ -1,25 +1,22 @@
 ﻿using System.Text.RegularExpressions;
-using DiscordDotNetUtilities.Interfaces;
 using Replybot.Models;
 
 namespace Replybot.ReactionCommands;
 
-public class FixNitterCommand : IReactionCommand
+public class FixTweetsWithoutAccountCommand : IReactionCommand
 {
-    private readonly IDiscordFormatter _discordFormatter;
     public readonly string NoLinkMessage = "I don't think there's a relevant link there.";
     private const string MatchedDomainKey = "matchedDomain";
     private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|t.co|x.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private const string NitterUrlRegexPattern = "https?:\\/\\/(www.)?(nitter.net)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     public const string FixTweetButtonEmojiId = "1133174470966784100";
-    public const string FixNitterButtonEmojiName = "fixnitter";
+    public const string ViewTweetsWithoutAccountButtonEmojiName = "view_tweets_without_account";
     private const string OriginalTwitterBaseUrl = "twitter.com";
     private const string NitterBaseUrl = "nitter.net";
     private readonly TimeSpan _matchTimeout;
 
-    public FixNitterCommand(IDiscordFormatter discordFormatter, BotSettings botSettings)
+    public FixTweetsWithoutAccountCommand(BotSettings botSettings)
     {
-        _discordFormatter = discordFormatter;
         _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     }
 
@@ -61,7 +58,7 @@ public class FixNitterCommand : IReactionCommand
 
         var messagesToSend = new List<CommandResponse>
         {
-            new() { Embed = _discordFormatter.BuildRegularEmbed("View Tweets Without An Account", fixedMessage, reactingUser) }
+            new() { Description = fixedMessage }
         };
         return Task.FromResult(messagesToSend);
     }
@@ -69,12 +66,12 @@ public class FixNitterCommand : IReactionCommand
     private string BuildNitterMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
     {
         var fixedTweets = FixTwitterUrls(message);
-        var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
+        var tweetDescribeText = fixedTweets.Count == 1 ? "that tweet" : "those tweets";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
             ? $" (in {userWhoSentTweets.Mention}'s message)"
             : "";
-        var authorMentionMessage = $"{requestingUser.Mention} You can use the following to view the linked {tweetDescribeText}{differentUserText} without an account (it is correct that there's no preview):\n";
-        return $"{authorMentionMessage}{string.Join("\n", fixedTweets.Select(t => $"[{t.Replace($"https://{NitterBaseUrl}", "")}]({t})"))}";
+        var authorMentionMessage = $"{requestingUser.Mention} Here you can access {tweetDescribeText}{differentUserText} and their associated thread without an account:\n";
+        return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}\nNote: it is intentional that there is no preview.";
     }
 
     private string BuildOriginalTweetsMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
@@ -85,7 +82,7 @@ public class FixNitterCommand : IReactionCommand
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
             ? $" (in {userWhoSentTweets.Mention}'s message)"
             : "";
-        var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {tweetDescribeText}{differentUserText}: \n";
+        var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {tweetDescribeText}{differentUserText}:\n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
     }
 
@@ -102,12 +99,6 @@ public class FixNitterCommand : IReactionCommand
     private IList<string> FixTwitterUrls(IMessage messageToFix)
     {
         var urlsFromMessage = GetTwitterUrlsFromMessage(messageToFix.Content);
-        return urlsFromMessage.Select(url => url.Replace(OriginalTwitterBaseUrl, NitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
-    }
-
-    private IList<string> FixNitterUrls(IMessage messageToFix)
-    {
-        var urlsFromMessage = GetNitterUrlsFromMessage(messageToFix.Content);
         return urlsFromMessage.Select(url =>
         {
             var match = Regex.Match(url, TwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
@@ -115,6 +106,12 @@ public class FixNitterCommand : IReactionCommand
             return url.Replace(originalUrl, NitterBaseUrl,
                 StringComparison.InvariantCultureIgnoreCase);
         }).ToList();
+    }
+
+    private IList<string> FixNitterUrls(IMessage messageToFix)
+    {
+        var urlsFromMessage = GetNitterUrlsFromMessage(messageToFix.Content);
+        return urlsFromMessage.Select(url => url.Replace(NitterBaseUrl, OriginalTwitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
     private IEnumerable<string> GetTwitterUrlsFromMessage(string text)
@@ -131,6 +128,6 @@ public class FixNitterCommand : IReactionCommand
 
     private static Emote GetFixNitterEmote()
     {
-        return Emote.Parse($"<:{FixNitterButtonEmojiName}:{FixTweetButtonEmojiId}>");
+        return Emote.Parse($"<:{ViewTweetsWithoutAccountButtonEmojiName}:{FixTweetButtonEmojiId}>");
     }
 }
