@@ -58,7 +58,12 @@ public class FixTweetsWithoutAccountCommand : IReactionCommand
 
         var messagesToSend = new List<CommandResponse>
         {
-            new() { Description = fixedMessage }
+            new()
+            {
+                Description = fixedMessage,
+                AllowDeleteButton = true,
+                NotifyWhenReplying = false
+            }
         };
         return Task.FromResult(messagesToSend);
     }
