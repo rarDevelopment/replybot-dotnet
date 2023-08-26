@@ -73,7 +73,7 @@ public class FixTweetsWithoutAccountCommand : IReactionCommand
         var fixedTweets = FixTwitterUrls(message);
         var tweetDescribeText = fixedTweets.Count == 1 ? "that tweet" : "those tweets";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
-            ? $" (in {userWhoSentTweets.Mention}'s message)"
+            ? $" (in {userWhoSentTweets.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here you can access {tweetDescribeText}{differentUserText} and their associated thread without an account:\n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}\nNote: it is intentional that there is no preview.";
@@ -85,7 +85,7 @@ public class FixTweetsWithoutAccountCommand : IReactionCommand
         var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
         var isAre = fixedTweets.Count == 1 ? "is" : "are";
         var differentUserText = requestingUser.Id != userWhoSentTweets.Id
-            ? $" (in {userWhoSentTweets.Mention}'s message)"
+            ? $" (in {userWhoSentTweets.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {tweetDescribeText}{differentUserText}:\n";
         return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
