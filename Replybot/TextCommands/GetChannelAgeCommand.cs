@@ -26,7 +26,7 @@ public class GetChannelAgeCommand : ITextCommand
     public Task<CommandResponse> Handle(SocketMessage message)
     {
         var channelAgeText = GetChannelAgeText(message.Channel as SocketGuildChannel);
-        var embed = _discordFormatter.BuildRegularEmbed("Server Member Count",
+        var embed = _discordFormatter.BuildRegularEmbedWithUserFooter("Server Member Count",
             $"This channel{channelAgeText}", message.Author);
 
         return Task.FromResult(new CommandResponse

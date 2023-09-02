@@ -29,14 +29,14 @@ public class GetMemberCountCommand : ITextCommand
         {
             return Task.FromResult(new CommandResponse
             {
-                Embed = _discordFormatter.BuildErrorEmbed("Not a Server",
+                Embed = _discordFormatter.BuildErrorEmbedWithUserFooter("Not a Server",
                     "This command can only be used in a Discord server, it will not work in a DM.", message.Author),
                 StopProcessing = true,
                 NotifyWhenReplying = true,
             });
         }
 
-        var embed = _discordFormatter.BuildRegularEmbed("Server Member Count",
+        var embed = _discordFormatter.BuildRegularEmbedWithUserFooter("Server Member Count",
             $"This server has **{guild.MemberCount}** members.", message.Author);
 
         return Task.FromResult(new CommandResponse

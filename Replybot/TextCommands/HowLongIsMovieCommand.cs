@@ -93,12 +93,12 @@ public class HowLongIsMovieCommand : ITextCommand
 
                 if (embedFieldBuilders.Count == 0)
                 {
-                    return _discordFormatter.BuildRegularEmbed("No Movie Found",
+                    return _discordFormatter.BuildRegularEmbedWithUserFooter("No Movie Found",
                         "Sorry, I couldn't find any movies that matched your search.",
                         message.Author);
                 }
 
-                return _discordFormatter.BuildRegularEmbed("Movie Duration(s)",
+                return _discordFormatter.BuildRegularEmbedWithUserFooter("Movie Duration(s)",
                     "",
                     message.Author,
                     embedFieldBuilders);
@@ -107,13 +107,12 @@ public class HowLongIsMovieCommand : ITextCommand
             {
                 _logger.Log(LogLevel.Error, "Error in HowLongIsMovie command - {0}", ex.Message);
                 return _discordFormatter.BuildErrorEmbed("Movie Duration",
-                    "Hmm, couldn't do that search for some reason. Try again later!",
-                    embedFooterBuilder: null);
+                    "Hmm, couldn't do that search for some reason. Try again later!");
             }
         }
 
         _logger.Log(LogLevel.Error, $"Error in HowLongIsMovieCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbed("Error Finding Movie Duration",
+        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Movie Duration",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }

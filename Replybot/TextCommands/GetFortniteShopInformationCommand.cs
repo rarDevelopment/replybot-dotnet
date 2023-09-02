@@ -66,7 +66,7 @@ public class GetFortniteShopInformationCommand : ITextCommand
             BuildShopSection(shopInfo.Daily, "Daily")
         };
 
-        return _discordFormatter.BuildRegularEmbed(
+        return _discordFormatter.BuildRegularEmbedWithUserFooter(
             $"Fortnite Shop Information - {date.ToShortDateString()}",
             "",
             message.Author,

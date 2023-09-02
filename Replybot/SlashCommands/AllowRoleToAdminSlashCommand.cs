@@ -29,7 +29,7 @@ public class AllowRoleToAdminSlashCommand : InteractionModuleBase<SocketInteract
         if (Context.User is not IGuildUser requestingUser)
         {
             await FollowupAsync(embed:
-                _discordFormatter.BuildErrorEmbed("Invalid Action",
+                _discordFormatter.BuildErrorEmbedWithUserFooter("Invalid Action",
                     "Sorry, you need to be a valid user in a valid server to use this bot.",
                     Context.User));
             return;
@@ -38,7 +38,7 @@ public class AllowRoleToAdminSlashCommand : InteractionModuleBase<SocketInteract
         if (!await _roleHelper.CanAdministrate(Context.Guild, requestingUser))
         {
             await FollowupAsync(embed:
-                _discordFormatter.BuildErrorEmbed("Insufficient Permissions",
+                _discordFormatter.BuildErrorEmbedWithUserFooter("Insufficient Permissions",
                     "Sorry, you do not have permission to manage the bot.",
                     Context.User));
             return;
@@ -47,7 +47,7 @@ public class AllowRoleToAdminSlashCommand : InteractionModuleBase<SocketInteract
         var config = await _configurationBusinessLayer.GetGuildConfiguration(Context.Guild);
         if (config == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbed("Oops!",
+            await RespondAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter("Oops!",
                 "There was a problem reading the configuration for this server. That shouldn't happen, so maybe try again later.",
                 Context.User));
             return;
@@ -116,13 +116,13 @@ public class AllowRoleToAdminSlashCommand : InteractionModuleBase<SocketInteract
                 });
             }
 
-            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbed("Configuring Bot Permissions",
+            await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter("Configuring Bot Permissions",
                 $"**NOTE:** Users added to this role later will still need to be manually {(setAllowed ? "Allowed" : "Removed")} (or you can run this command again).",
                 Context.User, embedFieldBuilders));
         }
         else
         {
-            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbed("Configuring Bot Permissions",
+            await FollowupAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter("Configuring Bot Permissions",
                 "The command failed. Please try again later, or there might be an issue with your request.",
                 Context.User));
         }

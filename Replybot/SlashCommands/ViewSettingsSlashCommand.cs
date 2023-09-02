@@ -30,7 +30,7 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
 
             if (guildConfig == null)
             {
-                await RespondAsync(embed: _discordFormatter.BuildErrorEmbed("Oops!",
+                await RespondAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter("Oops!",
                     "There was a problem reading the configuration for this server. That shouldn't happen, so maybe try again later.",
                     Context.User));
                 return;
@@ -46,7 +46,7 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
             message += $"Fix Bluesky Reactions: {GetEnabledText(guildConfig.EnableFixBlueskyReactions)}\n";
             message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (+ any users with the Administrator permission)\n";
 
-            await RespondAsync(embed: _discordFormatter.BuildRegularEmbed($"Settings for {Context.Guild.Name}",
+            await RespondAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter($"Settings for {Context.Guild.Name}",
                 message,
                 Context.User));
             return;
