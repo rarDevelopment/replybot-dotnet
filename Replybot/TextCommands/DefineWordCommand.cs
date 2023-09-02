@@ -64,7 +64,7 @@ public class DefineWordCommand : ITextCommand
 
             if (splitWords.Count <= 0)
             {
-                return _discordFormatter.BuildErrorEmbed("No Word Provided",
+                return _discordFormatter.BuildErrorEmbedWithUserFooter("No Word Provided",
                     "What would you like me to define?",
                     message.Author);
             }
@@ -74,7 +74,7 @@ public class DefineWordCommand : ITextCommand
                 var definition = await _freeDictionaryApi.GetDefinition(splitWords[0]);
                 if (definition == null)
                 {
-                    return _discordFormatter.BuildErrorEmbed("No Definition Found",
+                    return _discordFormatter.BuildErrorEmbedWithUserFooter("No Definition Found",
                         "I couldn't find a definition for that word.",
                         message.Author);
                 }
@@ -83,7 +83,7 @@ public class DefineWordCommand : ITextCommand
 
                 var embedFieldBuilders = BuildDefinitionFields(definition);
 
-                return _discordFormatter.BuildRegularEmbed(
+                return _discordFormatter.BuildRegularEmbedWithUserFooter(
                     definition.Word,
                     origin,
                     message.Author,
@@ -92,14 +92,14 @@ public class DefineWordCommand : ITextCommand
             catch (HttpRequestException ex)
             {
                 _logger.Log(LogLevel.Error, "Error in DefineWordCommand: {0}", ex.Message);
-                return _discordFormatter.BuildErrorEmbed("Error Defining Word",
+                return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
                     "There was an error retrieving that definition, please try again later.",
                     message.Author);
             }
         }
 
         _logger.Log(LogLevel.Error, $"Error in DefineWordCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbed("Error Defining Word",
+        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }

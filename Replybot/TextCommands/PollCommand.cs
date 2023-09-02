@@ -44,7 +44,7 @@ public class PollCommand : ITextCommand
         if (messageWithoutTrigger.Length == 0)
         {
             return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                    "You need at least two answers in your poll", embedFooterBuilder: null));
+                    "You need at least two answers in your poll"));
         }
 
         var splitArgs = messageWithoutTrigger.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
@@ -52,7 +52,7 @@ public class PollCommand : ITextCommand
         if (splitArgs.Count <= 2)
         {
             return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                "You need at least two answers in your poll", embedFooterBuilder: null));
+                "You need at least two answers in your poll"));
         }
 
         var question = splitArgs[0];
@@ -61,14 +61,13 @@ public class PollCommand : ITextCommand
         if (answers.Count > _pollOptionsAlphabet.Count)
         {
             return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
-                    $"You can't have more than {_pollOptionsAlphabet.Count} answers. Nobody is going to read a poll that long anyway 😌",
-                    embedFooterBuilder: null));
+                    $"You can't have more than {_pollOptionsAlphabet.Count} answers. Nobody is going to read a poll that long anyway 😌"));
         }
 
         var reactions = answers.Select((_, index) => _pollOptionsAlphabet[index]).ToList();
         var answersToDisplay = answers.Select((answer, index) => $"{reactions[index]} {answer}").ToList();
 
-        var pollEmbed = _discordFormatter.BuildRegularEmbed(question, string.Join("\n", answersToDisplay), message.Author);
+        var pollEmbed = _discordFormatter.BuildRegularEmbedWithUserFooter(question, string.Join("\n", answersToDisplay), message.Author);
         var reactionEmotes = reactions.Select(e => new Emoji(e)).ToList();
 
         return new PollEmbed(pollEmbed, reactionEmotes);

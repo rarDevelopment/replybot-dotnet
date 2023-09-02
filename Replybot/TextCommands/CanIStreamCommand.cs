@@ -59,7 +59,7 @@ public class CanIStreamCommand : ITextCommand
             IsInline = false
         }).ToList();
 
-        return _discordFormatter.BuildRegularEmbed("Stream Link Options", Description, message.Author,
+        return _discordFormatter.BuildRegularEmbedWithUserFooter("Stream Link Options", Description, message.Author,
             embedFieldBuilders);
     }
 }

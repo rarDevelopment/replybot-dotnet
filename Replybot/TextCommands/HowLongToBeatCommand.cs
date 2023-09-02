@@ -119,7 +119,7 @@ public class HowLongToBeatCommand : ITextCommand
                     IsInline = false
                 });
 
-                return _discordFormatter.BuildRegularEmbed("How Long To Beat",
+                return _discordFormatter.BuildRegularEmbedWithUserFooter("How Long To Beat",
                     "",
                     message.Author,
                     embedFieldBuilders,
@@ -129,13 +129,12 @@ public class HowLongToBeatCommand : ITextCommand
             {
                 _logger.Log(LogLevel.Error, "Error in HowLongToBeat command - {0}", ex.Message);
                 return _discordFormatter.BuildErrorEmbed("How Long To Beat",
-                    $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}",
-                    embedFooterBuilder: null);
+                    $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}");
             }
         }
 
         _logger.Log(LogLevel.Error, $"Error in HowLongToBeatCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbed("Error Finding Game",
+        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Game",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }
