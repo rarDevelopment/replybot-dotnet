@@ -121,7 +121,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, Magic8BallCommand>();
     services.AddSingleton<ITextCommand, SongLinkCommand>();
     services.AddSingleton<ITextCommand, SearchCommand>();
-    services.AddSingleton<ITextCommand, ChooseForMeCommand>();
+    services.AddSingleton<ITextCommand, ChooseCommand>();
     services.AddSingleton<ITextCommand, VersionCommand>();
 
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();

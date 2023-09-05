@@ -68,6 +68,5 @@ public class ChooseCommand : ITextCommand
             $"Error in ChooseCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
         return
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!";
-
     }
 }
