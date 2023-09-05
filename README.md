@@ -95,6 +95,10 @@ If you're a Fortnite player, "Toby Fortnite shop" will show you a glimpse of wha
 
 Make those challenging decisions - say `Toby flip a coin` and he'll do so.
 
+## Choose For Me
+
+Make _more_ challenging decisions - say something like `"Toby pick one for me: [option 1], [option 2], [option 3], and so on..."` and he'll pick one of the comma-separated options for you. You can trigger this with a variety of phrases, like `Toby choose:` or `Toby please select one for me:` or `Toby random:`, but the colon `:` is important!
+
 ## Search Something Real Quick
 
 Toby can grab a quick link to some search results for you, just say `Toby search [search term here]`. Toby prefers DuckDuckGo 🦆 so if you'd like to use Google specifically, say `Toby google [search term here]`.

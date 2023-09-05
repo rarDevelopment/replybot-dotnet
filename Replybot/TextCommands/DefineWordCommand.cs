@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
-using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Models.FreeDictionary;
 using Replybot.ServiceLayer;
@@ -52,9 +51,7 @@ public class DefineWordCommand : ITextCommand
 
     private async Task<Embed?> GetWordDefinitionEmbed(SocketMessage message)
     {
-        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
-
-        var match = Regex.Match(messageWithoutBotName, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        var match = Regex.Match(message.Content, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         if (match.Success)
         {
             var matchedGroup = match.Groups[SearchTermKey];
