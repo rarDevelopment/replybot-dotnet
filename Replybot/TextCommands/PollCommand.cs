@@ -48,8 +48,7 @@ public class PollCommand : ITextCommand
 
     private PollEmbed BuildPollEmbed(SocketMessage message)
     {
-        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
-        var match = Regex.Match(messageWithoutBotName, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        var match = Regex.Match(message.Content, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
 
         if (match.Success)
         {

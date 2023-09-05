@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
-using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
@@ -54,9 +53,7 @@ public class HowLongIsMovieCommand : ITextCommand
 
     private async Task<Embed?> GetHowLongIsMovieEmbed(SocketMessage message)
     {
-        var messageWithoutBotName = KeywordHandler.RemoveBotName(message.Content);
-
-        var match = Regex.Match(messageWithoutBotName, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        var match = Regex.Match(message.Content, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         if (match.Success)
         {
             var searchText = match.Groups[SearchTermKey].Value;

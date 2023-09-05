@@ -41,23 +41,6 @@ public static class KeywordHandler
         return HttpUtility.UrlPathEncode(text);
     }
 
-    public static string ReplaceTriggerInMessage(this string text, IReadOnlyList<string> triggersToReplace)
-    {
-        var replacedText = text;
-        for (int replacementsDone = 0, index = 0; replacementsDone == 0 && index < triggersToReplace.Count; index++)
-        {
-            var indexOfTrigger = text.IndexOf(triggersToReplace[index], StringComparison.InvariantCultureIgnoreCase);
-            if (indexOfTrigger == -1)
-            {
-                continue;
-            }
-            replacedText = text.Remove(indexOfTrigger, triggersToReplace[index].Length);
-            replacementsDone++;
-        }
-
-        return replacedText;
-    }
-
     public static string RemoveTriggersFromMessage(this string messageContent, string[] triggersToRemove)
     {
         var messageWithoutTrigger = messageContent;
@@ -133,7 +116,7 @@ public static class KeywordHandler
         return botNameFound;
     }
 
-    public static string RemoveBotName(string messageContent)
+    private static string RemoveBotName(string messageContent)
     {
         var messageWithoutBotName = messageContent;
         foreach (var botName in BotNames.Names)
@@ -197,7 +180,7 @@ public static class KeywordHandler
         return BuildKeyword(keyword.ToString());
     }
 
-    public static string BuildKeyword(string keyword)
+    private static string BuildKeyword(string keyword)
     {
         return $"{{{{{keyword.ToUpper(CultureInfo.InvariantCulture)}}}}}";
     }
