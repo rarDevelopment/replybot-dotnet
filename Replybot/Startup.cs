@@ -80,6 +80,7 @@ builder.ConfigureServices((host, services) =>
 
     var dictionarySettings = new DictionarySettings(host.Configuration["FreeDictionary:BaseUrl"]!);
     var blueskySettings = new BlueskySettings(host.Configuration["Bluesky:BaseUrl"]!);
+    var siteIgnoreListSettings = new SiteIgnoreListSettings(host.Configuration["SiteIgnoreList:Url"]!);
 
     services.AddSingleton(versionSettings);
     services.AddSingleton(botSettings);
@@ -133,6 +134,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<HowLongToBeatApi>();
     services.AddSingleton<FreeDictionaryApi>();
     services.AddSingleton<BlueskyApi>();
+    services.AddSingleton<SiteIgnoreService>();
 
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
@@ -163,6 +165,11 @@ builder.ConfigureServices((host, services) =>
     services.AddHttpClient(HttpClients.Bluesky.ToString(), config =>
     {
         config.BaseAddress = new Uri(blueskySettings.BaseUrl);
+    });
+
+    services.AddHttpClient(HttpClients.SiteIgnoreList.ToString(), config =>
+    {
+        config.BaseAddress = new Uri(siteIgnoreListSettings.Url);
     });
 });
 

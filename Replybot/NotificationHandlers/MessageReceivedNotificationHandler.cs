@@ -5,6 +5,7 @@ using Replybot.Notifications;
 using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.ReactionCommands;
+using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
 using static System.Text.RegularExpressions.Regex;
 
@@ -19,6 +20,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly DiscordSettings _discordSettings;
     private readonly DiscordSocketClient _client;
     private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
+    private readonly SiteIgnoreService _siteIgnoreService;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private readonly TimeSpan _matchTimeout;
@@ -33,6 +35,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         DiscordSettings discordSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,
+        SiteIgnoreService siteIgnoreService,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
@@ -44,6 +47,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _discordSettings = discordSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
+        _siteIgnoreService = siteIgnoreService;
         _discordFormatter = discordFormatter;
         _logger = logger;
         _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
@@ -196,11 +200,11 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             await HandleDiscordMessageLinks(channel, messageWithLinks, discordLinks);
 
-            await HandleGeneralLinks(channel, messageWithLinks, otherLinks);
+            await HandleGeneralLinks(messageWithLinks, otherLinks);
         }
     }
 
-    private async Task HandleGeneralLinks(SocketGuildChannel channel, SocketMessage messageWithLinks, IEnumerable<string> otherLinks)
+    private async Task HandleGeneralLinks(SocketMessage messageWithLinks, IEnumerable<string> otherLinks)
     {
         if (messageWithLinks.Channel is not SocketTextChannel textChannel)
         {
@@ -214,8 +218,15 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             return;
         }
 
+        var sitesToIgnore = await _siteIgnoreService.GetSiteIgnoreList();
+        var sitesToIgnoreList = sitesToIgnore?.Split("\n").Where(s => s.Trim().Length > 0).ToList();
+
         foreach (var link in otherLinks)
         {
+            if (ShouldIgnoreLink(sitesToIgnoreList, link))
+            {
+                continue;
+            }
             var relevantMessage =
                 messages.OrderByDescending(m => m.Timestamp).FirstOrDefault(m => m.Content.Contains(link, StringComparison.InvariantCultureIgnoreCase));
             if (relevantMessage == null)
@@ -227,6 +238,13 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 $"{PreviouslyPostedEmoji} This link was posted earlier by {relevantMessage.Author.Mention}! {PreviouslyPostedEmoji}\n[Click here to go to the previous discussion]({relevantMessage.GetJumpUrl()}).");
             await messageWithLinks.Channel.SendMessageAsync(embed: embed, messageReference: new MessageReference(messageWithLinks.Id));
         }
+    }
+
+    private static bool ShouldIgnoreLink(IReadOnlyCollection<string>? sitesToIgnore, string link)
+    {
+        return sitesToIgnore != null &&
+               sitesToIgnore.Any(s => link.Contains(s,
+                   StringComparison.InvariantCultureIgnoreCase));
     }
 
     private async Task HandleDiscordMessageLinks(SocketGuildChannel channel, SocketMessage messageWithLinks,
