@@ -217,7 +217,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         foreach (var link in otherLinks)
         {
             var relevantMessage =
-                messages.FirstOrDefault(m => m.Content.Contains(link, StringComparison.InvariantCultureIgnoreCase));
+                messages.OrderByDescending(m => m.Timestamp).FirstOrDefault(m => m.Content.Contains(link, StringComparison.InvariantCultureIgnoreCase));
             if (relevantMessage == null)
             {
                 continue;
