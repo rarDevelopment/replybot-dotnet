@@ -3,6 +3,7 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
+using DiscordDotNetUtilities.Interfaces;
 using Replybot.ReactionCommands;
 using Replybot.TextCommands.Models;
 using static System.Text.RegularExpressions.Regex;
@@ -15,10 +16,13 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
     private readonly IEnumerable<ITextCommand> _textCommands;
     private readonly IEnumerable<IReactionCommand> _reactionCommands;
     private readonly VersionSettings _versionSettings;
+    private readonly DiscordSettings _discordSettings;
     private readonly DiscordSocketClient _client;
     private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
+    private readonly IDiscordFormatter _discordFormatter;
     private readonly ILogger<DiscordBot> _logger;
     private readonly TimeSpan _matchTimeout;
+    private const string PreviouslyPostedEmoji = "<:slowpoke:1149574363599868004>";
 
     public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
@@ -26,8 +30,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         IEnumerable<IReactionCommand> reactionCommands,
         BotSettings botSettings,
         VersionSettings versionSettings,
+        DiscordSettings discordSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,
+        IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
         _replyBusinessLayer = replyBusinessLayer;
@@ -35,8 +41,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         _textCommands = textCommands;
         _reactionCommands = reactionCommands;
         _versionSettings = versionSettings;
+        _discordSettings = discordSettings;
         _client = client;
         _logMessageBuilder = logMessageBuilder;
+        _discordFormatter = discordFormatter;
         _logger = logger;
         _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
@@ -55,7 +63,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
 
             if (guildChannel != null)
             {
-                await HandleDiscordMessageLink(guildChannel, notification.Message);
+                await HandleLinks(guildChannel, notification.Message);
             }
 
             IGuild? guild = guildChannel?.Guild;
@@ -175,68 +183,113 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         return commandResponse;
     }
 
-    private async Task HandleDiscordMessageLink(SocketGuildChannel channel, SocketMessage messageWithLink)
+    private async Task HandleLinks(SocketGuildChannel channel, SocketMessage messageWithLinks)
     {
         const string pattern = @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)";
 
-        var discordLinkMatches = Matches(messageWithLink.Content, pattern, RegexOptions.IgnoreCase, _matchTimeout);
-        if (discordLinkMatches.Any())
+        var linkMatches = Matches(messageWithLinks.Content, pattern, RegexOptions.IgnoreCase, _matchTimeout);
+        if (linkMatches.Any())
         {
-            foreach (Match match in discordLinkMatches)
+            var links = linkMatches.Select(lm => lm.Value).ToList();
+            var discordLinks = links.Where(l => l.Contains(_discordSettings.BaseUrl));
+            var otherLinks = links.Where(l => !l.Contains(_discordSettings.BaseUrl));
+
+            await HandleDiscordMessageLinks(channel, messageWithLinks, discordLinks);
+
+            await HandleGeneralLinks(channel, messageWithLinks, otherLinks);
+        }
+    }
+
+    private async Task HandleGeneralLinks(SocketGuildChannel channel, SocketMessage messageWithLinks, IEnumerable<string> otherLinks)
+    {
+        if (messageWithLinks.Channel is not SocketTextChannel textChannel)
+        {
+            return;
+        }
+
+        var messages = (await textChannel.GetMessagesAsync(messageWithLinks, Direction.Before, 150).FlattenAsync()).ToList();
+
+        if (!messages.Any())
+        {
+            return;
+        }
+
+        foreach (var link in otherLinks)
+        {
+            var relevantMessage =
+                messages.FirstOrDefault(m => m.Content.Contains(link, StringComparison.InvariantCultureIgnoreCase));
+            if (relevantMessage == null)
             {
-                var fullUrl = new Uri(match.Value);
-                var urlSplitOnDot = fullUrl.Host.Split('.');
-                if (!urlSplitOnDot.Contains("discord"))
-                {
-                    continue;
-                }
-
-                var segmentsJoined = string.Join("", fullUrl.Segments).Split("/");
-                if (!segmentsJoined.Contains("channels"))
-                {
-                    continue;
-                }
-
-                if (segmentsJoined.Length < 5)
-                {
-                    continue;
-                }
-
-                SocketGuild guild;
-                var guildIdFromUrl = Convert.ToUInt64(segmentsJoined[2]);
-                if (channel.Guild.Id != guildIdFromUrl)
-                {
-                    guild = _client.GetGuild(guildIdFromUrl);
-                    if (guild is null)
-                    {
-                        continue;
-                    }
-                }
-                else
-                {
-                    guild = channel.Guild;
-                }
-                if (guild != channel.Guild)
-                {
-                    continue;
-                }
-
-                var channelWithMessage = await ((IGuild)guild).GetTextChannelAsync(Convert.ToUInt64(segmentsJoined[3]))
-                    .ConfigureAwait(false);
-                if (channelWithMessage == null)
-                {
-                    continue;
-                }
-
-                var messageBeingLinked = await channelWithMessage.GetMessageAsync(Convert.ToUInt64(segmentsJoined[4])).ConfigureAwait(false);
-                if (messageBeingLinked is null)
-                {
-                    continue;
-                }
-
-                var embedBuilder = _logMessageBuilder.CreateEmbedBuilder("Message Linked", $"[Original Message]({messageBeingLinked.GetJumpUrl()}) by {messageBeingLinked.Author.Mention}:", messageBeingLinked);
-                await messageWithLink.Channel.SendMessageAsync(embed: embedBuilder.Build());
+                continue;
             }
+
+            var embed = _discordFormatter.BuildRegularEmbed("Link Posted Previously",
+                $"{PreviouslyPostedEmoji} This link was posted earlier by {relevantMessage.Author.Mention}! {PreviouslyPostedEmoji}\n[Click here to go to the previous discussion]({relevantMessage.GetJumpUrl()}).");
+            await messageWithLinks.Channel.SendMessageAsync(embed: embed, messageReference: new MessageReference(messageWithLinks.Id));
+        }
+    }
+
+    private async Task HandleDiscordMessageLinks(SocketGuildChannel channel, SocketMessage messageWithLinks,
+        IEnumerable<string> discordLinks)
+    {
+        foreach (var link in discordLinks)
+        {
+            var fullUrl = new Uri(link);
+            var urlSplitOnDot = fullUrl.Host.Split('.');
+            if (!urlSplitOnDot.Contains("discord"))
+            {
+                continue;
+            }
+
+            var segmentsJoined = string.Join("", fullUrl.Segments).Split("/");
+            if (!segmentsJoined.Contains("channels"))
+            {
+                continue;
+            }
+
+            if (segmentsJoined.Length < 5)
+            {
+                continue;
+            }
+
+            SocketGuild guild;
+            var guildIdFromUrl = Convert.ToUInt64(segmentsJoined[2]);
+            if (channel.Guild.Id != guildIdFromUrl)
+            {
+                guild = _client.GetGuild(guildIdFromUrl);
+                if (guild is null)
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                guild = channel.Guild;
+            }
+
+            if (guild != channel.Guild)
+            {
+                continue;
+            }
+
+            var channelWithMessage = await ((IGuild)guild).GetTextChannelAsync(Convert.ToUInt64(segmentsJoined[3]))
+                .ConfigureAwait(false);
+            if (channelWithMessage == null)
+            {
+                continue;
+            }
+
+            var messageBeingLinked = await channelWithMessage.GetMessageAsync(Convert.ToUInt64(segmentsJoined[4]))
+                .ConfigureAwait(false);
+            if (messageBeingLinked is null)
+            {
+                continue;
+            }
+
+            var embedBuilder = _logMessageBuilder.CreateEmbedBuilder("Message Linked",
+                $"[Original Message]({messageBeingLinked.GetJumpUrl()}) by {messageBeingLinked.Author.Mention}:",
+                messageBeingLinked);
+            await messageWithLinks.Channel.SendMessageAsync(embed: embedBuilder.Build());
         }
     }
 
