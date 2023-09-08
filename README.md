@@ -15,6 +15,7 @@ Previous Version: https://github.com/rarDevelopment/replybot
 # Toby's Names
 
 Toby answers to the following names:
+
 - toby
 - replybot
 - tobias
@@ -50,6 +51,10 @@ Use `/view-settings` to see the existing settings for all of the above options.
 
 If you post a link to another message in the same server, Toby will preview that message for you, which can often save you a click.
 
+## Points Out Previously Posted Links
+
+If you post a link to that has already been posted recently in the same channel, Toby will notify you of this and link you to the previous post. This can help catch up on any discussion that already happened for that link.
+
 ## Define Words (uses [Free Dictionary API](https://github.com/meetDeveloper/freeDictionaryAPI))
 
 You can say `Toby define [word here]` and he'll try to find a dictionary definition for that word.
@@ -59,15 +64,19 @@ You can say `Toby define [word here]` and he'll try to find a dictionary definit
 You can make a (very simple) poll by doing `"Toby poll [question here], [answer 1 here], [answer 2 here], and so on..."`. This will genereate a post with the question, answer choices, and reactions associated with each answer choice.
 
 ## Fix Tweet Previews ~~(uses [FixTweet](https://github.com/FixTweet/FixTweet))~~ (uses [BetterTwitFix](https://github.com/ryuuzake/BetterTwitFix))
+
 Tweets posted in Discord will include a preview embed of that tweet. But if there's a video, that video preview might not play properly. Or if there is more than 1 image, those other images won't show on mobile devices. To help with this, Toby will add a reaction emoji to any post that includes a Twitter link. If someone taps on that reaction emoji, Toby will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message. If someone has posted an vxtwitter.com link directly and you'd like the original tweet link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original tweet link. Admins can use the `/set-fix-tweet-reactions` command to turn this on or off.
 
 ## View Tweets Without An Account (uses [Nitter](https://github.com/zedeus/nitter))
+
 Nitter is a site that pulls in Twitter's data to display separate from Twitter. This means you can view tweets and tweet threads without an account, despite newly-added restrictions on Twitter.com.
 
 ## Fix Instagram Previews (uses [InstaFix](https://github.com/Wikidepia/InstaFix))
+
 Instagram links posted in Discord sometimes don't preview at all! Similar to the above, Toby will add a reaction emoji to any post that includes an Instagram link. If someone taps that reaction emoji, Toby will reply with that same link at ddinstagram.com, which is a site that fixes video and image preview embeds in Discord's Instagram previews. This works with all Instagram posts in the message. If someone has posted a ddinstagram.com link directly and you'd like the original link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original Instagram link. Admins can use the `/set-fix-instagram-reactions` command to turn this on or off.
 
 ## Fix Bluesky Previews
+
 Instagram links posted in Discord don't preview at all! Similar to the above, Toby will add a reaction emoji to any post that includes an Bluesky post link. If someone taps that reaction emoji, Toby will reply with the text and images (including alt text) from that post. This works with all Bluesky posts in the message. Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
 
 ## Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
@@ -87,9 +96,8 @@ If you're looking to watch something, `Toby can I stream [movie or show here]` w
 If you have a song or album link on Apple Music, Spotify, YouTube Music, etc. but you'd like to share it to a server where your friends might use another streaming service, say `Toby songlink [link to the song/album here]` and Toby will generate a link that will show you all of the services where that song or album can be found.
 
 ## Fortnite Shop Information (using [Fortnite API](https://fortnite-api.com/))
-If you're a Fortnite player, "Toby Fortnite shop" will show you a glimpse of what's on the shop currently
 
-# Fun Stuff
+If you're a Fortnite player, "Toby Fortnite shop" will show you a glimpse of what's on the shop currently
 
 ## Flip a Coin
 

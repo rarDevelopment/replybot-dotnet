@@ -63,7 +63,8 @@ builder.ConfigureServices((host, services) =>
 
     var discordSettings = new DiscordSettings(host.Configuration["Discord:BotToken"]!,
         host.Configuration["Discord:AvatarBaseUrl"]!,
-        Convert.ToInt32(host.Configuration["Discord:MaxCharacters"]));
+        Convert.ToInt32(host.Configuration["Discord:MaxCharacters"]),
+        host.Configuration["Discord:BaseUrl"]!);
 
     var databaseSettings = new DatabaseSettings(
         host.Configuration["Database:Cluster"]!,
