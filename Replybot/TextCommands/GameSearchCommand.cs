@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
-using Replybot.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
 
@@ -17,7 +16,6 @@ public class GameSearchCommand : ITextCommand
     private readonly TimeSpan _matchTimeout;
 
     public GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
-        TheMovieDbSettings theMovieDbSettings,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
     {
@@ -132,7 +130,7 @@ public class GameSearchCommand : ITextCommand
         }
 
         _logger.Log(LogLevel.Error, $"Error in GameSearchCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Movie Duration",
+        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Game Information",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }
