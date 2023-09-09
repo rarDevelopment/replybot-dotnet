@@ -125,7 +125,7 @@ public class GameSearchCommand : ITextCommand
             }
             catch (Exception ex)
             {
-                _logger.Log(LogLevel.Error, "Error in GameSearchCommand command - {0}", ex.Message);
+                _logger.Log(LogLevel.Error, "Error in GameSearchCommand command - {0} -- {1}", ex.Message, ((RestEase.ApiException)ex).Content);
                 return _discordFormatter.BuildErrorEmbed("Game Information",
                     "Hmm, couldn't do that search for some reason. Try again later!");
             }
