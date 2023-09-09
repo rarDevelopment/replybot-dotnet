@@ -11,6 +11,7 @@ using Replybot;
 using Serilog;
 using System.Reflection;
 using Fortnite_API;
+using IGDB;
 using Replybot.BusinessLayer;
 using Replybot.DataLayer;
 using Replybot.Models;
@@ -81,6 +82,8 @@ builder.ConfigureServices((host, services) =>
     var dictionarySettings = new DictionarySettings(host.Configuration["FreeDictionary:BaseUrl"]!);
     var blueskySettings = new BlueskySettings(host.Configuration["Bluesky:BaseUrl"]!);
     var siteIgnoreListSettings = new SiteIgnoreListSettings(host.Configuration["SiteIgnoreList:Url"]!);
+    var internetGameDatabaseSettings = new InternetGameDatabaseSettings(host.Configuration["InternetGameDatabase:ClientId"]!,
+        host.Configuration["InternetGameDatabase:ClientSecret"]!);
 
     services.AddSingleton(versionSettings);
     services.AddSingleton(botSettings);
@@ -89,6 +92,8 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(howLongToBeatSettings);
     services.AddSingleton(theMovieDbSettings);
     services.AddSingleton(blueskySettings);
+    services.AddSingleton(siteIgnoreListSettings);
+    services.AddSingleton(internetGameDatabaseSettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
@@ -124,6 +129,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, SongLinkCommand>();
     services.AddSingleton<ITextCommand, SearchCommand>();
     services.AddSingleton<ITextCommand, ChooseCommand>();
+    services.AddSingleton<ITextCommand, GameSearchCommand>();
     services.AddSingleton<ITextCommand, VersionCommand>();
 
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();
@@ -135,12 +141,15 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<FreeDictionaryApi>();
     services.AddSingleton<BlueskyApi>();
     services.AddSingleton<SiteIgnoreService>();
+    services.AddSingleton<InternetGameDatabaseApi>();
 
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
 
     services.AddSingleton<TheMovieDbApi>();
     services.AddSingleton(_ => new TMDbClient(host.Configuration["TheMovieDB:ApiKey"]));
+
+    services.AddSingleton(_ => new IGDBClient(internetGameDatabaseSettings.ClientId, internetGameDatabaseSettings.ClientSecret));
 
     services.AddScoped<RoleHelper>();
 
