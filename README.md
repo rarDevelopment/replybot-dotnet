@@ -51,7 +51,7 @@ Use `/view-settings` to see the existing settings for all of the above options.
 
 If you post a link to another message in the same server, Toby will preview that message for you, which can often save you a click.
 
-## Points Out Previously Posted Links
+## Identifies Previously Posted Links
 
 If you post a link to that has already been posted recently in the same channel, Toby will notify you of this and link you to the previous post. This can help catch up on any discussion that already happened for that link.
 
