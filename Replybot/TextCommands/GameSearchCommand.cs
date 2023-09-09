@@ -12,7 +12,7 @@ public class GameSearchCommand : ITextCommand
     private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string TriggerRegexPattern = $"when (does|did|will|is) (?<{SearchTermKey}>(.*)) (come out|release|drop|releasing|dropping|coming out)\\??";
-    private const int MaxGamesToShow = 2;
+    private const int MaxGamesToShow = 3;
     private readonly TimeSpan _matchTimeout;
 
     public GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,

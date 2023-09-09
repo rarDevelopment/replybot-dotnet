@@ -13,7 +13,7 @@ public class InternetGameDatabaseApi
 
     public async Task<IReadOnlyList<Game>> SearchGames(string searchTerm)
     {
-        var queryFields = $"fields id,name,cover,release_dates.*,platforms.*,status,url,websites; search \"{searchTerm}\";";
+        var queryFields = $"fields id,name,cover,release_dates.*,platforms.*,status,url,websites; search \"{searchTerm}\"; where version_parent = null & category = 0;";
         var games = await _igdbClient.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: queryFields);
         return games.ToList();
     }
