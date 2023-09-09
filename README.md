@@ -79,9 +79,13 @@ Instagram links posted in Discord sometimes don't preview at all! Similar to the
 
 Instagram links posted in Discord don't preview at all! Similar to the above, Toby will add a reaction emoji to any post that includes an Bluesky post link. If someone taps that reaction emoji, Toby will reply with the text and images (including alt text) from that post. This works with all Bluesky posts in the message. Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
 
-## Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
+## Video Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
 
 Use `Toby hltb [game here]` and Toby will tell you how long that game is.
+
+## Video Game Release Dates (using [IGDB](https://www.igdb.com/))
+
+Use `Toby when did [game here] come out` or `Toby when will [game here] release?` (or a few other possible wordings) and Toby will tell you the release date(s) that game.
 
 ## Movie Runtimes (using [The Movie Database (TMDB)](https://themoviedb.org/))
 
@@ -106,10 +110,6 @@ Make those challenging decisions - say `Toby flip a coin` and he'll do so.
 ## Choose For Me
 
 Make _more_ challenging decisions - say something like `"Toby pick one for me: [option 1], [option 2], [option 3], and so on..."` and he'll pick one of the comma-separated options for you. You can trigger this with a variety of phrases, like `Toby choose:` or `Toby please select one for me:` or `Toby random:`, but the colon `:` is important!
-
-## Search Something Real Quick
-
-Toby can grab a quick link to some search results for you, just say `Toby search [search term here]`. Toby prefers DuckDuckGo 🦆 so if you'd like to use Google specifically, say `Toby google [search term here]`.
 
 ## 8-Ball
 
