@@ -54,7 +54,7 @@ public class ChooseCommand : ITextCommand
 
         var splitArgs = messageWithoutTrigger.Split(',').Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
 
-        if (splitArgs.Count <= 2)
+        if (splitArgs.Count < 2)
         {
             return "You need to give me at least two options to choose from!";
         }
