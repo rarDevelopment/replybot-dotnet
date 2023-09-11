@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
+using IGDB.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
 
@@ -73,7 +74,7 @@ public class GameSearchCommand : ITextCommand
                         continue;
                     }
 
-                    var releaseData = new List<string>();
+                    var releaseDateDisplayStrings = new List<string>();
 
                     var groupedData = game.ReleaseDates.Values.GroupBy(x => $"{x.Date?.ToString("yyyy-MM-dd")}")
                         .Select(x => new
@@ -91,20 +92,24 @@ public class GameSearchCommand : ITextCommand
                             return platform?.Name ?? "N/A";
                         }).Distinct();
 
+                        var releaseDateDisplay = $"**{(!string.IsNullOrEmpty(releaseDate.Date) ? releaseDate.Date : "No Date Available")}**";
+
                         var platforms = string.Join(", ", platformNames);
 
                         var regions = string.Join(", ", releaseDate.Regions.Select(r => r.Key != null ? r.Key.Value.ToString() : "N/A"));
 
-                        releaseData.Add(
-                            $"**{releaseDate.Date}**\n_Platform(s): {platforms}_\n_Region(s): {regions}_");
+                        releaseDateDisplayStrings.Add(
+                            $"**{releaseDateDisplay}**\n_Platform(s): {platforms}_\n_Region(s): {regions}_");
                     }
 
-                    var releaseDates = string.Join("\n", releaseData.OrderBy(s => s));
+                    var status = game.Status ?? GameStatus.Released;
+
+                    var releaseDates = string.Join("\n", releaseDateDisplayStrings.OrderBy(s => s));
 
                     embedFieldBuilders.Add(new EmbedFieldBuilder
                     {
                         Name = game.Name,
-                        Value = releaseDates,
+                        Value = $"Release Status: **{status}**\n{releaseDates}",
                         IsInline = false
                     });
                 }
