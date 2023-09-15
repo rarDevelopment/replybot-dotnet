@@ -5,5 +5,6 @@ public enum HttpClients
     HowLongToBeat,
     Dictionary,
     Bluesky,
-    SiteIgnoreList
+    SiteIgnoreList,
+    CountryConfigList
 }

@@ -93,7 +93,7 @@ Use `Toby how long is [movie here]` or `Toby how long to watch [movie here]` or 
 
 ## Find Where Movies/TV Shows Are Streaming (using [JustWatch](https://justwatch.com))
 
-If you're looking to watch something, `Toby can I stream [movie or show here]` will give you US, Canada, and UK links to justWatch, where you can find where it's streaming (if at all). If you need another location, you can change the country on the site itself.
+If you're looking to watch something, `Toby can I stream "[movie or show here]" in [country here]` will give you links to JustWatch for your specified country, where you can find where it's streaming (if at all). If you need a location that is not supported, you can request it by opening an issue on [this repo](https://github.com/rarDevelopment/justwatch-country-config) or you can change the country on the site itself.
 
 ## Find a Song or Album Link on All Services (using [Odesli](https://odesli.co/))
 
