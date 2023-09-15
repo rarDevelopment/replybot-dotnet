@@ -18,8 +18,7 @@ public class CanIStreamCommand : ITextCommand
     private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string CountryTermKey = "countryTerm";
-    private const string TriggerRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) \"(?<{SearchTermKey}>(.*))\"(( in)* (?<{CountryTermKey}>(.*)))*\\??";
-    private const string CountryNotFoundErrorText = $"Sorry, I couldn't get the configurations for the specified country. Note that I do not have all countries configured, and you can [request a country be added on GitHub]({CountryListGitHubUrl})! Alternatively, if you believe this is an error, let me know!";
+    private const string TriggerRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) +\"(?<{SearchTermKey}>(.*))\"(( +in)* +(?<{CountryTermKey}>(.*)))*\\??";
     private readonly TimeSpan _matchTimeout;
 
     public CanIStreamCommand(CountryConfigService countryConfigService,
@@ -60,7 +59,7 @@ public class CanIStreamCommand : ITextCommand
         if (match.Success)
         {
             var searchText = match.Groups[SearchTermKey].Value.UrlEncode();
-            var country = match.Groups[CountryTermKey].Value.UrlEncode();
+            var country = match.Groups[CountryTermKey].Value.Trim().UrlEncode();
 
             var countryConfigs = await GetCountryConfigs();
 
@@ -76,7 +75,10 @@ public class CanIStreamCommand : ITextCommand
             if (countryToUse == null)
             {
                 var supportedCountries = countryConfigs.OrderBy(s => s.Name).Select(c => c.Name).ToList();
-                return _discordFormatter.BuildErrorEmbed("Could Not Find Specified Country", $"{CountryNotFoundErrorText}\n\nSupported countries are: **{string.Join(", ", supportedCountries)}**");
+                return _discordFormatter.BuildErrorEmbed("Could Not Find Specified Country",
+                    $"Sorry, I couldn't get the configurations for the specified country: `{country}`.\n" +
+                    $"Note that I do not have all countries configured, and you can [request a country be added on GitHub]({CountryListGitHubUrl})!\n" +
+                    $"Alternatively, if you believe this is an error, let me know!\n\nSupported countries are: **{string.Join(", ", supportedCountries)}**");
             }
 
             var embedFieldBuilder = new EmbedFieldBuilder

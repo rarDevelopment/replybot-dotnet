@@ -18,7 +18,7 @@ public class HowLongToBeatCommand : ITextCommand
     private const string SearchUrlTemplate = $"{UrlKeyword}?q={QueryKeyword}#search";
     private const string GameUrlTemplate = $"{UrlKeyword}game?id={GameIdKeyword}";
     private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"(hltb|how long to beat|game length) (?<{SearchTermKey}>(.*))\\??";
+    private const string TriggerRegexPattern = $"(hltb|how long to beat|game length) +(?<{SearchTermKey}>(.*))\\??";
     private readonly TimeSpan _matchTimeout;
 
     public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
