@@ -82,6 +82,7 @@ builder.ConfigureServices((host, services) =>
     var dictionarySettings = new DictionarySettings(host.Configuration["FreeDictionary:BaseUrl"]!);
     var blueskySettings = new BlueskySettings(host.Configuration["Bluesky:BaseUrl"]!);
     var siteIgnoreListSettings = new SiteIgnoreListSettings(host.Configuration["SiteIgnoreList:Url"]!);
+    var countryConfigListSettings = new CountryConfigListSettings(host.Configuration["CountryConfigList:Url"]!);
     var internetGameDatabaseSettings = new InternetGameDatabaseSettings(host.Configuration["InternetGameDatabase:ClientId"]!,
         host.Configuration["InternetGameDatabase:ClientSecret"]!);
 
@@ -94,6 +95,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(blueskySettings);
     services.AddSingleton(siteIgnoreListSettings);
     services.AddSingleton(internetGameDatabaseSettings);
+    services.AddSingleton(countryConfigListSettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
@@ -140,6 +142,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<FreeDictionaryApi>();
     services.AddSingleton<BlueskyApi>();
     services.AddSingleton<SiteIgnoreService>();
+    services.AddSingleton<CountryConfigService>();
     services.AddSingleton<InternetGameDatabaseApi>();
 
     services.AddSingleton<FortniteApi>();
@@ -178,6 +181,11 @@ builder.ConfigureServices((host, services) =>
     services.AddHttpClient(HttpClients.SiteIgnoreList.ToString(), config =>
     {
         config.BaseAddress = new Uri(siteIgnoreListSettings.Url);
+    });
+
+    services.AddHttpClient(HttpClients.CountryConfigList.ToString(), config =>
+    {
+        config.BaseAddress = new Uri(countryConfigListSettings.Url);
     });
 });
 

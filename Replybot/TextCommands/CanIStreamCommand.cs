@@ -1,65 +1,103 @@
 ﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
+using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
+using System.Text.RegularExpressions;
+using Replybot.Models;
 
 namespace Replybot.TextCommands;
 
 public class CanIStreamCommand : ITextCommand
 {
-    private readonly IReplyBusinessLayer _replyBusinessLayer;
+    private readonly CountryConfigService _countryConfigService;
     private readonly IDiscordFormatter _discordFormatter;
     private const string JustWatchBaseUrl = "https://www.justwatch.com/";
-    private const string Description = "Use one of the following links to see streaming availability search results in the specified country. For other countries, click one of these links and change your country on the website!";
-    private readonly string[] _triggers = { "stream", "can i watch", "can i stream", "justwatch", "just watch" };
-    private readonly List<StreamLinkUrlMap> _streamLinkMappings = new()
-    {
-        new StreamLinkUrlMap(":flag_us:","USA","us","search"),
-        new StreamLinkUrlMap(":flag_ca:","Canada","ca","search"),
-        new StreamLinkUrlMap(":flag_gb:","UK","uk","search"),
-        new StreamLinkUrlMap(":flag_de:","Germany","de","Suche"),
-        new StreamLinkUrlMap(":flag_br:","Brazil","br","busca"),
-        new StreamLinkUrlMap(":flag_in:","India","in","search"),
-        new StreamLinkUrlMap(":flag_om:","Oman","om","search"),
-    };
+    private const string CountryListGitHubUrl = "https://github.com/rarDevelopment/justwatch-country-config/";
+    private const string Description = "Use the following link to see streaming availability search results in the specified country.";
 
-    public CanIStreamCommand(IReplyBusinessLayer replyBusinessLayer,
+    private readonly ILogger<DiscordBot> _logger;
+    private const string SearchTermKey = "searchTerm";
+    private const string CountryTermKey = "countryTerm";
+    private const string TriggerRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) \"(?<{SearchTermKey}>(.*))\"(( in)* (?<{CountryTermKey}>(.*)))*\\??";
+    private const string CountryNotFoundErrorText = $"Sorry, I couldn't get the configurations for the specified country. Note that I do not have all countries configured, and you can [request a country be added on GitHub]({CountryListGitHubUrl})! Alternatively, if you believe this is an error, let me know!";
+    private readonly TimeSpan _matchTimeout;
+
+    public CanIStreamCommand(CountryConfigService countryConfigService,
+        ILogger<DiscordBot> logger,
         IDiscordFormatter discordFormatter)
     {
-        _replyBusinessLayer = replyBusinessLayer;
+        _countryConfigService = countryConfigService;
+        _logger = logger;
         _discordFormatter = discordFormatter;
+        _matchTimeout = TimeSpan.FromMilliseconds(100);
     }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
         return replyCriteria.IsBotNameMentioned &&
-               _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
+               Regex.IsMatch(replyCriteria.MessageText,
+                   TriggerRegexPattern,
+                   RegexOptions.IgnoreCase,
+                   _matchTimeout);
     }
 
-    public Task<CommandResponse> Handle(SocketMessage message)
+    public async Task<CommandResponse> Handle(SocketMessage message)
     {
-        var embed = GetStreamLinksEmbed(message);
+        var embed = await GetStreamLinksEmbed(message);
 
-        return Task.FromResult(new CommandResponse
+        return new CommandResponse
         {
             Embed = embed,
             Reactions = null,
             StopProcessing = true,
             NotifyWhenReplying = true,
-        });
+        };
     }
 
-    private Embed GetStreamLinksEmbed(SocketMessage message)
+    private async Task<Embed> GetStreamLinksEmbed(SocketMessage message)
     {
-        var messageEncodedWithoutTriggers = message.Content.RemoveTriggersFromMessage(_triggers).UrlEncode();
-
-        var embedFieldBuilders = _streamLinkMappings.Select(streamLinkUrlMap => new EmbedFieldBuilder
+        var match = Regex.Match(message.Content, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        if (match.Success)
         {
-            Name = $"{streamLinkUrlMap.Flag} {streamLinkUrlMap.Name}",
-            Value = $"{JustWatchBaseUrl}{streamLinkUrlMap.CountryCode}/{streamLinkUrlMap.SearchWord}?q={messageEncodedWithoutTriggers}",
-            IsInline = false
-        }).ToList();
+            var searchText = match.Groups[SearchTermKey].Value.UrlEncode();
+            var country = match.Groups[CountryTermKey].Value.UrlEncode();
 
-        return _discordFormatter.BuildRegularEmbedWithUserFooter("Stream Link Options", Description, message.Author,
-            embedFieldBuilders);
+            var countryConfigs = await GetCountryConfigs();
+
+            if (countryConfigs == null)
+            {
+                return _discordFormatter.BuildErrorEmbed("Error Finding Streaming Options",
+                    "Sorry, I couldn't get the configurations to construct the streaming links. You can search for yourself at https://justwatch.com!");
+            }
+
+            var countryToUse =
+                countryConfigs.FirstOrDefault(c => c.TriggerNames != null && c.TriggerNames.Any() && c.TriggerNames.Contains(country, StringComparer.InvariantCultureIgnoreCase));
+
+            if (countryToUse == null)
+            {
+                var supportedCountries = countryConfigs.OrderBy(s => s.Name).Select(c => c.Name).ToList();
+                return _discordFormatter.BuildErrorEmbed("Could Not Find Specified Country", $"{CountryNotFoundErrorText}\n\nSupported countries are: **{string.Join(", ", supportedCountries)}**");
+            }
+
+            var embedFieldBuilder = new EmbedFieldBuilder
+            {
+                Name = $"{countryToUse.Emoji} {countryToUse.Name}",
+                Value =
+                    $"{JustWatchBaseUrl}{countryToUse.Code}/{countryToUse.UrlSearchWord}?q={searchText}",
+                IsInline = false
+            };
+
+            return _discordFormatter.BuildRegularEmbedWithUserFooter("Stream Link Options", Description, message.Author, new List<EmbedFieldBuilder> { embedFieldBuilder });
+        }
+        _logger.Log(LogLevel.Error, $"Error in CanIStreamCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Building JustWatch Link",
+            "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
+            message.Author);
+    }
+
+    private async Task<IReadOnlyList<CountryConfig>?> GetCountryConfigs()
+    {
+        var countryConfigList = await _countryConfigService.GetCountryConfigList();
+        return countryConfigList;
     }
 }
