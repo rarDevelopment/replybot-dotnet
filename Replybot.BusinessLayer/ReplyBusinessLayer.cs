@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Discord;
 using Discord.WebSocket;
+using Replybot.BusinessLayer.Extensions;
 using Replybot.DataLayer;
 using Replybot.Models;
 
@@ -46,7 +47,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
             return null;
         }
 
-        var cleanedMessage = KeywordHandler.CleanMessageForTrigger(message);
+        var cleanedMessage = CleanMessageForTrigger(message);
 
         var matches = replyData.Where(r =>
             r.Triggers.FirstOrDefault(triggerTerm => GetWordMatch(triggerTerm, cleanedMessage)) != null).ToList();
@@ -58,13 +59,13 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
 
     public bool GetWordMatch(string triggerTerm, string input)
     {
-        if (triggerTerm == KeywordHandler.BuildKeyword(TriggerKeyword.Anything))
+        if (triggerTerm == TriggerKeyword.Anything.BuildKeyword())
         {
             return true;
         }
 
         var trigger = triggerTerm.ToLower(CultureInfo.InvariantCulture).Trim();
-        trigger = KeywordHandler.EscapeRegExp(trigger, _matchTimeout);
+        trigger = EscapeRegExp(trigger, _matchTimeout);
         var pattern = $"(^|(?<!\\w)){trigger}(\\b|(?!\\w))";
         return Regex.IsMatch(input, pattern, RegexOptions.IgnoreCase, _matchTimeout);
     }
@@ -78,7 +79,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
 
         var botUser = guildUsers.First(x => x.Id == botUserId);
         var botNickname = botUser.Nickname;
-        var botNameInMessage = KeywordHandler.GetBotNameInMessage(message.Content, botNickname);
+        var botNameInMessage = message.Content.GetBotNameInMessage(botNickname);
         return message.MentionedUsers.Any(u => u.Id == botUserId) || !string.IsNullOrEmpty(botNameInMessage);
     }
 
@@ -93,4 +94,24 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
         var randomNumber = random.Next(replies.Length);
         return replies[randomNumber];
     }
+
+    private static string CleanMessageForTrigger(string message)
+    {
+        string cleanedMessage = message.Replace(TriggerKeyword.BotName.BuildKeyword(), "", StringComparison.InvariantCultureIgnoreCase);
+        foreach (var botName in BotNames.Names)
+        {
+            cleanedMessage = cleanedMessage.Replace(botName, TriggerKeyword.BotName.BuildKeyword(), StringComparison.InvariantCultureIgnoreCase);
+        }
+        // TODO: replace accented characters here
+        return cleanedMessage;
+    }
+
+    private static string EscapeRegExp(string text, TimeSpan matchTimeout)
+    {
+        var pattern = "[.*+?^${}()|[\\]\\\\]";
+        var escapedText = Regex.Replace(text, pattern, "\\$&", RegexOptions.None, matchTimeout);
+        return escapedText;
+    }
+
+
 }

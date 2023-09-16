@@ -3,6 +3,7 @@ using Replybot.BusinessLayer;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
 using System.Text.RegularExpressions;
+using Replybot.BusinessLayer.Extensions;
 using Replybot.Models;
 
 namespace Replybot.TextCommands;
