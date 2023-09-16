@@ -4,6 +4,7 @@ using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
+using Replybot.BusinessLayer.Extensions;
 using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
@@ -143,9 +144,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var messageText = KeywordHandler.ReplaceKeywords(reply,
-                message.Author.Username,
-                message.Author.Id,
+            var messageText = reply.ReplaceKeywords(message.Author,
                 _versionSettings.VersionNumber,
                 message.Content,
                 replyDefinition);
@@ -359,7 +358,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
 
         var wasDeleted = false;
-        if (!reply.Contains(KeywordHandler.BuildKeyword(TriggerKeyword.DeleteMessage)))
+        if (!reply.Contains(TriggerKeyword.DeleteMessage.BuildKeyword()))
         {
             return wasDeleted;
         }
