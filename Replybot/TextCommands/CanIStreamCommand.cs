@@ -99,7 +99,7 @@ public class CanIStreamCommand : ITextCommand
 
     private SearchAndCountryPair? DetermineSearchAndCountry(string messageText)
     {
-        var lastInIndex = messageText.IndexOf("in", StringComparison.InvariantCultureIgnoreCase);
+        var lastInIndex = messageText.LastIndexOf("in", StringComparison.InvariantCultureIgnoreCase);
         if (lastInIndex == -1)
         {
             return null;
