@@ -1,5 +1,4 @@
 ﻿using DiscordDotNetUtilities.Interfaces;
-using Replybot.BusinessLayer;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
 using System.Text.RegularExpressions;
@@ -19,7 +18,9 @@ public class CanIStreamCommand : ITextCommand
     private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string CountryTermKey = "countryTerm";
-    private const string TriggerRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) +\"(?<{SearchTermKey}>(.*))\"(( +in)* +(?<{CountryTermKey}>(.*?)))\\??$";
+
+    private const string SearchRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) +(?<{SearchTermKey}>([A-Za-z- ]*))";
+    private const string CountryRegexPattern = $"in +(?<{CountryTermKey}>(.*))";
     private readonly TimeSpan _matchTimeout;
 
     public CanIStreamCommand(CountryConfigService countryConfigService,
@@ -34,11 +35,14 @@ public class CanIStreamCommand : ITextCommand
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return replyCriteria.IsBotNameMentioned &&
-               Regex.IsMatch(replyCriteria.MessageText,
-                   TriggerRegexPattern,
-                   RegexOptions.IgnoreCase,
-                   _matchTimeout);
+        if (!replyCriteria.IsBotNameMentioned)
+        {
+            return false;
+        }
+
+        var searchAndCountry = DetermineSearchAndCountry(replyCriteria.MessageText);
+
+        return searchAndCountry != null && searchAndCountry.IsValid();
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -56,28 +60,26 @@ public class CanIStreamCommand : ITextCommand
 
     private async Task<Embed> GetStreamLinksEmbed(SocketMessage message)
     {
-        var match = Regex.Match(message.Content, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
-        if (match.Success)
-        {
-            var searchText = match.Groups[SearchTermKey].Value.UrlEncode();
-            var country = match.Groups[CountryTermKey].Value.Trim();
+        var searchAndCountry = DetermineSearchAndCountry(message.Content);
 
+        if (searchAndCountry != null && searchAndCountry.IsValid())
+        {
             var countryConfigs = await GetCountryConfigs();
 
             if (countryConfigs == null)
             {
                 return _discordFormatter.BuildErrorEmbed("Error Finding Streaming Options",
-                    "Sorry, I couldn't get the configurations to construct the streaming links. You can search for yourself at https://justwatch.com!");
+                    $"Sorry, I couldn't get the configurations to construct the streaming links. You can search for yourself at {JustWatchBaseUrl}!");
             }
 
             var countryToUse =
-                countryConfigs.FirstOrDefault(c => c.TriggerNames != null && c.TriggerNames.Any() && c.TriggerNames.Contains(country, StringComparer.InvariantCultureIgnoreCase));
+                countryConfigs.FirstOrDefault(c => c.TriggerNames != null && c.TriggerNames.Any() && c.TriggerNames.Contains(searchAndCountry.Country, StringComparer.InvariantCultureIgnoreCase));
 
             if (countryToUse == null)
             {
                 var supportedCountries = countryConfigs.OrderBy(s => s.Name).Select(c => c.Name).ToList();
                 return _discordFormatter.BuildErrorEmbed("Could Not Find Specified Country",
-                    $"Sorry, I couldn't get the configurations for the specified country: `{country}`.\n" +
+                    $"Sorry, I couldn't get the configurations for the specified country: `{searchAndCountry.Country}`.\n" +
                     $"Note that I do not have all countries configured, and you can [request a country be added on GitHub]({CountryListGitHubUrl})!\n" +
                     $"Alternatively, if you believe this is an error, let me know!\n\nSupported countries are: **{string.Join(", ", supportedCountries)}**");
             }
@@ -86,7 +88,7 @@ public class CanIStreamCommand : ITextCommand
             {
                 Name = $"{countryToUse.Emoji} {countryToUse.Name}",
                 Value =
-                    $"{JustWatchBaseUrl}{countryToUse.Code}/{countryToUse.UrlSearchWord}?q={searchText}",
+                    $"{JustWatchBaseUrl}{countryToUse.Code}/{countryToUse.UrlSearchWord}?q={searchAndCountry.SearchText}",
                 IsInline = false
             };
 
@@ -96,6 +98,38 @@ public class CanIStreamCommand : ITextCommand
         return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Building JustWatch Link",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
+    }
+
+    private SearchAndCountryPair? DetermineSearchAndCountry(string messageText)
+    {
+        var lastInIndex = messageText.IndexOf("in", StringComparison.InvariantCultureIgnoreCase);
+        if (lastInIndex == -1)
+        {
+            return null;
+        }
+
+        var countrySection = messageText[lastInIndex..];
+
+        var countryMatch = Regex.Match(countrySection, CountryRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        if (!countryMatch.Success)
+        {
+            return null;
+        }
+
+        var country = countryMatch.Groups[CountryTermKey].Value.Trim();
+
+        var otherSection = messageText[..lastInIndex];
+
+        var searchMatch = Regex.Match(otherSection, SearchRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+
+        if (!searchMatch.Success)
+        {
+            return null;
+        }
+
+        var searchText = searchMatch.Groups[SearchTermKey].Value.Trim().UrlEncode();
+
+        return new SearchAndCountryPair(searchText, country);
     }
 
     private async Task<IReadOnlyList<CountryConfig>?> GetCountryConfigs()
