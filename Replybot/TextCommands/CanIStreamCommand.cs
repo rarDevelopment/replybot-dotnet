@@ -35,14 +35,11 @@ public class CanIStreamCommand : ITextCommand
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        if (!replyCriteria.IsBotNameMentioned)
-        {
-            return false;
-        }
-
-        var searchAndCountry = DetermineSearchAndCountry(replyCriteria.MessageText);
-
-        return Regex.IsMatch(replyCriteria.MessageText, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
+        return replyCriteria.IsBotNameMentioned &&
+               Regex.IsMatch(replyCriteria.MessageText,
+                   TriggerRegexPattern,
+                   RegexOptions.IgnoreCase,
+                   _matchTimeout);
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
