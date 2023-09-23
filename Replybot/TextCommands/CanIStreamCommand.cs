@@ -18,9 +18,9 @@ public class CanIStreamCommand : ITextCommand
     private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string CountryTermKey = "countryTerm";
-
-    private const string SearchRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) +(?<{SearchTermKey}>([A-Za-z- ]*))";
-    private const string CountryRegexPattern = $"in +(?<{CountryTermKey}>(.*))";
+    private const string TriggerRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch)(.*)\\??";
+    private const string SearchRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) +(?<{SearchTermKey}>(.*))";
+    private const string CountryRegexPattern = $"in +(?<{CountryTermKey}>([A-Za-z- ]*))";
     private readonly TimeSpan _matchTimeout;
 
     public CanIStreamCommand(CountryConfigService countryConfigService,
@@ -42,7 +42,7 @@ public class CanIStreamCommand : ITextCommand
 
         var searchAndCountry = DetermineSearchAndCountry(replyCriteria.MessageText);
 
-        return searchAndCountry != null && searchAndCountry.IsValid();
+        return Regex.IsMatch(replyCriteria.MessageText, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -96,7 +96,7 @@ public class CanIStreamCommand : ITextCommand
         }
         _logger.Log(LogLevel.Error, $"Error in CanIStreamCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
         return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Building JustWatch Link",
-            "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
+            "You need to specify the country that you're looking for.\nTry something like:\n`can I stream back to the future in canada`.",
             message.Author);
     }
 
