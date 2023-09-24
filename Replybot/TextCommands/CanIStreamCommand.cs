@@ -18,8 +18,9 @@ public class CanIStreamCommand : ITextCommand
     private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string CountryTermKey = "countryTerm";
-    private const string TriggerRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch)(.*)\\??";
-    private const string SearchRegexPattern = $"(stream|can i watch|can i stream|justwatch|just watch) +(?<{SearchTermKey}>(.*))";
+    private const string BeginningTriggerWordsPattern = "((((where )? *((can|do) i )|just)?) *(watch|stream))";
+    private const string TriggerRegexPattern = $"{BeginningTriggerWordsPattern}(.*)\\??";
+    private const string SearchRegexPattern = $"{BeginningTriggerWordsPattern} +(?<{SearchTermKey}>(.*))";
     private const string CountryRegexPattern = $"in +(?<{CountryTermKey}>([A-Za-z- ]*))";
     private readonly TimeSpan _matchTimeout;
 
