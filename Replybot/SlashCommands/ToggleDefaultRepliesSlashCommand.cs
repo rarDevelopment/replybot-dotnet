@@ -29,7 +29,7 @@ public class ToggleDefaultRepliesSlashCommand : InteractionModuleBase<SocketInte
             var success = await _guildConfigurationBusinessLayer.SetEnableDefaultReplies(Context.Guild, isEnabled);
             if (success)
             {
-                await RespondAsync($"Consider it done! Default replies are now {(isEnabled ? "ON" : "OFF")}. Note: This setting does not affect special features.");
+                await RespondAsync($"Consider it done! Default replies are now {(isEnabled ? "ON" : "OFF")}.");
                 return;
             }
 

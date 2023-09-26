@@ -1,32 +1,31 @@
 ﻿using System.Text.Json;
-using Replybot.DataLayer.SchemaModels;
 using Replybot.Models;
 using System.Net.Http.Json;
+using Replybot.Models.SchemaModels;
 
-namespace Replybot.ServiceLayer
+namespace Replybot.ServiceLayer;
+
+public class DefaultRepliesService
 {
-    public class DefaultRepliesService
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public DefaultRepliesService(IHttpClientFactory httpClientFactory)
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        _httpClientFactory = httpClientFactory;
+    }
 
-        public DefaultRepliesService(IHttpClientFactory httpClientFactory)
+    public async Task<IList<GuildReplyDefinition>?> GetDefaultReplies()
+    {
+        var client = _httpClientFactory.CreateClient(HttpClients.DefaultReplies.ToString());
+        var response = await client.GetAsync("");
+        if (!response.IsSuccessStatusCode)
         {
-            _httpClientFactory = httpClientFactory;
+            return null;
         }
-
-        public async Task<IList<GuildReplyDefinition>?> GetDefaultReplies()
+        var defaultReplyData = await response.Content.ReadFromJsonAsync<DefaultReplyData>(new JsonSerializerOptions
         {
-            var client = _httpClientFactory.CreateClient(HttpClients.DefaultReplies.ToString());
-            var response = await client.GetAsync("");
-            if (!response.IsSuccessStatusCode)
-            {
-                return null;
-            }
-            var defaultReplyData = await response.Content.ReadFromJsonAsync<DefaultReplyData>(new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-            return defaultReplyData?.DefaultReplies.Select(tr => tr.ToDomain()).ToList();
-        }
+            PropertyNameCaseInsensitive = true
+        });
+        return defaultReplyData?.DefaultReplies.Select(tr => tr.ToDomain()).ToList();
     }
 }

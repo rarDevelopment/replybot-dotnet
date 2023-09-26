@@ -1,7 +1,6 @@
-﻿using System.Text.Json;
-using MongoDB.Driver;
-using Replybot.DataLayer.SchemaModels;
+﻿using MongoDB.Driver;
 using Replybot.Models;
+using Replybot.Models.SchemaModels;
 
 namespace Replybot.DataLayer;
 
@@ -17,17 +16,6 @@ public class ReplyDataLayer : IReplyDataLayer
         var database = client.GetDatabase(databaseSettings.Name);
         _guildRepliesCollection = database.GetCollection<GuildReplyDefinitionEntity>("guildReplyDefinitions");
         _guildConfigurationCollection = database.GetCollection<GuildConfigurationEntity>("configuration");
-    }
-    public IList<GuildReplyDefinition>? GetDefaultReplies()
-    {
-        var filePath = Path.GetFullPath($"{Environment.CurrentDirectory}../Replybot.DataLayer/DefaultReplies.json");
-        using var r = new StreamReader(filePath);
-        var json = r.ReadToEnd();
-        var defaultReplyData = JsonSerializer.Deserialize<DefaultReplyData>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-        return defaultReplyData?.DefaultReplies.Select(tr => tr.ToDomain()).ToList();
     }
 
     public async Task<IList<GuildReplyDefinition>?> GetActiveRepliesForGuild(string guildId)

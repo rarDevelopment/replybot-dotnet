@@ -83,6 +83,7 @@ builder.ConfigureServices((host, services) =>
     var blueskySettings = new BlueskySettings(host.Configuration["Bluesky:BaseUrl"]!);
     var siteIgnoreListSettings = new SiteIgnoreListSettings(host.Configuration["SiteIgnoreList:Url"]!);
     var countryConfigListSettings = new CountryConfigListSettings(host.Configuration["CountryConfigList:Url"]!);
+    var defaultRepliesSettings = new DefaultRepliesSettings(host.Configuration["DefaultReplies:Url"]!);
     var internetGameDatabaseSettings = new InternetGameDatabaseSettings(host.Configuration["InternetGameDatabase:ClientId"]!,
         host.Configuration["InternetGameDatabase:ClientSecret"]!);
 
@@ -96,6 +97,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(siteIgnoreListSettings);
     services.AddSingleton(internetGameDatabaseSettings);
     services.AddSingleton(countryConfigListSettings);
+    services.AddSingleton(defaultRepliesSettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
@@ -145,6 +147,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<DefaultRepliesService>();
     services.AddSingleton<CountryConfigService>();
     services.AddSingleton<InternetGameDatabaseApi>();
+    services.AddSingleton<DefaultRepliesService>();
 
     services.AddSingleton<FortniteApi>();
     services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
@@ -187,6 +190,11 @@ builder.ConfigureServices((host, services) =>
     services.AddHttpClient(HttpClients.CountryConfigList.ToString(), config =>
     {
         config.BaseAddress = new Uri(countryConfigListSettings.Url);
+    });
+
+    services.AddHttpClient(HttpClients.DefaultReplies.ToString(), config =>
+    {
+        config.BaseAddress = new Uri(defaultRepliesSettings.Url);
     });
 });
 

@@ -4,7 +4,6 @@ namespace Replybot.DataLayer;
 
 public interface IReplyDataLayer
 {
-    IList<GuildReplyDefinition>? GetDefaultReplies();
     Task<IList<GuildReplyDefinition>?> GetActiveRepliesForGuild(string guildId);
     Task<GuildConfiguration?> GetConfigurationForGuild(string guildId, string guildName);
     Task<bool> UpdateGuildConfiguration(string guildId, string guildName);
