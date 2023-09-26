@@ -6,5 +6,6 @@ public enum HttpClients
     Dictionary,
     Bluesky,
     SiteIgnoreList,
-    CountryConfigList
+    CountryConfigList,
+    DefaultReplies
 }

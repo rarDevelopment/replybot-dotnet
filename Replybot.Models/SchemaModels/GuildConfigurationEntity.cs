@@ -1,8 +1,7 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
-using Replybot.Models;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
-namespace Replybot.DataLayer.SchemaModels;
+namespace Replybot.Models.SchemaModels;
 
 public class GuildConfigurationEntity
 {

@@ -7,21 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="DefaultReplies.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="DefaultReplies.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Replybot.Models\Replybot.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SchemaModels\" />
   </ItemGroup>
 
 </Project>

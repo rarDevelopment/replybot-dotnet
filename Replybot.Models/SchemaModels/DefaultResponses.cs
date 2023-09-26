@@ -1,4 +1,4 @@
-﻿namespace Replybot.DataLayer.SchemaModels;
+﻿namespace Replybot.Models.SchemaModels;
 
 public class DefaultReplyData
 {
