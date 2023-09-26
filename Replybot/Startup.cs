@@ -142,6 +142,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<FreeDictionaryApi>();
     services.AddSingleton<BlueskyApi>();
     services.AddSingleton<SiteIgnoreService>();
+    services.AddSingleton<DefaultRepliesService>();
     services.AddSingleton<CountryConfigService>();
     services.AddSingleton<InternetGameDatabaseApi>();
 
