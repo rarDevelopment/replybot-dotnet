@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Replybot.BusinessLayer\Replybot.BusinessLayer.csproj" />
     <ProjectReference Include="..\Replybot.Models\Replybot.Models.csproj" />
   </ItemGroup>
 

@@ -5,17 +5,20 @@ using Discord.WebSocket;
 using Replybot.BusinessLayer.Extensions;
 using Replybot.DataLayer;
 using Replybot.Models;
+using Replybot.ServiceLayer;
 
 namespace Replybot.BusinessLayer;
 
 public class ReplyBusinessLayer : IReplyBusinessLayer
 {
     private readonly IReplyDataLayer _replyDataLayer;
+    private readonly DefaultRepliesService _defaultRepliesService;
     private readonly TimeSpan _matchTimeout;
 
-    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, BotSettings botSettings)
+    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, DefaultRepliesService defaultRepliesService, BotSettings botSettings)
     {
         _replyDataLayer = replyDataLayer;
+        _defaultRepliesService = defaultRepliesService;
         _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
@@ -24,7 +27,7 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
         string? channelId = null,
         string? userId = null)
     {
-        var defaultReplies = _replyDataLayer.GetDefaultReplies();
+        var defaultReplies = await _defaultRepliesService.GetDefaultReplies();
         var guildReplyDefinitions = guildId != null
             ? await _replyDataLayer.GetActiveRepliesForGuild(guildId)
             : null;

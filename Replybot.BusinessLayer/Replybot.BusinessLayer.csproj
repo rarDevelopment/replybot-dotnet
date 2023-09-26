@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Replybot.DataLayer\Replybot.DataLayer.csproj" />
     <ProjectReference Include="..\Replybot.Models\Replybot.Models.csproj" />
+    <ProjectReference Include="..\Replybot.ServiceLayer\Replybot.ServiceLayer.csproj" />
   </ItemGroup>
 
 </Project>
