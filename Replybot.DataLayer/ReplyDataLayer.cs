@@ -20,7 +20,7 @@ public class ReplyDataLayer : IReplyDataLayer
     }
     public IList<GuildReplyDefinition>? GetDefaultReplies()
     {
-        var filePath = Path.GetFullPath("DefaultReplies.json");
+        var filePath = Path.GetFullPath($"{Environment.CurrentDirectory}../Replybot.DataLayer/DefaultReplies.json");
         using var r = new StreamReader(filePath);
         var json = r.ReadToEnd();
         var defaultReplyData = JsonSerializer.Deserialize<DefaultReplyData>(json, new JsonSerializerOptions

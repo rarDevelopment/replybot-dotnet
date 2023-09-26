@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Replybot.BusinessLayer.Extensions;
 using Replybot.DataLayer;
 using Replybot.Models;
+using Replybot.ServiceLayer;
 
 namespace Replybot.BusinessLayer;
 
@@ -13,9 +14,10 @@ public class ReplyBusinessLayer : IReplyBusinessLayer
     private readonly IReplyDataLayer _replyDataLayer;
     private readonly TimeSpan _matchTimeout;
 
-    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, BotSettings botSettings)
+    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, Replybot.ServiceLayer. defaultRepliesService, BotSettings botSettings)
     {
         _replyDataLayer = replyDataLayer;
+        _defaultRepliesService = defaultRepliesService;
         _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
     }
 
