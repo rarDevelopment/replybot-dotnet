@@ -111,6 +111,10 @@ Make those challenging decisions - say `Toby flip a coin` and he'll do so.
 
 Make _more_ challenging decisions - say something like `"Toby pick one for me: [option 1], [option 2], [option 3], and so on..."` and he'll pick one of the comma-separated options for you. You can trigger this with a variety of phrases, like `Toby choose:` or `Toby please select one for me:` or `Toby random:`, but the colon `:` is important!
 
+## Get a Quick Search Link
+
+Toby can grab a quick link to some search results for you, just say `Toby google [search term here]` for Google, `Toby ddg [search term here]` for DuckDuckGo (full name also works), or `Toby bing [search term here]` for Bing.
+
 ## 8-Ball
 
 Want to shake the 8-ball? Ask Toby a question and include `Toby 🎱` or `Toby 8-ball` and you'll get an 8-ball style response, as if you shook it yourself.
