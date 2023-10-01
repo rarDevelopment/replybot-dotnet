@@ -133,6 +133,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, SongLinkCommand>();
     services.AddSingleton<ITextCommand, ChooseCommand>();
     services.AddSingleton<ITextCommand, GameSearchCommand>();
+    services.AddSingleton<ITextCommand, SearchCommand>();
     services.AddSingleton<ITextCommand, VersionCommand>();
 
     services.AddSingleton<IReactionCommand, FixTwitterCommand>();
