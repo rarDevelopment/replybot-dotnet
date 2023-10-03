@@ -7,7 +7,7 @@ public class FixTweetsWithoutAccountCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a relevant link there.";
     private const string MatchedDomainKey = "matchedDomain";
-    private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|t.co|x.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
+    private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|t.co|x.com|fxtwitter.com|vxtwitter.com|fixvx.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private const string NitterUrlRegexPattern = "https?:\\/\\/(www.)?(nitter.net)\\/[a-z0-9_]+\\/status\\/[0-9]+";
     public const string FixTweetButtonEmojiId = "1133174470966784100";
     public const string ViewTweetsWithoutAccountButtonEmojiName = "view_tweets_without_account";
