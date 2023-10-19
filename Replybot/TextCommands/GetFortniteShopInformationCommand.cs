@@ -60,11 +60,26 @@ public class GetFortniteShopInformationCommand : ITextCommand
         }
 
         var date = shopInfo.Date;
-        var shopItems = new List<EmbedFieldBuilder>
+        var shopItems = new List<EmbedFieldBuilder>();
+
+        if (shopInfo.HasFeatured)
         {
-            BuildShopSection(shopInfo.Featured, "Featured"),
-            BuildShopSection(shopInfo.Daily, "Daily")
-        };
+            shopItems.Add(BuildShopSection(shopInfo.Featured, "Featured"));
+        }
+
+        if (shopInfo.HasDaily)
+        {
+            BuildShopSection(shopInfo.Daily, "Daily");
+        }
+
+        if (!shopItems.Any())
+        {
+            return _discordFormatter.BuildRegularEmbedWithUserFooter(
+                $"Fortnite Shop Information - {date.ToShortDateString()}",
+                "No shop items could be found for today.",
+                message.Author
+            );
+        }
 
         return _discordFormatter.BuildRegularEmbedWithUserFooter(
             $"Fortnite Shop Information - {date.ToShortDateString()}",
