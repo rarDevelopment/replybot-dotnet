@@ -7,7 +7,7 @@ public class FixTwitterCommand : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string MatchedDomainKey = "matchedDomain";
-    private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|t.co|x.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
+    private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|t.co|x.com|nitter.net))\\/[a-z0-9_]+\\/status\\/[0-9]+";
     private const string VxTwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(vxtwitter.com|fxtwitter.com|fixvx.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
     public const string FixTweetButtonEmojiId = "1110617858892894248";
     public const string FixTweetButtonEmojiName = "fixtweet";
