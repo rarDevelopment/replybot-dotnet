@@ -10,6 +10,7 @@ public class FixBlueskyCommand : IReactionCommand
 {
     private readonly BlueskyApi _blueskyApi;
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
+    private const string ContentUnavailableText = "[content unavailable]";
     private readonly TimeSpan _matchTimeout;
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
     public const string FixTweetButtonEmojiId = "1126862392941367376";
@@ -117,18 +118,43 @@ public class FixBlueskyCommand : IReactionCommand
             var repo = splitUrl[0];
             var rkey = splitUrl[2];
 
-            var blueskyResponse = await _blueskyApi.GetRecord(repo, rkey);
-            if (blueskyResponse == null)
+            var blueskyRecord = await _blueskyApi.GetRecord(repo, rkey);
+            if (blueskyRecord == null)
             {
                 continue;
             }
 
-            var images = blueskyResponse.Value.Embed?.Media?.Images ?? blueskyResponse.Value.Embed?.Images;
+            var images = blueskyRecord.Value.Embed?.Media?.Images ?? blueskyRecord.Value.Embed?.Images;
             var imageCount = images?.Count ?? 0;
 
-            var postText = blueskyResponse.Value.Text;
+            var quotedRecord = blueskyRecord.Value.Embed?.Record ?? null;
 
-            var did = GetUserDidFromUri(blueskyResponse.Uri);
+            var postText = blueskyRecord.Value.Text;
+
+            if (quotedRecord != null)
+            {
+                postText += "\n**Quoted Post:**\n";
+                var quotedUserDid = GetUserDidFromUri(quotedRecord.Uri);
+                var quotedRkey = GetRkeyFromUri(quotedRecord.Uri);
+                if (quotedUserDid != null && quotedRkey != null)
+                {
+                    var quotedBlueskyRecord = await _blueskyApi.GetRecord(quotedUserDid, quotedRkey);
+                    if (quotedBlueskyRecord != null)
+                    {
+                        postText += quotedBlueskyRecord.Value.Text;
+                    }
+                    else
+                    {
+                        postText += ContentUnavailableText;
+                    }
+                }
+                else
+                {
+                    postText += ContentUnavailableText;
+                }
+            }
+
+            var did = GetUserDidFromUri(blueskyRecord.Uri);
             if (did == null)
             {
                 continue;
@@ -155,6 +181,12 @@ public class FixBlueskyCommand : IReactionCommand
             });
         }
         return blueskyEmbeds;
+    }
+
+    private static string? GetRkeyFromUri(string uri)
+    {
+        var uriSplit = uri.Replace("at://", "").Split("/");
+        return uriSplit.LastOrDefault();
     }
 
     private static string? GetUserDidFromUri(string uri)

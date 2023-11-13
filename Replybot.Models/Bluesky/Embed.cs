@@ -12,4 +12,7 @@ public class Embed
 
     [JsonPropertyName("images")]
     public List<Image>? Images { get; set; }
+
+    [JsonPropertyName("record")]
+    public QuotedRecord? Record { get; set; }
 }
