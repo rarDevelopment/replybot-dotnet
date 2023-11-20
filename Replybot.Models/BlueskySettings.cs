@@ -1,11 +1,6 @@
 ﻿namespace Replybot.Models;
 
-public class BlueskySettings
+public class BlueskySettings(string baseUrl)
 {
-    public BlueskySettings(string baseUrl)
-    {
-        BaseUrl = baseUrl;
-    }
-
-    public string BaseUrl { get; set; }
+    public string BaseUrl { get; set; } = baseUrl;
 }

@@ -1,13 +1,7 @@
 ﻿namespace Replybot.TextCommands.Models;
 
-public class PollEmbed
+public class PollEmbed(Embed embed, IReadOnlyList<IEmote>? reactionEmotes = null)
 {
-    public PollEmbed(Embed embed, IReadOnlyList<IEmote>? reactionEmotes = null)
-    {
-        Embed = embed;
-        ReactionEmotes = reactionEmotes;
-    }
-
-    public Embed Embed { get; set; }
-    public IReadOnlyList<IEmote>? ReactionEmotes { get; set; }
+    public Embed Embed { get; set; } = embed;
+    public IReadOnlyList<IEmote>? ReactionEmotes { get; set; } = reactionEmotes;
 }

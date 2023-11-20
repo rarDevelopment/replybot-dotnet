@@ -2,17 +2,10 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleFixTweetReactionsSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ToggleFixTweetReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+        RoleHelper roleHelper)
+    : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly RoleHelper _roleHelper;
-
-    public ToggleFixTweetReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _roleHelper = roleHelper;
-    }
-    
     [SlashCommand("set-fix-tweet-reactions", "Set fix tweet reactions on or off (true or false).")]
     public async Task ToggleAutoFixTweets(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
@@ -24,9 +17,9 @@ public class ToggleFixTweetReactionsSlashCommand : InteractionModuleBase<SocketI
             return;
         }
 
-        if (await _roleHelper.CanAdministrate(Context.Guild, member))
+        if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetEnableAutoFixTweets(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableAutoFixTweets(Context.Guild, isEnabled);
             if (success)
             {
                 await RespondAsync($"Consider it done! Fix tweet reactions, which allow you to react to convert twitter.com links to vxtwitter.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");

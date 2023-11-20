@@ -2,17 +2,10 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleFixBlueskyReactionsSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ToggleFixBlueskyReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+        RoleHelper roleHelper)
+    : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly RoleHelper _roleHelper;
-
-    public ToggleFixBlueskyReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _roleHelper = roleHelper;
-    }
-
     [SlashCommand("set-fix-bluesky-reactions", "Set fix Bluesky reactions on or off (true or false).")]
     public async Task ToggleAutoFixBluesky(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
@@ -24,9 +17,9 @@ public class ToggleFixBlueskyReactionsSlashCommand : InteractionModuleBase<Socke
             return;
         }
 
-        if (await _roleHelper.CanAdministrate(Context.Guild, member))
+        if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetEnableAutoFixBluesky(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableAutoFixBluesky(Context.Guild, isEnabled);
             if (success)
             {
                 await RespondAsync($"Consider it done! Fix Bluesky reactions, which allow you to react to get a preview of Bluesky.com links are now {(isEnabled ? "ON" : "OFF")}.");

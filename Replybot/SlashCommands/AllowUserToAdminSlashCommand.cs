@@ -3,21 +3,11 @@ using Replybot.BusinessLayer;
 
 namespace Replybot.SlashCommands;
 
-public class AllowUserToAdminSlashCommand : InteractionModuleBase<SocketInteractionContext>
-{
-    private readonly IGuildConfigurationBusinessLayer _configurationBusinessLayer;
-    private readonly RoleHelper _roleHelper;
-    private readonly IDiscordFormatter _discordFormatter;
-
-    public AllowUserToAdminSlashCommand(IGuildConfigurationBusinessLayer configurationBusinessLayer,
+public class AllowUserToAdminSlashCommand(IGuildConfigurationBusinessLayer configurationBusinessLayer,
         RoleHelper roleHelper,
         IDiscordFormatter discordFormatter)
-    {
-        _configurationBusinessLayer = configurationBusinessLayer;
-        _roleHelper = roleHelper;
-        _discordFormatter = discordFormatter;
-    }
-
+    : InteractionModuleBase<SocketInteractionContext>
+{
     [SlashCommand("allow-user-to-admin", "Set whether or not the specified user can manage the bot.")]
     public async Task AllowRoleToAdmin(
         [Summary("user", "The name of the user to allow to manage the bot")] IUser userToSet,
@@ -29,25 +19,25 @@ public class AllowUserToAdminSlashCommand : InteractionModuleBase<SocketInteract
         if (Context.User is not IGuildUser requestingUser)
         {
             await FollowupAsync(embed:
-                _discordFormatter.BuildErrorEmbedWithUserFooter("Invalid Action",
+                discordFormatter.BuildErrorEmbedWithUserFooter("Invalid Action",
                     "Sorry, you need to be a valid user in a valid server to use this bot.",
                     Context.User));
             return;
         }
 
-        if (!await _roleHelper.CanAdministrate(Context.Guild, requestingUser))
+        if (!await roleHelper.CanAdministrate(Context.Guild, requestingUser))
         {
             await FollowupAsync(embed:
-                _discordFormatter.BuildErrorEmbedWithUserFooter("Insufficient Permissions",
+                discordFormatter.BuildErrorEmbedWithUserFooter("Insufficient Permissions",
                     "Sorry, you do not have permission to manage the bot.",
                     Context.User));
             return;
         }
 
-        var config = await _configurationBusinessLayer.GetGuildConfiguration(Context.Guild);
+        var config = await configurationBusinessLayer.GetGuildConfiguration(Context.Guild);
         if (config == null)
         {
-            await RespondAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter("Oops!",
+            await RespondAsync(embed: discordFormatter.BuildErrorEmbedWithUserFooter("Oops!",
                 "There was a problem reading the configuration for this server. That shouldn't happen, so maybe try again later.",
                 Context.User));
             return;
@@ -60,27 +50,27 @@ public class AllowUserToAdminSlashCommand : InteractionModuleBase<SocketInteract
             if (isUserAllowed)
             {
                 await FollowupAsync(embed:
-                    _discordFormatter.BuildErrorEmbedWithUserFooter("User Already Allowed",
+                    discordFormatter.BuildErrorEmbedWithUserFooter("User Already Allowed",
                         "Sorry, this user is already allowed to manage the bot.",
                         Context.User));
                 return;
             }
-            await _configurationBusinessLayer.SetApprovedUsers(Context.Guild, new List<string> { userToSet.Id.ToString() }, true);
+            await configurationBusinessLayer.SetApprovedUsers(Context.Guild, new List<string> { userToSet.Id.ToString() }, true);
         }
         else
         {
             if (!isUserAllowed)
             {
                 await FollowupAsync(embed:
-                    _discordFormatter.BuildErrorEmbedWithUserFooter("User Is Already Not Allowed",
+                    discordFormatter.BuildErrorEmbedWithUserFooter("User Is Already Not Allowed",
                         "Sorry, this user is not allowed to manage the bot so there's nothing to change.",
                         Context.User));
                 return;
             }
-            await _configurationBusinessLayer.SetApprovedUsers(Context.Guild, new List<string> { userToSet.Id.ToString() }, false);
+            await configurationBusinessLayer.SetApprovedUsers(Context.Guild, new List<string> { userToSet.Id.ToString() }, false);
         }
 
-        await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter("Configuring Bot Permissions",
+        await FollowupAsync(embed: discordFormatter.BuildRegularEmbedWithUserFooter("Configuring Bot Permissions",
             $"The user {userToSet.Mention} can now {(setAllowed ? "" : "no longer")} manage the bot.",
             Context.User));
     }

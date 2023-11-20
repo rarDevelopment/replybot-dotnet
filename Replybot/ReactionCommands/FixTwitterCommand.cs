@@ -3,7 +3,7 @@ using Replybot.Models;
 
 namespace Replybot.ReactionCommands;
 
-public class FixTwitterCommand : IReactionCommand
+public class FixTwitterCommand(BotSettings botSettings) : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Twitter link there.";
     private const string MatchedDomainKey = "matchedDomain";
@@ -13,12 +13,7 @@ public class FixTwitterCommand : IReactionCommand
     public const string FixTweetButtonEmojiName = "fixtweet";
     private const string OriginalTwitterBaseUrl = "x.com";
     private const string FixedTwitterBaseUrl = "vxtwitter.com";
-    private readonly TimeSpan _matchTimeout;
-
-    public FixTwitterCommand(BotSettings botSettings)
-    {
-        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
-    }
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {

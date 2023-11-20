@@ -1,11 +1,6 @@
 ﻿namespace Replybot.Models;
 
-public class TheMovieDbSettings
+public class TheMovieDbSettings(string imdbBaseUrl)
 {
-    public TheMovieDbSettings(string imdbBaseUrl)
-    {
-        ImdbBaseUrl = imdbBaseUrl;
-    }
-
-    public string ImdbBaseUrl { get; set; }
+    public string ImdbBaseUrl { get; set; } = imdbBaseUrl;
 }

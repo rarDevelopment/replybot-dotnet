@@ -2,18 +2,11 @@
 
 namespace Replybot.ServiceLayer
 {
-    public class SiteIgnoreService
+    public class SiteIgnoreService(IHttpClientFactory httpClientFactory)
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        public SiteIgnoreService(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-        }
-
         public async Task<string?> GetSiteIgnoreList()
         {
-            var client = _httpClientFactory.CreateClient(HttpClients.SiteIgnoreList.ToString());
+            var client = httpClientFactory.CreateClient(HttpClients.SiteIgnoreList.ToString());
             var response = await client.GetAsync("");
             if (!response.IsSuccessStatusCode)
             {

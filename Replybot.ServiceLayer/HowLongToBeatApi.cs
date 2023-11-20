@@ -7,18 +7,11 @@ using Replybot.Models.HowLongToBeat;
 
 namespace Replybot.ServiceLayer;
 
-public class HowLongToBeatApi
+public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public HowLongToBeatApi(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
     public async Task<HowLongToBeatResponse?> GetHowLongToBeatInformation(string searchTerm)
     {
-        var client = _httpClientFactory.CreateClient(HttpClients.HowLongToBeat.ToString());
+        var client = httpClientFactory.CreateClient(HttpClients.HowLongToBeat.ToString());
         var request = new HowLongToBeatRequest
         {
             SearchType = "games",

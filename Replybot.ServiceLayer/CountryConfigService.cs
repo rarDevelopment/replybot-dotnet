@@ -3,18 +3,11 @@ using Replybot.Models;
 
 namespace Replybot.ServiceLayer
 {
-    public class CountryConfigService
+    public class CountryConfigService(IHttpClientFactory httpClientFactory)
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        public CountryConfigService(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-        }
-
         public async Task<IReadOnlyList<CountryConfig>?> GetCountryConfigList()
         {
-            var client = _httpClientFactory.CreateClient(HttpClients.CountryConfigList.ToString());
+            var client = httpClientFactory.CreateClient(HttpClients.CountryConfigList.ToString());
             var response = await client.GetAsync("");
             if (!response.IsSuccessStatusCode)
             {

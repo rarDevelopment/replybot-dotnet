@@ -2,14 +2,8 @@
 
 namespace Replybot.Notifications;
 
-public class UserUnbannedNotification : INotification
+public class UserUnbannedNotification(SocketUser userWhoWasUnbanned, SocketGuild guild) : INotification
 {
-    public SocketUser UserWhoWasUnbanned { get; }
-    public SocketGuild Guild { get; }
-
-    public UserUnbannedNotification(SocketUser userWhoWasUnbanned, SocketGuild guild)
-    {
-        UserWhoWasUnbanned = userWhoWasUnbanned;
-        Guild = guild;
-    }
+    public SocketUser UserWhoWasUnbanned { get; } = userWhoWasUnbanned;
+    public SocketGuild Guild { get; } = guild;
 }

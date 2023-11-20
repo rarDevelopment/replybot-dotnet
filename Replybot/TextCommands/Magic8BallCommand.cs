@@ -3,9 +3,8 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class Magic8BallCommand : ITextCommand
+public class Magic8BallCommand(IReplyBusinessLayer replyBusinessLayer) : ITextCommand
 {
-    private readonly IReplyBusinessLayer _replyBusinessLayer;
     private readonly string[] _triggers = { "8-ball", "8ball", "8 ball", "🎱" };
     private readonly string[] _replies = { "It is certain.",
         "It is decidedly so.",
@@ -29,22 +28,17 @@ public class Magic8BallCommand : ITextCommand
         "Very doubtful.",
         "Better believe it!" };
 
-    public Magic8BallCommand(IReplyBusinessLayer replyBusinessLayer)
-    {
-        _replyBusinessLayer = replyBusinessLayer;
-    }
-
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
         return replyCriteria.IsBotNameMentioned &&
-               _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
+               _triggers.Any(t => replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
     public Task<CommandResponse> Handle(SocketMessage message)
     {
         return Task.FromResult(new CommandResponse
         {
-            Description = _replyBusinessLayer.ChooseReply(_replies),
+            Description = replyBusinessLayer.ChooseReply(_replies),
             Reactions = new List<IEmote> { new Emoji("🎱") },
             StopProcessing = true,
             NotifyWhenReplying = true,

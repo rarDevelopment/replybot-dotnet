@@ -1,13 +1,7 @@
 ﻿namespace Replybot.Models.Bluesky;
 
-public class ImageWithMetadata
+public class ImageWithMetadata(Stream image, string altText)
 {
-    public ImageWithMetadata(Stream image, string altText)
-    {
-        Image = image;
-        AltText = altText;
-    }
-
-    public Stream Image { get; set; }
-    public string AltText { get; set; }
+    public Stream Image { get; set; } = image;
+    public string AltText { get; set; } = altText;
 }

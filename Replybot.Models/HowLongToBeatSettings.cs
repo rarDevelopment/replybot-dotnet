@@ -1,13 +1,7 @@
 ﻿namespace Replybot.Models;
 
-public class HowLongToBeatSettings
+public class HowLongToBeatSettings(string baseUrl, string referer)
 {
-    public HowLongToBeatSettings(string baseUrl, string referer)
-    {
-        BaseUrl = baseUrl;
-        Referer = referer;
-    }
-
-    public string BaseUrl { get; set; }
-    public string Referer { get; set; }
+    public string BaseUrl { get; set; } = baseUrl;
+    public string Referer { get; set; } = referer;
 }

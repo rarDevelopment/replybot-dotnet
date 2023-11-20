@@ -2,17 +2,10 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleDefaultRepliesSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ToggleDefaultRepliesSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+        RoleHelper roleHelper)
+    : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly RoleHelper _roleHelper;
-
-    public ToggleDefaultRepliesSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _roleHelper = roleHelper;
-    }
-
     [SlashCommand("set-default-replies", "Set default replies to on or off (true or false).")]
     public async Task ToggleDefaultReplies(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
@@ -24,9 +17,9 @@ public class ToggleDefaultRepliesSlashCommand : InteractionModuleBase<SocketInte
             return;
         }
 
-        if (await _roleHelper.CanAdministrate(Context.Guild, member))
+        if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetEnableDefaultReplies(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableDefaultReplies(Context.Guild, isEnabled);
             if (success)
             {
                 await RespondAsync($"Consider it done! Default replies are now {(isEnabled ? "ON" : "OFF")}.");

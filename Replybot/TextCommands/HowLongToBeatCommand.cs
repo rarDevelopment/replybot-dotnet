@@ -6,12 +6,12 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class HowLongToBeatCommand : ITextCommand
+public class HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
+        HowLongToBeatApi howLongToBeatApi,
+        IDiscordFormatter discordFormatter,
+        ILogger<DiscordBot> logger)
+    : ITextCommand
 {
-    private readonly HowLongToBeatSettings _howLongToBeatSettings;
-    private readonly HowLongToBeatApi _howLongToBeatApi;
-    private readonly IDiscordFormatter _discordFormatter;
-    private readonly ILogger<DiscordBot> _logger;
     private const string UrlKeyword = "{{URL}}";
     private const string QueryKeyword = "{{QUERY}}";
     private const string GameIdKeyword = "{{GAME_ID}}";
@@ -19,19 +19,7 @@ public class HowLongToBeatCommand : ITextCommand
     private const string GameUrlTemplate = $"{UrlKeyword}game?id={GameIdKeyword}";
     private const string SearchTermKey = "searchTerm";
     private const string TriggerRegexPattern = $"(hltb|how long to beat|game length) +(?<{SearchTermKey}>(.*))\\??";
-    private readonly TimeSpan _matchTimeout;
-
-    public HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
-        HowLongToBeatApi howLongToBeatApi,
-        IDiscordFormatter discordFormatter,
-        ILogger<DiscordBot> logger)
-    {
-        _howLongToBeatSettings = howLongToBeatSettings;
-        _howLongToBeatApi = howLongToBeatApi;
-        _discordFormatter = discordFormatter;
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
-    }
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -63,12 +51,12 @@ public class HowLongToBeatCommand : ITextCommand
             var searchText = match.Groups[SearchTermKey].Value;
             var searchUrl =
                 SearchUrlTemplate
-                    .Replace(UrlKeyword, _howLongToBeatSettings.BaseUrl)
+                    .Replace(UrlKeyword, howLongToBeatSettings.BaseUrl)
                     .Replace(QueryKeyword, Uri.EscapeDataString(searchText));
 
             try
             {
-                var howLongToBeatInfo = await _howLongToBeatApi.GetHowLongToBeatInformation(searchText);
+                var howLongToBeatInfo = await howLongToBeatApi.GetHowLongToBeatInformation(searchText);
                 if (howLongToBeatInfo == null)
                 {
                     return null;
@@ -86,7 +74,7 @@ public class HowLongToBeatCommand : ITextCommand
                     var allStyles = ConvertSecondsToHoursForDisplay(game.CompAll, 1);
 
                     var gameUrl = GameUrlTemplate
-                        .Replace(UrlKeyword, _howLongToBeatSettings.BaseUrl)
+                        .Replace(UrlKeyword, howLongToBeatSettings.BaseUrl)
                         .Replace(GameIdKeyword, game.GameId.ToString());
 
                     var messageForField =
@@ -116,7 +104,7 @@ public class HowLongToBeatCommand : ITextCommand
                     IsInline = false
                 });
 
-                return _discordFormatter.BuildRegularEmbedWithUserFooter("How Long To Beat",
+                return discordFormatter.BuildRegularEmbedWithUserFooter("How Long To Beat",
                     "",
                     message.Author,
                     embedFieldBuilders,
@@ -124,14 +112,14 @@ public class HowLongToBeatCommand : ITextCommand
             }
             catch (Exception ex)
             {
-                _logger.Log(LogLevel.Error, "Error in HowLongToBeat command - {0}", ex.Message);
-                return _discordFormatter.BuildErrorEmbed("How Long To Beat",
+                logger.Log(LogLevel.Error, "Error in HowLongToBeat command - {0}", ex.Message);
+                return discordFormatter.BuildErrorEmbed("How Long To Beat",
                     $"Hmm, couldn't reach the site, but here's a link to try yourself: {searchUrl}");
             }
         }
 
-        _logger.Log(LogLevel.Error, $"Error in HowLongToBeatCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Game",
+        logger.Log(LogLevel.Error, $"Error in HowLongToBeatCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Game",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }

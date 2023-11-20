@@ -6,23 +6,15 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class PollCommand : ITextCommand
+public class PollCommand(BotSettings botSettings,
+        IDiscordFormatter discordFormatter,
+        ILogger<DiscordBot> logger)
+    : ITextCommand
 {
-    private readonly IDiscordFormatter _discordFormatter;
     private readonly IReadOnlyList<string> _pollOptionsAlphabet = new[] { "🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯", "🇰", "🇱", "🇲", "🇳", "🇴", "🇵", "🇶", "🇷", "🇸", "🇹" };
     private const string SearchTermKey = "searchTerm";
     private const string TriggerRegexPattern = $"poll (?<{SearchTermKey}>(.)*)";
-    private readonly TimeSpan _matchTimeout;
-    private readonly ILogger<DiscordBot> _logger;
-
-    public PollCommand(BotSettings botSettings,
-        IDiscordFormatter discordFormatter,
-        ILogger<DiscordBot> logger)
-    {
-        _discordFormatter = discordFormatter;
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
-    }
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -57,7 +49,7 @@ public class PollCommand : ITextCommand
 
             if (messageWithoutTrigger.Length <= 0)
             {
-                return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
+                return new PollEmbed(discordFormatter.BuildErrorEmbed("Error Making Poll",
                     "You need at least two answers in your poll"));
             }
 
@@ -65,7 +57,7 @@ public class PollCommand : ITextCommand
 
             if (splitArgs.Count <= 2)
             {
-                return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
+                return new PollEmbed(discordFormatter.BuildErrorEmbed("Error Making Poll",
                     "You need at least two answers in your poll"));
             }
 
@@ -74,21 +66,21 @@ public class PollCommand : ITextCommand
 
             if (answers.Count > _pollOptionsAlphabet.Count)
             {
-                return new PollEmbed(_discordFormatter.BuildErrorEmbed("Error Making Poll",
+                return new PollEmbed(discordFormatter.BuildErrorEmbed("Error Making Poll",
                         $"You can't have more than {_pollOptionsAlphabet.Count} answers. Nobody is going to read a poll that long anyway 😌"));
             }
 
             var reactions = answers.Select((_, index) => _pollOptionsAlphabet[index]).ToList();
             var answersToDisplay = answers.Select((answer, index) => $"{reactions[index]} {answer}").ToList();
 
-            var pollEmbed = _discordFormatter.BuildRegularEmbedWithUserFooter(question, string.Join("\n", answersToDisplay), message.Author);
+            var pollEmbed = discordFormatter.BuildRegularEmbedWithUserFooter(question, string.Join("\n", answersToDisplay), message.Author);
             var reactionEmotes = reactions.Select(e => new Emoji(e)).ToList();
 
             return new PollEmbed(pollEmbed, reactionEmotes);
         }
 
-        _logger.Log(LogLevel.Error, $"Error in PollCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        var errorEmbed = _discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
+        logger.Log(LogLevel.Error, $"Error in PollCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        var errorEmbed = discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
         return new PollEmbed(errorEmbed);

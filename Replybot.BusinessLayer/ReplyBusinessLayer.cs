@@ -9,27 +9,20 @@ using Replybot.ServiceLayer;
 
 namespace Replybot.BusinessLayer;
 
-public class ReplyBusinessLayer : IReplyBusinessLayer
+public class ReplyBusinessLayer(IReplyDataLayer replyDataLayer, DefaultRepliesService defaultRepliesService,
+        BotSettings botSettings)
+    : IReplyBusinessLayer
 {
-    private readonly IReplyDataLayer _replyDataLayer;
-    private readonly DefaultRepliesService _defaultRepliesService;
-    private readonly TimeSpan _matchTimeout;
-
-    public ReplyBusinessLayer(IReplyDataLayer replyDataLayer, DefaultRepliesService defaultRepliesService, BotSettings botSettings)
-    {
-        _replyDataLayer = replyDataLayer;
-        _defaultRepliesService = defaultRepliesService;
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
-    }
+    private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
 
     public async Task<GuildReplyDefinition?> GetReplyDefinition(string message,
         string? guildId,
         string? channelId = null,
         string? userId = null)
     {
-        var defaultReplies = await _defaultRepliesService.GetDefaultReplies();
+        var defaultReplies = await defaultRepliesService.GetDefaultReplies();
         var guildReplyDefinitions = guildId != null
-            ? await _replyDataLayer.GetActiveRepliesForGuild(guildId)
+            ? await replyDataLayer.GetActiveRepliesForGuild(guildId)
             : null;
 
         var defaultReply = FindReplyFromData(defaultReplies, message);

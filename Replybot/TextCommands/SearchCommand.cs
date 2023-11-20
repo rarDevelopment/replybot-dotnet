@@ -4,23 +4,16 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class SearchCommand : ITextCommand
+public class SearchCommand(ILogger<DiscordBot> logger) : ITextCommand
 {
-    private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
-    private readonly TimeSpan _matchTimeout;
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
     private readonly List<SearchLinkMap> _searchLinkMappings = new()
     {
         new SearchLinkMap($"(ddg|duckduckgo) (?<{SearchTermKey}>(.*))", "DuckDuckGo", "https://duckduckgo.com/?q="),
         new SearchLinkMap($"google (?<{SearchTermKey}>(.*))", "Google", "https://www.google.com/search?q="),
         new SearchLinkMap($"bing (?<{SearchTermKey}>(.*))", "Bing", "https://www.bing.com/search?q="),
     };
-
-    public SearchCommand(ILogger<DiscordBot> logger)
-    {
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
-    }
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -59,7 +52,7 @@ public class SearchCommand : ITextCommand
             });
         }
 
-        _logger.Log(LogLevel.Error, $"Error in GameSearchCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        logger.Log(LogLevel.Error, $"Error in GameSearchCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
         return Task.FromResult(new CommandResponse
         {
             Description = "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",

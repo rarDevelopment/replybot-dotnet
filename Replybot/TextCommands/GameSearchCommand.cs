@@ -5,25 +5,15 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class GameSearchCommand : ITextCommand
+public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
+        IDiscordFormatter discordFormatter,
+        ILogger<DiscordBot> logger)
+    : ITextCommand
 {
-    private readonly InternetGameDatabaseApi _internetGameDatabaseApi;
-    private readonly IDiscordFormatter _discordFormatter;
-    private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string TriggerRegexPattern = $"when +(does|did|will|is) +(?<{SearchTermKey}>(.*)) +(come out|release|drop|releasing|dropping|coming out)\\??";
     private const int MaxGamesToShow = 3;
-    private readonly TimeSpan _matchTimeout;
-
-    public GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
-        IDiscordFormatter discordFormatter,
-        ILogger<DiscordBot> logger)
-    {
-        _internetGameDatabaseApi = internetGameDatabaseApi;
-        _discordFormatter = discordFormatter;
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
-    }
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -56,7 +46,7 @@ public class GameSearchCommand : ITextCommand
 
             try
             {
-                var gameSearchResults = await _internetGameDatabaseApi.SearchGames(searchText);
+                var gameSearchResults = await internetGameDatabaseApi.SearchGames(searchText);
 
                 var embedFieldBuilders = new List<EmbedFieldBuilder>();
 
@@ -121,26 +111,26 @@ public class GameSearchCommand : ITextCommand
 
                 if (embedFieldBuilders.Count == 0)
                 {
-                    return _discordFormatter.BuildRegularEmbedWithUserFooter("No Game(s) Found",
+                    return discordFormatter.BuildRegularEmbedWithUserFooter("No Game(s) Found",
                         "Sorry, I couldn't find any games that matched your search.",
                         message.Author);
                 }
 
-                return _discordFormatter.BuildRegularEmbedWithUserFooter("Game Information",
+                return discordFormatter.BuildRegularEmbedWithUserFooter("Game Information",
                     "",
                     message.Author,
                     embedFieldBuilders);
             }
             catch (Exception ex)
             {
-                _logger.Log(LogLevel.Error, "Error in GameSearchCommand command - {0} -- {1}", ex.Message, ((RestEase.ApiException)ex).Content);
-                return _discordFormatter.BuildErrorEmbed("Game Information",
+                logger.Log(LogLevel.Error, "Error in GameSearchCommand command - {0} -- {1}", ex.Message, ((RestEase.ApiException)ex).Content);
+                return discordFormatter.BuildErrorEmbed("Game Information",
                     "Hmm, couldn't do that search for some reason. Try again later!");
             }
         }
 
-        _logger.Log(LogLevel.Error, $"Error in GameSearchCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Game Information",
+        logger.Log(LogLevel.Error, $"Error in GameSearchCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Game Information",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }

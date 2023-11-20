@@ -1,11 +1,6 @@
 ﻿namespace Replybot.Models;
 
-public class SiteIgnoreListSettings
+public class SiteIgnoreListSettings(string url)
 {
-    public string Url { get; }
-
-    public SiteIgnoreListSettings(string url)
-    {
-        Url = url;
-    }
+    public string Url { get; } = url;
 }

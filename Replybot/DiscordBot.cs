@@ -6,69 +6,54 @@ using Replybot.Notifications;
 
 namespace Replybot;
 
-public class DiscordBot : BackgroundService
-{
-    private readonly DiscordSocketClient _client;
-    private readonly InteractionService _interactionService;
-    private readonly ILogger _logger;
-    private readonly InteractionHandler _interactionHandler;
-    private readonly DiscordSettings _discordSettings;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly TimeSpan _loopWaitTime = TimeSpan.FromSeconds(15);
-    private readonly CancellationToken _cancellationToken;
-
-    public DiscordBot(DiscordSocketClient client,
+public class DiscordBot(DiscordSocketClient client,
         InteractionService interactionService,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<DiscordBot> logger,
         InteractionHandler interactionHandler,
         DiscordSettings discordSettings)
-    {
-        _client = client;
-        _interactionService = interactionService;
-        _logger = logger;
-        _interactionHandler = interactionHandler;
-        _discordSettings = discordSettings;
-        _serviceScopeFactory = serviceScopeFactory;
-        _cancellationToken = new CancellationTokenSource().Token;
-    }
+    : BackgroundService
+{
+    private readonly ILogger _logger = logger;
+    private readonly TimeSpan _loopWaitTime = TimeSpan.FromSeconds(15);
+    private readonly CancellationToken _cancellationToken = new CancellationTokenSource().Token;
 
     private IMediator Mediator
     {
         get
         {
-            var scope = _serviceScopeFactory.CreateScope();
+            var scope = serviceScopeFactory.CreateScope();
             return scope.ServiceProvider.GetRequiredService<IMediator>();
         }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _client.Ready += ClientReady;
+        client.Ready += ClientReady;
 
-        _client.Log += LogAsync;
-        _interactionService.Log += LogAsync;
+        client.Log += LogAsync;
+        interactionService.Log += LogAsync;
 
-        await _interactionHandler.InitializeAsync();
+        await interactionHandler.InitializeAsync();
 
         SetEvents();
 
-        await _client.LoginAsync(TokenType.Bot, _discordSettings.BotToken);
+        await client.LoginAsync(TokenType.Bot, discordSettings.BotToken);
 
-        await _client.StartAsync();
+        await client.StartAsync();
 
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(_loopWaitTime, stoppingToken);
-            if (_client.ConnectionState != ConnectionState.Disconnected)
+            if (client.ConnectionState != ConnectionState.Disconnected)
             {
                 continue;
             }
             await LogAsync(new LogMessage(LogSeverity.Error, "ExecuteAsync", "Attempting to restart bot"));
-            await _client.StopAsync();
+            await client.StopAsync();
             try
             {
-                await _client.StartAsync();
+                await client.StartAsync();
             }
             catch (Exception ex)
             {
@@ -79,26 +64,26 @@ public class DiscordBot : BackgroundService
 
     private async Task ClientReady()
     {
-        _logger.LogInformation($"Logged as {_client.CurrentUser}");
+        _logger.LogInformation($"Logged as {client.CurrentUser}");
 
-        await _interactionService.RegisterCommandsGloballyAsync();
+        await interactionService.RegisterCommandsGloballyAsync();
     }
 
     public void SetEvents()
     {
-        _client.MessageReceived += msg => Publish(new MessageReceivedNotification(msg));
-        _client.GuildMemberUpdated += (cachedOldUser, newUser) => Publish(new GuildMemberUpdatedNotification(cachedOldUser, newUser));
-        _client.JoinedGuild += socketGuild => Publish(new JoinedGuildNotification(socketGuild));
-        _client.GuildUpdated += (oldGuild, newGuild) => Publish(new GuildUpdatedNotification(oldGuild, newGuild));
-        _client.LeftGuild += socketGuild => Publish(new LeftGuildNotification(socketGuild));
-        _client.UserUpdated += (oldUser, newUser) => Publish(new UserUpdatedNotification(oldUser, newUser));
-        _client.MessageUpdated += (oldMessage, newMessage, channel) => Publish(new MessageUpdatedNotification(oldMessage, newMessage, channel));
-        _client.MessageDeleted += (message, channel) => Publish(new MessageDeletedNotification(message, channel));
-        _client.UserLeft += (guild, userWhoLeft) => Publish(new UserLeftNotification(guild, userWhoLeft));
-        _client.UserBanned += (userWhoWasBanned, guild) => Publish(new UserBannedNotification(userWhoWasBanned, guild));
-        _client.UserUnbanned += (userWhoWasUnbanned, guild) => Publish(new UserUnbannedNotification(userWhoWasUnbanned, guild));
-        _client.UserJoined += user => Publish(new UserJoinedNotification(user));
-        _client.ReactionAdded += (cacheableMessage, cacheableChannel, reaction) => Publish(new ReactionAddedNotification(cacheableMessage, cacheableChannel, reaction));
+        client.MessageReceived += msg => Publish(new MessageReceivedNotification(msg));
+        client.GuildMemberUpdated += (cachedOldUser, newUser) => Publish(new GuildMemberUpdatedNotification(cachedOldUser, newUser));
+        client.JoinedGuild += socketGuild => Publish(new JoinedGuildNotification(socketGuild));
+        client.GuildUpdated += (oldGuild, newGuild) => Publish(new GuildUpdatedNotification(oldGuild, newGuild));
+        client.LeftGuild += socketGuild => Publish(new LeftGuildNotification(socketGuild));
+        client.UserUpdated += (oldUser, newUser) => Publish(new UserUpdatedNotification(oldUser, newUser));
+        client.MessageUpdated += (oldMessage, newMessage, channel) => Publish(new MessageUpdatedNotification(oldMessage, newMessage, channel));
+        client.MessageDeleted += (message, channel) => Publish(new MessageDeletedNotification(message, channel));
+        client.UserLeft += (guild, userWhoLeft) => Publish(new UserLeftNotification(guild, userWhoLeft));
+        client.UserBanned += (userWhoWasBanned, guild) => Publish(new UserBannedNotification(userWhoWasBanned, guild));
+        client.UserUnbanned += (userWhoWasUnbanned, guild) => Publish(new UserUnbannedNotification(userWhoWasUnbanned, guild));
+        client.UserJoined += user => Publish(new UserJoinedNotification(user));
+        client.ReactionAdded += (cacheableMessage, cacheableChannel, reaction) => Publish(new ReactionAddedNotification(cacheableMessage, cacheableChannel, reaction));
     }
 
     private Task Publish<TEvent>(TEvent @event) where TEvent : INotification

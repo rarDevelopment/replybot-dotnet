@@ -3,18 +3,10 @@ using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
-public class GuildMemberUpdatedNotificationHandler : INotificationHandler<GuildMemberUpdatedNotification>
-{
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly SystemChannelPoster _systemChannelPoster;
-
-    public GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+public class GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         SystemChannelPoster systemChannelPoster)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _systemChannelPoster = systemChannelPoster;
-    }
-
+    : INotificationHandler<GuildMemberUpdatedNotification>
+{
     public Task Handle(GuildMemberUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
@@ -29,7 +21,7 @@ public class GuildMemberUpdatedNotificationHandler : INotificationHandler<GuildM
 
             var oldUser = cachedOldUser.Value;
 
-            var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
+            var guildConfig = await guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
             var announceChange = guildConfig.EnableAvatarAnnouncements;
             var tagUserInChange = guildConfig.EnableAvatarMentions;
 
@@ -48,7 +40,7 @@ public class GuildMemberUpdatedNotificationHandler : INotificationHandler<GuildM
                 avatarUrl = newUser.GetDisplayAvatarUrl(ImageFormat.Jpeg);
             }
 
-            await _systemChannelPoster.PostToGuildSystemChannel(newUser.Guild,
+            await systemChannelPoster.PostToGuildSystemChannel(newUser.Guild,
                 $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look in this server! Check it out: {avatarUrl}",
                 $"Guild: {newUser.Guild.Name} ({newUser.Guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                 typeof(GuildMemberUpdatedNotificationHandler));

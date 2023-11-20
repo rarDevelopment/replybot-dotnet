@@ -11,23 +11,7 @@ using Replybot.TextCommands.Models;
 using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.NotificationHandlers;
-public class MessageReceivedNotificationHandler : INotificationHandler<MessageReceivedNotification>
-{
-    private readonly IReplyBusinessLayer _replyBusinessLayer;
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly IEnumerable<ITextCommand> _textCommands;
-    private readonly IEnumerable<IReactionCommand> _reactionCommands;
-    private readonly VersionSettings _versionSettings;
-    private readonly DiscordSettings _discordSettings;
-    private readonly DiscordSocketClient _client;
-    private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
-    private readonly SiteIgnoreService _siteIgnoreService;
-    private readonly IDiscordFormatter _discordFormatter;
-    private readonly ILogger<DiscordBot> _logger;
-    private readonly TimeSpan _matchTimeout;
-    private const string PreviouslyPostedEmoji = "<:slowpoke:1149574363599868004>";
-
-    public MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
+public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         IEnumerable<ITextCommand> textCommands,
         IEnumerable<IReactionCommand> reactionCommands,
@@ -39,20 +23,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         SiteIgnoreService siteIgnoreService,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
-    {
-        _replyBusinessLayer = replyBusinessLayer;
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _textCommands = textCommands;
-        _reactionCommands = reactionCommands;
-        _versionSettings = versionSettings;
-        _discordSettings = discordSettings;
-        _client = client;
-        _logMessageBuilder = logMessageBuilder;
-        _siteIgnoreService = siteIgnoreService;
-        _discordFormatter = discordFormatter;
-        _logger = logger;
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
-    }
+    : INotificationHandler<MessageReceivedNotification>
+{
+    private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
+    private const string PreviouslyPostedEmoji = "<:slowpoke:1149574363599868004>";
 
     public Task Handle(MessageReceivedNotification notification, CancellationToken cancellationToken)
     {
@@ -74,7 +48,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             IGuild? guild = guildChannel?.Guild;
             var guildUsers = guild != null ? await guild.GetUsersAsync() : null;
 
-            foreach (var command in _textCommands)
+            foreach (var command in textCommands)
             {
                 var replyCriteria = new TextCommandReplyCriteria(notification.Message.Content)
                 {
@@ -93,10 +67,10 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 }
             }
 
-            var config = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
+            var config = await guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
             if (config != null)
             {
-                foreach (var reactionCommand in _reactionCommands)
+                foreach (var reactionCommand in reactionCommands)
                 {
                     if (!reactionCommand.CanHandle(notification.Message.Content, config))
                     {
@@ -111,7 +85,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 }
             }
 
-            var replyDefinition = await _replyBusinessLayer.GetReplyDefinition(message.Content,
+            var replyDefinition = await replyBusinessLayer.GetReplyDefinition(message.Content,
                 guildChannel?.Guild.Id.ToString(),
                 message.Channel.Id.ToString(),
                 message.Author.Id.ToString());
@@ -126,7 +100,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 return Task.CompletedTask;
             }
 
-            var reply = _replyBusinessLayer.ChooseReply(replyDefinition.Replies);
+            var reply = replyBusinessLayer.ChooseReply(replyDefinition.Replies);
 
             var wasDeleted = await HandleDelete(message, reply);
             var messageReference = wasDeleted ? null : new MessageReference(message.Id);
@@ -145,7 +119,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             }
 
             var messageText = reply.ReplaceKeywords(message.Author,
-                _versionSettings.VersionNumber,
+                versionSettings.VersionNumber,
                 message.Content,
                 replyDefinition);
 
@@ -194,8 +168,8 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         if (linkMatches.Any())
         {
             var links = linkMatches.Select(lm => lm.Value).ToList();
-            var discordLinks = links.Where(l => l.Contains(_discordSettings.BaseUrl));
-            var otherLinks = links.Where(l => !l.Contains(_discordSettings.BaseUrl));
+            var discordLinks = links.Where(l => l.Contains(discordSettings.BaseUrl));
+            var otherLinks = links.Where(l => !l.Contains(discordSettings.BaseUrl));
 
             await HandleDiscordMessageLinks(channel, messageWithLinks, discordLinks);
 
@@ -217,7 +191,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             return;
         }
 
-        var sitesToIgnore = await _siteIgnoreService.GetSiteIgnoreList();
+        var sitesToIgnore = await siteIgnoreService.GetSiteIgnoreList();
         var sitesToIgnoreList = sitesToIgnore?.Split("\n").Where(s => s.Trim().Length > 0).ToList();
 
         foreach (var link in otherLinks)
@@ -233,7 +207,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 continue;
             }
 
-            var embed = _discordFormatter.BuildRegularEmbed("Link Posted Previously",
+            var embed = discordFormatter.BuildRegularEmbed("Link Posted Previously",
                 $"{PreviouslyPostedEmoji} This link was posted earlier by {relevantMessage.Author.Mention}! {PreviouslyPostedEmoji}\n[Click here to go to the previous discussion]({relevantMessage.GetJumpUrl()}).");
             await messageWithLinks.Channel.SendMessageAsync(embed: embed, messageReference: new MessageReference(messageWithLinks.Id));
         }
@@ -273,7 +247,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var guildIdFromUrl = Convert.ToUInt64(segmentsJoined[2]);
             if (channel.Guild.Id != guildIdFromUrl)
             {
-                guild = _client.GetGuild(guildIdFromUrl);
+                guild = client.GetGuild(guildIdFromUrl);
                 if (guild is null)
                 {
                     continue;
@@ -303,7 +277,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 continue;
             }
 
-            var embedBuilder = _logMessageBuilder.CreateEmbedBuilder("Message Linked",
+            var embedBuilder = logMessageBuilder.CreateEmbedBuilder("Message Linked",
                 $"[Original Message]({messageBeingLinked.GetJumpUrl()}) by {messageBeingLinked.Author.Mention}:",
                 messageBeingLinked);
             await messageWithLinks.Channel.SendMessageAsync(embed: embedBuilder.Build());
@@ -322,7 +296,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log(LogLevel.Error, $"Failed to add reaction {triggerResponseReaction}", ex);
+                    logger.Log(LogLevel.Error, $"Failed to add reaction {triggerResponseReaction}", ex);
                 }
             }
         }
@@ -339,7 +313,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
             var botUserInGuild = (message.Author as SocketGuildUser)?.Guild.CurrentUser;
             if (botUserInGuild != null)
             {
-                isBotMentioned = _replyBusinessLayer.IsBotNameMentioned(message, botUserInGuild.Id, guildUsers);
+                isBotMentioned = replyBusinessLayer.IsBotNameMentioned(message, botUserInGuild.Id, guildUsers);
             }
         }
         else if (isDm)
@@ -372,7 +346,7 @@ public class MessageReceivedNotificationHandler : INotificationHandler<MessageRe
         }
         catch (Exception ex)
         {
-            _logger.Log(LogLevel.Error, $"Failed to delete message: {ex.Message}", ex);
+            logger.Log(LogLevel.Error, $"Failed to delete message: {ex.Message}", ex);
         }
 
         return wasDeleted;

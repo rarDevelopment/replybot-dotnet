@@ -1,12 +1,7 @@
 ﻿namespace Replybot.TextCommands.Models;
 
-public class TextCommandReplyCriteria
+public class TextCommandReplyCriteria(string messageText)
 {
-    public TextCommandReplyCriteria(string messageText)
-    {
-        MessageText = messageText;
-    }
-
-    public string MessageText { get; set; }
+    public string MessageText { get; set; } = messageText;
     public bool IsBotNameMentioned { get; set; }
 }
