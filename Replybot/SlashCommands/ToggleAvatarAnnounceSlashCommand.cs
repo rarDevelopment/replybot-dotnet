@@ -2,17 +2,10 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleAvatarAnnounceSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ToggleAvatarAnnounceSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+        RoleHelper roleHelper)
+    : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly RoleHelper _roleHelper;
-
-    public ToggleAvatarAnnounceSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _roleHelper = roleHelper;
-    }
-    
     [SlashCommand("set-avatar-announcement", "Set avatar announcements to on or off (true or false).")]
     public async Task ToggleAvatarAnnounce(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
@@ -24,9 +17,9 @@ public class ToggleAvatarAnnounceSlashCommand : InteractionModuleBase<SocketInte
             return;
         }
 
-        if (await _roleHelper.CanAdministrate(Context.Guild, member))
+        if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetEnableAvatarAnnouncements(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableAvatarAnnouncements(Context.Guild, isEnabled);
             if (success)
             {
                 await RespondAsync($"Consider it done! Avatar announcements are now {(isEnabled ? "ON" : "OFF")}.");

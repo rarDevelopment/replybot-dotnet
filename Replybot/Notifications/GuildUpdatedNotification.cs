@@ -2,14 +2,8 @@
 
 namespace Replybot.Notifications;
 
-public class GuildUpdatedNotification : INotification
+public class GuildUpdatedNotification(SocketGuild oldGuild, SocketGuild newGuild) : INotification
 {
-    public SocketGuild OldGuild { get; }
-    public SocketGuild NewGuild { get; }
-
-    public GuildUpdatedNotification(SocketGuild oldGuild, SocketGuild newGuild)
-    {
-        OldGuild = oldGuild;
-        NewGuild = newGuild;
-    }
+    public SocketGuild OldGuild { get; } = oldGuild;
+    public SocketGuild NewGuild { get; } = newGuild;
 }

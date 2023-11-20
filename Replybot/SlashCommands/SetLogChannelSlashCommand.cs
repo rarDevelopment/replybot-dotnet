@@ -2,17 +2,10 @@
 
 namespace Replybot.SlashCommands;
 
-public class SetLogChannelSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class SetLogChannelSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+        RoleHelper roleHelper)
+    : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly RoleHelper _roleHelper;
-
-    public SetLogChannelSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _roleHelper = roleHelper;
-    }
-
     [SlashCommand("set-logs-channel", "Sets the channel to use for logging activities in this Discord.")]
     public async Task SetLogChannel(
         [Summary("channel", "The channel where you'd like logs to be stored. Leave it empty to turn off logging.")] IGuildChannel? channel = null)
@@ -24,9 +17,9 @@ public class SetLogChannelSlashCommand : InteractionModuleBase<SocketInteraction
             return;
         }
 
-        if (await _roleHelper.CanAdministrate(Context.Guild, member))
+        if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetLogChannel(Context.Guild, channel?.Id.ToString());
+            var success = await guildConfigurationBusinessLayer.SetLogChannel(Context.Guild, channel?.Id.ToString());
             if (success)
             {
                 var text = "Consider it done! Activity will no longer be logged.";

@@ -6,28 +6,16 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class HowLongIsMovieCommand : ITextCommand
-{
-    private readonly TheMovieDbApi _theMovieDbApi;
-    private readonly TheMovieDbSettings _theMovieDbSettings;
-    private readonly IDiscordFormatter _discordFormatter;
-    private readonly ILogger<DiscordBot> _logger;
-    private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"(how long is|hltw|how long to watch|movie duration|film duration|movie runtime|film runtime) (?<{SearchTermKey}>(.*))\\??";
-    private const int MaxMoviesToShow = 3;
-    private readonly TimeSpan _matchTimeout;
-
-    public HowLongIsMovieCommand(TheMovieDbApi theMovieDbApi,
+public class HowLongIsMovieCommand(TheMovieDbApi theMovieDbApi,
         TheMovieDbSettings theMovieDbSettings,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
-    {
-        _theMovieDbApi = theMovieDbApi;
-        _theMovieDbSettings = theMovieDbSettings;
-        _discordFormatter = discordFormatter;
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
-    }
+    : ITextCommand
+{
+    private const string SearchTermKey = "searchTerm";
+    private const string TriggerRegexPattern = $"(how long is|hltw|how long to watch|movie duration|film duration|movie runtime|film runtime) (?<{SearchTermKey}>(.*))\\??";
+    private const int MaxMoviesToShow = 3;
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -60,7 +48,7 @@ public class HowLongIsMovieCommand : ITextCommand
 
             try
             {
-                var movieSearchResults = await _theMovieDbApi.SearchMovies(searchText);
+                var movieSearchResults = await theMovieDbApi.SearchMovies(searchText);
 
                 var moviesToProcess = movieSearchResults.Results.Take(MaxMoviesToShow);
 
@@ -68,14 +56,14 @@ public class HowLongIsMovieCommand : ITextCommand
 
                 foreach (var movieResult in moviesToProcess)
                 {
-                    var movie = await _theMovieDbApi.GetMovie(movieResult.Id);
+                    var movie = await theMovieDbApi.GetMovie(movieResult.Id);
                     var releaseYear = movie.ReleaseDate?.Year;
                     var director = movie.Credits.Crew.FirstOrDefault(c => c.Job.ToLower() == "director")?.Name ?? "No director found.";
                     var castMembers = movie.Credits.Cast.Take(3).Select(c => c.Name).ToList();
                     var castText = castMembers.Count > 0 ? string.Join(", ", castMembers) : "No star(s) found";
 
                     var imdbLink = !string.IsNullOrEmpty(movie.ImdbId)
-                        ? $"{_theMovieDbSettings.ImdbBaseUrl}{movie.ImdbId}"
+                        ? $"{theMovieDbSettings.ImdbBaseUrl}{movie.ImdbId}"
                         : "No IMDB page found.";
 
                     var runtimeText = movie.Runtime is > 0 ? $"{ConvertMinutesToDisplayTime(movie.Runtime.Value)}" : "No runtime found.";
@@ -90,26 +78,26 @@ public class HowLongIsMovieCommand : ITextCommand
 
                 if (embedFieldBuilders.Count == 0)
                 {
-                    return _discordFormatter.BuildRegularEmbedWithUserFooter("No Movie Found",
+                    return discordFormatter.BuildRegularEmbedWithUserFooter("No Movie Found",
                         "Sorry, I couldn't find any movies that matched your search.",
                         message.Author);
                 }
 
-                return _discordFormatter.BuildRegularEmbedWithUserFooter("Movie Duration(s)",
+                return discordFormatter.BuildRegularEmbedWithUserFooter("Movie Duration(s)",
                     "",
                     message.Author,
                     embedFieldBuilders);
             }
             catch (Exception ex)
             {
-                _logger.Log(LogLevel.Error, "Error in HowLongIsMovie command - {0}", ex.Message);
-                return _discordFormatter.BuildErrorEmbed("Movie Duration",
+                logger.Log(LogLevel.Error, "Error in HowLongIsMovie command - {0}", ex.Message);
+                return discordFormatter.BuildErrorEmbed("Movie Duration",
                     "Hmm, couldn't do that search for some reason. Try again later!");
             }
         }
 
-        _logger.Log(LogLevel.Error, $"Error in HowLongIsMovieCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Movie Duration",
+        logger.Log(LogLevel.Error, $"Error in HowLongIsMovieCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Movie Duration",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }

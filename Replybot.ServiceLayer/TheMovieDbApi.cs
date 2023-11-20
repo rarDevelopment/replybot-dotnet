@@ -5,22 +5,15 @@ using TMDbLib.Objects.Search;
 
 namespace Replybot.ServiceLayer;
 
-public class TheMovieDbApi
+public class TheMovieDbApi(TMDbClient tmDbClient)
 {
-    private readonly TMDbClient _tmDbClient;
-
-    public TheMovieDbApi(TMDbClient tmDbClient)
-    {
-        _tmDbClient = tmDbClient;
-    }
-
     public async Task<SearchContainer<SearchMovie>> SearchMovies(string searchTerm)
     {
-        return await _tmDbClient.SearchMovieAsync(searchTerm, includeAdult: false);
+        return await tmDbClient.SearchMovieAsync(searchTerm, includeAdult: false);
     }
 
     public async Task<Movie> GetMovie(int id)
     {
-        return await _tmDbClient.GetMovieAsync(id, MovieMethods.Credits);
+        return await tmDbClient.GetMovieAsync(id, MovieMethods.Credits);
     }
 }

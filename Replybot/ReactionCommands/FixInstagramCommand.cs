@@ -4,21 +4,16 @@ using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.ReactionCommands;
 
-public class FixInstagramCommand : IReactionCommand
+public class FixInstagramCommand(BotSettings botSettings) : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
     private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
     private const string DdInstagramUrlRegexPattern = "https?:\\/\\/(www.)?(ddinstagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
-    private readonly TimeSpan _matchTimeout;
+    private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
     public const string FixInstagramButtonEmojiId = "1116574189592260658";
     public const string FixInstagramButtonEmojiName = "fixinstagram";
     private const string OriginalInstagramBaseUrl = "instagram.com";
     private const string FixedInstagramBaseUrl = "ddinstagram.com";
-
-    public FixInstagramCommand(BotSettings botSettings)
-    {
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
-    }
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {

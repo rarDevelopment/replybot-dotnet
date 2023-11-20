@@ -2,17 +2,10 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleFixInstagramReactionsSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ToggleFixInstagramReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+        RoleHelper roleHelper)
+    : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly RoleHelper _roleHelper;
-
-    public ToggleFixInstagramReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, RoleHelper roleHelper)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _roleHelper = roleHelper;
-    }
-    
     [SlashCommand("set-fix-instagram-reactions", "Set fix Instagram reactions on or off (true or false).")]
     public async Task ToggleAutoFixInstagram(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
@@ -24,9 +17,9 @@ public class ToggleFixInstagramReactionsSlashCommand : InteractionModuleBase<Soc
             return;
         }
 
-        if (await _roleHelper.CanAdministrate(Context.Guild, member))
+        if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await _guildConfigurationBusinessLayer.SetEnableAutoFixInstagram(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableAutoFixInstagram(Context.Guild, isEnabled);
             if (success)
             {
                 await RespondAsync($"Consider it done! Fix Instagram reactions, which allow you to react to convert instagram.com links to ddinstagram.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");

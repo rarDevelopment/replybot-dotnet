@@ -6,21 +6,14 @@ using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.ReactionCommands;
 
-public class FixBlueskyCommand : IReactionCommand
+public class FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi) : IReactionCommand
 {
-    private readonly BlueskyApi _blueskyApi;
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
     private const string ContentUnavailableText = "[content unavailable]";
-    private readonly TimeSpan _matchTimeout;
+    private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
     public const string FixTweetButtonEmojiId = "1126862392941367376";
     public const string FixTweetButtonEmojiName = "fixbluesky";
-
-    public FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi)
-    {
-        _blueskyApi = blueskyApi;
-        _matchTimeout = new TimeSpan(botSettings.RegexTimeoutTicks);
-    }
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
@@ -118,7 +111,7 @@ public class FixBlueskyCommand : IReactionCommand
             var repo = splitUrl[0];
             var rkey = splitUrl[2];
 
-            var blueskyRecord = await _blueskyApi.GetRecord(repo, rkey);
+            var blueskyRecord = await blueskyApi.GetRecord(repo, rkey);
             if (blueskyRecord == null)
             {
                 continue;
@@ -138,7 +131,7 @@ public class FixBlueskyCommand : IReactionCommand
                 var quotedRkey = GetRkeyFromUri(quotedRecord.Uri);
                 if (quotedUserDid != null && quotedRkey != null)
                 {
-                    var quotedBlueskyRecord = await _blueskyApi.GetRecord(quotedUserDid, quotedRkey);
+                    var quotedBlueskyRecord = await blueskyApi.GetRecord(quotedUserDid, quotedRkey);
                     if (quotedBlueskyRecord != null)
                     {
                         postText += quotedBlueskyRecord.Value.Text;
@@ -165,7 +158,7 @@ public class FixBlueskyCommand : IReactionCommand
             {
                 foreach (var image in images)
                 {
-                    var blueskyImage = await _blueskyApi.GetImage(did, image.ImageData.Ref.Link);
+                    var blueskyImage = await blueskyApi.GetImage(did, image.ImageData.Ref.Link);
                     if (blueskyImage != null)
                     {
                         imagesToSend.Add(new ImageWithMetadata(blueskyImage, image.Alt));

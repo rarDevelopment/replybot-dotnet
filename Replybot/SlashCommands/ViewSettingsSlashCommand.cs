@@ -3,17 +3,10 @@ using Replybot.BusinessLayer;
 
 namespace Replybot.SlashCommands;
 
-public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionContext>
+public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+        IDiscordFormatter discordFormatter)
+    : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly IDiscordFormatter _discordFormatter;
-
-    public ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, IDiscordFormatter discordFormatter)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _discordFormatter = discordFormatter;
-    }
-
     [DefaultMemberPermissions(GuildPermission.Administrator)]
     [SlashCommand("view-settings", "See the current settings for the bot.")]
     public async Task ViewSettings()
@@ -26,11 +19,11 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
         }
         if (member.GuildPermissions.Administrator)
         {
-            var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(Context.Guild);
+            var guildConfig = await guildConfigurationBusinessLayer.GetGuildConfiguration(Context.Guild);
 
             if (guildConfig == null)
             {
-                await RespondAsync(embed: _discordFormatter.BuildErrorEmbedWithUserFooter("Oops!",
+                await RespondAsync(embed: discordFormatter.BuildErrorEmbedWithUserFooter("Oops!",
                     "There was a problem reading the configuration for this server. That shouldn't happen, so maybe try again later.",
                     Context.User));
                 return;
@@ -46,7 +39,7 @@ public class ViewSettingsSlashCommand : InteractionModuleBase<SocketInteractionC
             message += $"Fix Bluesky Reactions: {GetEnabledText(guildConfig.EnableFixBlueskyReactions)}\n";
             message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (+ any users with the Administrator permission)\n";
 
-            await RespondAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter($"Settings for {Context.Guild.Name}",
+            await RespondAsync(embed: discordFormatter.BuildRegularEmbedWithUserFooter($"Settings for {Context.Guild.Name}",
                 message,
                 Context.User));
             return;

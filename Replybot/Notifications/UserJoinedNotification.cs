@@ -2,12 +2,7 @@
 
 namespace Replybot.Notifications;
 
-public class UserJoinedNotification : INotification
+public class UserJoinedNotification(SocketGuildUser userWhoJoined) : INotification
 {
-    public SocketGuildUser UserWhoJoined { get; }
-
-    public UserJoinedNotification(SocketGuildUser userWhoJoined)
-    {
-        UserWhoJoined = userWhoJoined;
-    }
+    public SocketGuildUser UserWhoJoined { get; } = userWhoJoined;
 }

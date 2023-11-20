@@ -7,32 +7,22 @@ using Replybot.Models;
 
 namespace Replybot.TextCommands;
 
-public class CanIStreamCommand : ITextCommand
+public class CanIStreamCommand(CountryConfigService countryConfigService,
+        ILogger<DiscordBot> logger,
+        IDiscordFormatter discordFormatter)
+    : ITextCommand
 {
-    private readonly CountryConfigService _countryConfigService;
-    private readonly IDiscordFormatter _discordFormatter;
     private const string JustWatchBaseUrl = "https://www.justwatch.com/";
     private const string CountryListGitHubUrl = "https://github.com/rarDevelopment/justwatch-country-config/";
     private const string Description = "Use the following link to see streaming availability search results in the specified country.";
 
-    private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string CountryTermKey = "countryTerm";
     private const string BeginningTriggerWordsPattern = "((((where )? *((can|do) i )|just)?) *(watch|stream))";
     private const string TriggerRegexPattern = $"{BeginningTriggerWordsPattern}(.*)\\??";
     private const string SearchRegexPattern = $"{BeginningTriggerWordsPattern} +(?<{SearchTermKey}>(.*))";
     private const string CountryRegexPattern = $"in +(?<{CountryTermKey}>([A-Za-z- ]*))";
-    private readonly TimeSpan _matchTimeout;
-
-    public CanIStreamCommand(CountryConfigService countryConfigService,
-        ILogger<DiscordBot> logger,
-        IDiscordFormatter discordFormatter)
-    {
-        _countryConfigService = countryConfigService;
-        _logger = logger;
-        _discordFormatter = discordFormatter;
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
-    }
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -66,7 +56,7 @@ public class CanIStreamCommand : ITextCommand
 
             if (countryConfigs == null)
             {
-                return _discordFormatter.BuildErrorEmbed("Error Finding Streaming Options",
+                return discordFormatter.BuildErrorEmbed("Error Finding Streaming Options",
                     $"Sorry, I couldn't get the configurations to construct the streaming links. You can search for yourself at {JustWatchBaseUrl}!");
             }
 
@@ -76,7 +66,7 @@ public class CanIStreamCommand : ITextCommand
             if (countryToUse == null)
             {
                 var supportedCountries = countryConfigs.OrderBy(s => s.Name).Select(c => c.Name).ToList();
-                return _discordFormatter.BuildErrorEmbed("Could Not Find Specified Country",
+                return discordFormatter.BuildErrorEmbed("Could Not Find Specified Country",
                     $"Sorry, I couldn't get the configurations for the specified country: `{searchAndCountry.Country}`.\n" +
                     $"Note that I do not have all countries configured, and you can [request a country be added on GitHub]({CountryListGitHubUrl})!\n" +
                     $"Alternatively, if you believe this is an error, let me know!\n\nSupported countries are: **{string.Join(", ", supportedCountries)}**");
@@ -90,10 +80,10 @@ public class CanIStreamCommand : ITextCommand
                 IsInline = false
             };
 
-            return _discordFormatter.BuildRegularEmbedWithUserFooter("Stream Link Options", Description, message.Author, new List<EmbedFieldBuilder> { embedFieldBuilder });
+            return discordFormatter.BuildRegularEmbedWithUserFooter("Stream Link Options", Description, message.Author, new List<EmbedFieldBuilder> { embedFieldBuilder });
         }
-        _logger.Log(LogLevel.Error, $"Error in CanIStreamCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Building JustWatch Link",
+        logger.Log(LogLevel.Error, $"Error in CanIStreamCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return discordFormatter.BuildErrorEmbedWithUserFooter("Error Building JustWatch Link",
             "You need to specify the country that you're looking for.\nTry something like:\n`can I stream back to the future in canada`.",
             message.Author);
     }
@@ -132,7 +122,7 @@ public class CanIStreamCommand : ITextCommand
 
     private async Task<IReadOnlyList<CountryConfig>?> GetCountryConfigs()
     {
-        var countryConfigList = await _countryConfigService.GetCountryConfigList();
+        var countryConfigList = await countryConfigService.GetCountryConfigList();
         return countryConfigList;
     }
 }

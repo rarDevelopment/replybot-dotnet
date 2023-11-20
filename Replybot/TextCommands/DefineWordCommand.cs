@@ -7,25 +7,15 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class DefineWordCommand : ITextCommand
-{
-    private readonly FreeDictionaryApi _freeDictionaryApi;
-    private readonly IDiscordFormatter _discordFormatter;
-    private readonly ILogger<DiscordBot> _logger;
-    private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"define (?<{SearchTermKey}>([a-z0-9 ])*)|what does (?<{SearchTermKey}>([a-z0-9 ]*)) mean\\??";
-    private readonly TimeSpan _matchTimeout;
-
-    public DefineWordCommand(BotSettings botSettings,
+public class DefineWordCommand(BotSettings botSettings,
         FreeDictionaryApi freeDictionaryApi,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
-    {
-        _freeDictionaryApi = freeDictionaryApi;
-        _discordFormatter = discordFormatter;
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
-    }
+    : ITextCommand
+{
+    private const string SearchTermKey = "searchTerm";
+    private const string TriggerRegexPattern = $"define (?<{SearchTermKey}>([a-z0-9 ])*)|what does (?<{SearchTermKey}>([a-z0-9 ]*)) mean\\??";
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -61,17 +51,17 @@ public class DefineWordCommand : ITextCommand
 
             if (splitWords.Count <= 0)
             {
-                return _discordFormatter.BuildErrorEmbedWithUserFooter("No Word Provided",
+                return discordFormatter.BuildErrorEmbedWithUserFooter("No Word Provided",
                     "What would you like me to define?",
                     message.Author);
             }
 
             try
             {
-                var definition = await _freeDictionaryApi.GetDefinition(splitWords[0]);
+                var definition = await freeDictionaryApi.GetDefinition(splitWords[0]);
                 if (definition == null)
                 {
-                    return _discordFormatter.BuildErrorEmbedWithUserFooter("No Definition Found",
+                    return discordFormatter.BuildErrorEmbedWithUserFooter("No Definition Found",
                         "I couldn't find a definition for that word.",
                         message.Author);
                 }
@@ -80,7 +70,7 @@ public class DefineWordCommand : ITextCommand
 
                 var embedFieldBuilders = BuildDefinitionFields(definition);
 
-                return _discordFormatter.BuildRegularEmbedWithUserFooter(
+                return discordFormatter.BuildRegularEmbedWithUserFooter(
                     definition.Word,
                     origin,
                     message.Author,
@@ -88,15 +78,15 @@ public class DefineWordCommand : ITextCommand
             }
             catch (HttpRequestException ex)
             {
-                _logger.Log(LogLevel.Error, "Error in DefineWordCommand: {0}", ex.Message);
-                return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
+                logger.Log(LogLevel.Error, "Error in DefineWordCommand: {0}", ex.Message);
+                return discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
                     "There was an error retrieving that definition, please try again later.",
                     message.Author);
             }
         }
 
-        _logger.Log(LogLevel.Error, $"Error in DefineWordCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return _discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
+        logger.Log(LogLevel.Error, $"Error in DefineWordCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        return discordFormatter.BuildErrorEmbedWithUserFooter("Error Defining Word",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }

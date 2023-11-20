@@ -2,14 +2,8 @@
 
 namespace Replybot.Notifications;
 
-public class UserLeftNotification : INotification
+public class UserLeftNotification(SocketGuild guild, SocketUser userWhoLeft) : INotification
 {
-    public SocketGuild Guild { get; }
-    public SocketUser UserWhoLeft { get; }
-
-    public UserLeftNotification(SocketGuild guild, SocketUser userWhoLeft)
-    {
-        Guild = guild;
-        UserWhoLeft = userWhoLeft;
-    }
+    public SocketGuild Guild { get; } = guild;
+    public SocketUser UserWhoLeft { get; } = userWhoLeft;
 }

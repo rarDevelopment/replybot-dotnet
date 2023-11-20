@@ -4,41 +4,37 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Replybot.Models.SchemaModels;
 
 [BsonIgnoreExtraElements]
-public class GuildReplyDefinitionEntity
+public class GuildReplyDefinitionEntity(ulong guildId, string[] triggers, decimal priority, string[]? replies = null,
+    bool mentionAuthor = false, bool requiresBotName = false, string[]? reactions = null)
 {
-    public GuildReplyDefinitionEntity(ulong guildId, string[] triggers, decimal priority, string[]? replies = null,
-        bool mentionAuthor = false, bool requiresBotName = false, string[]? reactions = null)
-    {
-        Triggers = triggers;
-        Priority = priority;
-        GuildId = guildId;
-        Replies = replies;
-        MentionAuthor = mentionAuthor;
-        RequiresBotName = requiresBotName;
-        Reactions = reactions;
-    }
-
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
     [BsonElement("guildId")]
-    public ulong GuildId { get; set; }
+    public ulong GuildId { get; set; } = guildId;
+
     [BsonElement("triggers")]
-    public string[] Triggers { get; set; }
+    public string[] Triggers { get; set; } = triggers;
+
     [BsonElement("replies")]
-    public string[]? Replies { get; set; }
+    public string[]? Replies { get; set; } = replies;
+
     [BsonElement("mentionAuthor")]
-    public bool MentionAuthor { get; set; }
+    public bool MentionAuthor { get; set; } = mentionAuthor;
+
     [BsonElement("requiresBotName")]
-    public bool RequiresBotName { get; set; }
+    public bool RequiresBotName { get; set; } = requiresBotName;
+
     [BsonElement("reactions")]
-    public string[]? Reactions { get; set; }
+    public string[]? Reactions { get; set; } = reactions;
+
     [BsonElement("userIds")]
     public string[]? UserIds { get; set; }
     [BsonElement("channelIds")]
     public string[]? ChannelIds { get; set; }
     [BsonElement("priority")]
-    public decimal Priority { get; set; }
+    public decimal Priority { get; set; } = priority;
+
     [BsonElement("isActive")]
     public bool IsActive { get; set; }
 

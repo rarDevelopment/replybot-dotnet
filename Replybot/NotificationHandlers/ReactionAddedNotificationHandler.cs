@@ -6,22 +6,11 @@ using Replybot.ReactionCommands;
 
 namespace Replybot.NotificationHandlers;
 
-public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInteractionContext>, INotificationHandler<ReactionAddedNotification>
-{
-    private readonly IGuildConfigurationBusinessLayer _configurationBusinessLayer;
-    private readonly IEnumerable<IReactionCommand> _reactionCommands;
-    private readonly ILogger<DiscordBot> _logger;
-
-    public ReactionAddedNotificationHandler(
-        IGuildConfigurationBusinessLayer configurationBusinessLayer,
+public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer configurationBusinessLayer,
         IEnumerable<IReactionCommand> reactionCommands,
         ILogger<DiscordBot> logger)
-    {
-        _configurationBusinessLayer = configurationBusinessLayer;
-        _reactionCommands = reactionCommands;
-        _logger = logger;
-    }
-
+    : InteractionModuleBase<SocketInteractionContext>, INotificationHandler<ReactionAddedNotification>
+{
     public Task Handle(ReactionAddedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
@@ -37,13 +26,13 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
                 return Task.CompletedTask;
             }
 
-            var config = await _configurationBusinessLayer.GetGuildConfiguration(guildChannel.Guild);
+            var config = await configurationBusinessLayer.GetGuildConfiguration(guildChannel.Guild);
             if (config == null)
             {
                 return Task.CompletedTask;
             }
 
-            foreach (var reactionCommand in _reactionCommands)
+            foreach (var reactionCommand in reactionCommands)
             {
                 await ProcessReactions(reactionCommand, reaction, config, message, reactingUser);
             }
@@ -121,7 +110,7 @@ public class ReactionAddedNotificationHandler : InteractionModuleBase<SocketInte
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error Deleting Message Using DeleteButton - {ex.Message}");
+            logger.LogError(ex, $"Error Deleting Message Using DeleteButton - {ex.Message}");
             await FollowupAsync(
                 $"Sorry {Context.User.Mention}, there was an error trying to delete that.", ephemeral: true);
         }

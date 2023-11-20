@@ -1,11 +1,6 @@
 ﻿namespace Replybot.Models;
 
-public class DefaultRepliesSettings
+public class DefaultRepliesSettings(string url)
 {
-    public string Url { get; }
-
-    public DefaultRepliesSettings(string url)
-    {
-        Url = url;
-    }
+    public string Url { get; } = url;
 }

@@ -3,7 +3,7 @@ using Replybot.Models;
 
 namespace Replybot.ReactionCommands;
 
-public class FixTweetsWithoutAccountCommand : IReactionCommand
+public class FixTweetsWithoutAccountCommand(BotSettings botSettings) : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a relevant link there.";
     private const string MatchedDomainKey = "matchedDomain";
@@ -13,12 +13,7 @@ public class FixTweetsWithoutAccountCommand : IReactionCommand
     public const string ViewTweetsWithoutAccountButtonEmojiName = "view_tweets_without_account";
     private const string OriginalTwitterBaseUrl = "twitter.com";
     private const string NitterBaseUrl = "nitter.net";
-    private readonly TimeSpan _matchTimeout;
-
-    public FixTweetsWithoutAccountCommand(BotSettings botSettings)
-    {
-        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
-    }
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {

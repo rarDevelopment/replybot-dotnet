@@ -7,35 +7,20 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class GetFortniteShopInformationCommand : ITextCommand
-{
-    private readonly FortniteApi _fortniteApi;
-    private readonly IReplyBusinessLayer _replyBusinessLayer;
-    private readonly DiscordSettings _discordSettings;
-    private readonly IDiscordFormatter _discordFormatter;
-    private readonly ILogger<DiscordBot> _logger;
-
-    private const string MoreText = "\n(see shop for more)";
-    private const string SectionSeparator = "\n";
-    private readonly string[] _triggers = { "fortnite shop" };
-
-    public GetFortniteShopInformationCommand(
-        FortniteApi fortniteApi,
+public class GetFortniteShopInformationCommand(FortniteApi fortniteApi,
         IReplyBusinessLayer replyBusinessLayer,
         DiscordSettings discordSettings,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
-    {
-        _fortniteApi = fortniteApi;
-        _replyBusinessLayer = replyBusinessLayer;
-        _discordSettings = discordSettings;
-        _discordFormatter = discordFormatter;
-        _logger = logger;
-    }
+    : ITextCommand
+{
+    private const string MoreText = "\n(see shop for more)";
+    private const string SectionSeparator = "\n";
+    private readonly string[] _triggers = { "fortnite shop" };
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
-        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => _replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
+        return replyCriteria.IsBotNameMentioned && _triggers.Any(t => replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
     public async Task<CommandResponse> Handle(SocketMessage message)
@@ -53,7 +38,7 @@ public class GetFortniteShopInformationCommand : ITextCommand
 
     private async Task<Embed?> GetFortniteShopInformationEmbed(SocketMessage message)
     {
-        var shopInfo = await _fortniteApi.GetFortniteShopInformation();
+        var shopInfo = await fortniteApi.GetFortniteShopInformation();
         if (shopInfo == null)
         {
             return null;
@@ -74,14 +59,14 @@ public class GetFortniteShopInformationCommand : ITextCommand
 
         if (!shopItems.Any())
         {
-            return _discordFormatter.BuildRegularEmbedWithUserFooter(
+            return discordFormatter.BuildRegularEmbedWithUserFooter(
                 $"Fortnite Shop Information - {date.ToShortDateString()}",
                 "No shop items could be found for today.",
                 message.Author
             );
         }
 
-        return _discordFormatter.BuildRegularEmbedWithUserFooter(
+        return discordFormatter.BuildRegularEmbedWithUserFooter(
             $"Fortnite Shop Information - {date.ToShortDateString()}",
             "",
             message.Author,
@@ -99,7 +84,7 @@ public class GetFortniteShopInformationCommand : ITextCommand
                 : $"{BuildSectionField(section)}";
 
             var lengthIfAdded = MakeShopItemsString(storeItems).Length + sectionTextToAdd.Length;
-            var maxAllowedCharacters = _discordSettings.MaxCharacters - (MoreText.Length + SectionSeparator.Length); //extra SectionSeparator to account for when MoreText is joined in with the others down below
+            var maxAllowedCharacters = discordSettings.MaxCharacters - (MoreText.Length + SectionSeparator.Length); //extra SectionSeparator to account for when MoreText is joined in with the others down below
             if (lengthIfAdded >= maxAllowedCharacters)
             {
                 storeItems.Add(MoreText);
@@ -126,12 +111,12 @@ public class GetFortniteShopInformationCommand : ITextCommand
                 return new EmbedFieldBuilder
                 {
                     Name = storeSection.HasName ? storeSection.Name : defaultSectionName,
-                    Value = outputString[.._discordSettings.MaxCharacters],
+                    Value = outputString[..discordSettings.MaxCharacters],
                     IsInline = false
                 };
             }
 
-            _logger.LogError(ex, "Error in GetFortniteShopInformationCommand");
+            logger.LogError(ex, "Error in GetFortniteShopInformationCommand");
             return new EmbedFieldBuilder
             {
                 Name = "Error Loading Section",

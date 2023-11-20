@@ -1,11 +1,6 @@
 ﻿namespace Replybot.Models;
 
-public class CountryConfigListSettings
+public class CountryConfigListSettings(string url)
 {
-    public string Url { get; }
-
-    public CountryConfigListSettings(string url)
-    {
-        Url = url;
-    }
+    public string Url { get; } = url;
 }

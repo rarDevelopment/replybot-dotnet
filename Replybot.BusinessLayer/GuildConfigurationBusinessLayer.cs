@@ -4,30 +4,23 @@ using Replybot.Models;
 
 namespace Replybot.BusinessLayer;
 
-public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
+public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : IGuildConfigurationBusinessLayer
 {
-    private readonly IReplyDataLayer _replyDataLayer;
-
-    public GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer)
-    {
-        _replyDataLayer = replyDataLayer;
-    }
-
     public async Task<GuildConfiguration?> GetGuildConfiguration(IGuild? guild)
     {
         if (guild == null)
         {
             return null;
         }
-        return await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        return await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
     }
 
     public async Task<bool> UpdateGuildConfiguration(IGuild guild)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.UpdateGuildConfiguration(guild.Id.ToString(), guild.Name);
+            return await replyDataLayer.UpdateGuildConfiguration(guild.Id.ToString(), guild.Name);
         }
 
         return false;
@@ -35,10 +28,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> DeleteGuildConfiguration(IGuild guild)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.DeleteGuildConfiguration(guild.Id.ToString());
+            return await replyDataLayer.DeleteGuildConfiguration(guild.Id.ToString());
         }
 
         return true;
@@ -48,17 +41,17 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
     {
         if (setAllowed)
         {
-            return await _replyDataLayer.AddAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
+            return await replyDataLayer.AddAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
         }
-        return await _replyDataLayer.RemoveAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
+        return await replyDataLayer.RemoveAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
     }
 
     public async Task<bool> SetEnableAvatarAnnouncements(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetEnableAvatarAnnouncements(guild.Id.ToString(), isEnabled);
+            return await replyDataLayer.SetEnableAvatarAnnouncements(guild.Id.ToString(), isEnabled);
         }
 
         return false;
@@ -66,10 +59,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetEnableAvatarMentions(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetEnableAvatarMentions(guild.Id.ToString(), isEnabled);
+            return await replyDataLayer.SetEnableAvatarMentions(guild.Id.ToString(), isEnabled);
         }
 
         return false;
@@ -77,10 +70,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetEnableAutoFixTweets(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetEnableFixTweetReactions(guild.Id.ToString(), isEnabled);
+            return await replyDataLayer.SetEnableFixTweetReactions(guild.Id.ToString(), isEnabled);
         }
 
         return false;
@@ -88,10 +81,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetEnableAutoFixInstagram(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetEnableFixInstagramReactions(guild.Id.ToString(), isEnabled);
+            return await replyDataLayer.SetEnableFixInstagramReactions(guild.Id.ToString(), isEnabled);
         }
 
         return false;
@@ -99,10 +92,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetEnableAutoFixBluesky(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetEnableFixBlueskyReactions(guild.Id.ToString(), isEnabled);
+            return await replyDataLayer.SetEnableFixBlueskyReactions(guild.Id.ToString(), isEnabled);
         }
 
         return false;
@@ -110,10 +103,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetEnableDefaultReplies(guild.Id.ToString(), isEnabled);
+            return await replyDataLayer.SetEnableDefaultReplies(guild.Id.ToString(), isEnabled);
         }
 
         return false;
@@ -121,10 +114,10 @@ public class GuildConfigurationBusinessLayer : IGuildConfigurationBusinessLayer
 
     public async Task<bool> SetLogChannel(IGuild guild, string? channelId)
     {
-        GuildConfiguration? config = await _replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
         {
-            return await _replyDataLayer.SetLogChannel(guild.Id.ToString(), channelId);
+            return await replyDataLayer.SetLogChannel(guild.Id.ToString(), channelId);
         }
 
         return false;

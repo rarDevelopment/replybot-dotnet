@@ -2,15 +2,9 @@
 
 namespace Replybot;
 
-public class ExistingMessageEmbedBuilder
+public class ExistingMessageEmbedBuilder(DiscordSettings discordSettings)
 {
-    private readonly DiscordSettings _discordSettings;
     private const string TruncationString = "[...]";
-
-    public ExistingMessageEmbedBuilder(DiscordSettings discordSettings)
-    {
-        _discordSettings = discordSettings;
-    }
 
     public EmbedBuilder CreateEmbedBuilder(string title, string explanationMessage, IMessage message)
     {
@@ -41,7 +35,7 @@ public class ExistingMessageEmbedBuilder
         descriptionToUse += !string.IsNullOrEmpty(message.Content) ? $"\n{message.Content}" : "";
         descriptionToUse += !string.IsNullOrEmpty(embedDescription) ? $"\n-----------\n{embedDescription}" : "";
 
-        embedBuilder.WithDescription(TruncateIfLongerThanMaxCharacters(descriptionToUse, _discordSettings.MaxCharacters, TruncationString));
+        embedBuilder.WithDescription(TruncateIfLongerThanMaxCharacters(descriptionToUse, discordSettings.MaxCharacters, TruncationString));
 
         return embedBuilder;
     }
@@ -56,7 +50,7 @@ public class ExistingMessageEmbedBuilder
         embedBuilder.WithFields(messagesToEmbed.Select(m => new EmbedFieldBuilder
         {
             Name = m.Key,
-            Value = TruncateIfLongerThanMaxCharacters(m.Value, _discordSettings.MaxCharacters, TruncationString),
+            Value = TruncateIfLongerThanMaxCharacters(m.Value, discordSettings.MaxCharacters, TruncationString),
             IsInline = false
         }));
 

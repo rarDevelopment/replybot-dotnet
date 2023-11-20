@@ -2,14 +2,8 @@
 
 namespace Replybot.Notifications;
 
-public class UserUpdatedNotification : INotification
+public class UserUpdatedNotification(SocketUser oldUser, SocketUser newUser) : INotification
 {
-    public SocketUser OldUser { get; }
-    public SocketUser NewUser { get; }
-
-    public UserUpdatedNotification(SocketUser oldUser, SocketUser newUser)
-    {
-        OldUser = oldUser;
-        NewUser = newUser;
-    }
+    public SocketUser OldUser { get; } = oldUser;
+    public SocketUser NewUser { get; } = newUser;
 }

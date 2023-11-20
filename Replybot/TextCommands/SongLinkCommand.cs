@@ -5,19 +5,12 @@ using Replybot.BusinessLayer.Extensions;
 
 namespace Replybot.TextCommands;
 
-public class SongLinkCommand : ITextCommand
+public class SongLinkCommand(ILogger<DiscordBot> logger) : ITextCommand
 {
     private const string SongLinkBaseUrl = "https://song.link/";
-    private readonly ILogger<DiscordBot> _logger;
     private const string SearchTermKey = "searchTerm";
     private const string TriggerRegexPattern = $"song( *)link +(?<{SearchTermKey}>(.*))";
-    private readonly TimeSpan _matchTimeout;
-
-    public SongLinkCommand(ILogger<DiscordBot> logger)
-    {
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(100);
-    }
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -42,7 +35,7 @@ public class SongLinkCommand : ITextCommand
                 NotifyWhenReplying = true,
             });
         }
-        _logger.Log(LogLevel.Error, $"Error in SongLinkCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
+        logger.Log(LogLevel.Error, $"Error in SongLinkCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
         return Task.FromResult(new CommandResponse
         {
             Description = "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",

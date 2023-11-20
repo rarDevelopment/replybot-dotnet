@@ -2,24 +2,15 @@
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
-public class MessageUpdatedNotificationHandler : INotificationHandler<MessageUpdatedNotification>
+public class MessageUpdatedNotificationHandler(LogChannelPoster logChannelPoster,
+        ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
+    : INotificationHandler<MessageUpdatedNotification>
 {
-    private readonly LogChannelPoster _logChannelPoster;
-    private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
-    private readonly DiscordSocketClient _client;
-
-    public MessageUpdatedNotificationHandler(LogChannelPoster logChannelPoster, ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
-    {
-        _logChannelPoster = logChannelPoster;
-        _logMessageBuilder = logMessageBuilder;
-        _client = client;
-    }
-
     public Task Handle(MessageUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {
-            if (notification.NewMessage.Author.Id == _client.CurrentUser.Id)
+            if (notification.NewMessage.Author.Id == client.CurrentUser.Id)
             {
                 return Task.CompletedTask;
             }
@@ -44,9 +35,9 @@ public class MessageUpdatedNotificationHandler : INotificationHandler<MessageUpd
                 return Task.CompletedTask;
             }
 
-            var embedBuilder = _logMessageBuilder.CreateEmbedBuilderWithFields("Message Updated", $"[Message]({notification.NewMessage.GetJumpUrl()}) from {notification.NewMessage.Author.Mention} edited in {textChannel.Mention}", messages);
+            var embedBuilder = logMessageBuilder.CreateEmbedBuilderWithFields("Message Updated", $"[Message]({notification.NewMessage.GetJumpUrl()}) from {notification.NewMessage.Author.Mention} edited in {textChannel.Mention}", messages);
 
-            await _logChannelPoster.SendToLogChannel(textChannel.Guild, embedBuilder.Build());
+            await logChannelPoster.SendToLogChannel(textChannel.Guild, embedBuilder.Build());
 
             return Task.CompletedTask;
         }, cancellationToken);

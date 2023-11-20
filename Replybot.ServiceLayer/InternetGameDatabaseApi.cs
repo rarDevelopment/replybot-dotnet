@@ -3,18 +3,12 @@ using IGDB.Models;
 
 namespace Replybot.ServiceLayer;
 
-public class InternetGameDatabaseApi
+public class InternetGameDatabaseApi(IGDBClient igdbClient)
 {
-    private readonly IGDBClient _igdbClient;
-    public InternetGameDatabaseApi(IGDBClient igdbClient)
-    {
-        _igdbClient = igdbClient;
-    }
-
     public async Task<IReadOnlyList<Game>> SearchGames(string searchTerm)
     {
         var queryFields = $"fields id,name,cover,release_dates.*,release_dates.status.*,platforms.*,status,url,websites; search \"{searchTerm}\"; where version_parent = null & (category = 0  | category = 8);";
-        var games = await _igdbClient.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: queryFields);
+        var games = await igdbClient.QueryAsync<Game>(IGDBClient.Endpoints.Games, query: queryFields);
         return games.ToList();
     }
 }

@@ -5,22 +5,14 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
 
-public class ChooseCommand : ITextCommand
-{
-    private readonly IReplyBusinessLayer _replyBusinessLayer;
-    private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"(choose|select|random|decide|pick)[^:]*: (?<{SearchTermKey}>(.*))";
-    private readonly TimeSpan _matchTimeout;
-    private readonly ILogger<DiscordBot> _logger;
-
-    public ChooseCommand(IReplyBusinessLayer replyBusinessLayer,
+public class ChooseCommand(IReplyBusinessLayer replyBusinessLayer,
         BotSettings botSettings,
         ILogger<DiscordBot> logger)
-    {
-        _replyBusinessLayer = replyBusinessLayer;
-        _logger = logger;
-        _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
-    }
+    : ITextCommand
+{
+    private const string SearchTermKey = "searchTerm";
+    private const string TriggerRegexPattern = $"(choose|select|random|decide|pick)[^:]*: (?<{SearchTermKey}>(.*))";
+    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -61,10 +53,10 @@ public class ChooseCommand : ITextCommand
 
         if (match.Success)
         {
-            return _replyBusinessLayer.ChooseReply(splitArgs.ToArray());
+            return replyBusinessLayer.ChooseReply(splitArgs.ToArray());
         }
 
-        _logger.Log(LogLevel.Error,
+        logger.Log(LogLevel.Error,
             $"Error in ChooseCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
         return
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!";

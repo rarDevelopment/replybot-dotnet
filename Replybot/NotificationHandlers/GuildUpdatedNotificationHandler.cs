@@ -3,18 +3,10 @@ using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
-public class GuildUpdatedNotificationHandler : INotificationHandler<GuildUpdatedNotification>
-{
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-    private readonly SystemChannelPoster _systemChannelPoster;
-
-    public GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+public class GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         SystemChannelPoster systemChannelPoster)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-        _systemChannelPoster = systemChannelPoster;
-    }
-
+    : INotificationHandler<GuildUpdatedNotification>
+{
     public Task Handle(GuildUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
@@ -24,16 +16,16 @@ public class GuildUpdatedNotificationHandler : INotificationHandler<GuildUpdated
 
             if (newGuild.Name != oldGuild.Name)
             {
-                await _systemChannelPoster.PostToGuildSystemChannel(
+                await systemChannelPoster.PostToGuildSystemChannel(
                     newGuild,
                     $"Wow, a server name change! This server has been renamed from **{oldGuild.Name}** to **{newGuild.Name}**.",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
-                await _guildConfigurationBusinessLayer.UpdateGuildConfiguration(newGuild);
+                await guildConfigurationBusinessLayer.UpdateGuildConfiguration(newGuild);
             }
 
             if (newGuild.IconId != oldGuild.IconId)
             {
-                await _systemChannelPoster.PostToGuildSystemChannel(
+                await systemChannelPoster.PostToGuildSystemChannel(
                     newGuild,
                     $"Hey look! A new server icon! {newGuild.IconUrl}",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));

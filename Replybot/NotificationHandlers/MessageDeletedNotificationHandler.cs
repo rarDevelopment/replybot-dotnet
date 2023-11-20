@@ -2,18 +2,10 @@
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
-public class MessageDeletedNotificationHandler : INotificationHandler<MessageDeletedNotification>
+public class MessageDeletedNotificationHandler(LogChannelPoster logChannelPoster,
+        ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
+    : INotificationHandler<MessageDeletedNotification>
 {
-    private readonly LogChannelPoster _logChannelPoster;
-    private readonly ExistingMessageEmbedBuilder _logMessageBuilder;
-    private readonly DiscordSocketClient _client;
-
-    public MessageDeletedNotificationHandler(LogChannelPoster logChannelPoster, ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
-    {
-        _logChannelPoster = logChannelPoster;
-        _logMessageBuilder = logMessageBuilder;
-        _client = client;
-    }
     public Task Handle(MessageDeletedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
@@ -28,19 +20,19 @@ public class MessageDeletedNotificationHandler : INotificationHandler<MessageDel
 
             if (deletedMessage == null)
             {
-                await _logChannelPoster.SendToLogChannel(textChannel.Guild,
+                await logChannelPoster.SendToLogChannel(textChannel.Guild,
                     "Message Deleted: [could not retrieve contents of message from cache]");
                 return Task.CompletedTask;
             }
 
-            if (deletedMessage.Author.Id == _client.CurrentUser.Id)
+            if (deletedMessage.Author.Id == client.CurrentUser.Id)
             {
                 return Task.CompletedTask;
             }
 
-            var embedBuilder = _logMessageBuilder.CreateEmbedBuilder("Message Deleted", $"Message from {deletedMessage.Author.Mention} deleted in {textChannel.Mention}", deletedMessage);
+            var embedBuilder = logMessageBuilder.CreateEmbedBuilder("Message Deleted", $"Message from {deletedMessage.Author.Mention} deleted in {textChannel.Mention}", deletedMessage);
 
-            await _logChannelPoster.SendToLogChannel(textChannel.Guild, embedBuilder.Build());
+            await logChannelPoster.SendToLogChannel(textChannel.Guild, embedBuilder.Build());
 
             return Task.CompletedTask;
         }, cancellationToken);

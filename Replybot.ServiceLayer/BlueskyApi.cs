@@ -4,18 +4,11 @@ using Replybot.Models.Bluesky;
 
 namespace Replybot.ServiceLayer;
 
-public class BlueskyApi
+public class BlueskyApi(IHttpClientFactory httpClientFactory)
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public BlueskyApi(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
     public async Task<BlueskyRecord?> GetRecord(string repo, string rkey)
     {
-        var client = _httpClientFactory.CreateClient(HttpClients.Bluesky.ToString());
+        var client = httpClientFactory.CreateClient(HttpClients.Bluesky.ToString());
         var response =
             await client.GetAsync($"com.atproto.repo.getRecord?repo={repo}&collection=app.bsky.feed.post&rkey={rkey}");
         if (!response.IsSuccessStatusCode)
@@ -29,7 +22,7 @@ public class BlueskyApi
 
     public async Task<Stream?> GetImage(string did, string cid)
     {
-        var client = _httpClientFactory.CreateClient(HttpClients.Bluesky.ToString());
+        var client = httpClientFactory.CreateClient(HttpClients.Bluesky.ToString());
         var response =
             await client.GetAsync($"com.atproto.sync.getBlob?did={did}&cid={cid}");
         if (!response.IsSuccessStatusCode)

@@ -5,18 +5,11 @@ using Replybot.Models.SchemaModels;
 
 namespace Replybot.ServiceLayer;
 
-public class DefaultRepliesService
+public class DefaultRepliesService(IHttpClientFactory httpClientFactory)
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public DefaultRepliesService(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
     public async Task<IList<GuildReplyDefinition>?> GetDefaultReplies()
     {
-        var client = _httpClientFactory.CreateClient(HttpClients.DefaultReplies.ToString());
+        var client = httpClientFactory.CreateClient(HttpClients.DefaultReplies.ToString());
         var response = await client.GetAsync("");
         if (!response.IsSuccessStatusCode)
         {

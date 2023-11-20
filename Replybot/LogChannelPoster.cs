@@ -2,18 +2,11 @@
 
 namespace Replybot;
 
-public class LogChannelPoster
+public class LogChannelPoster(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
 {
-    private readonly IGuildConfigurationBusinessLayer _guildConfigurationBusinessLayer;
-
-    public LogChannelPoster(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
-    {
-        _guildConfigurationBusinessLayer = guildConfigurationBusinessLayer;
-    }
-
     private async Task<SocketTextChannel?> GetLogChannel(IGuild guild)
     {
-        var guildConfig = await _guildConfigurationBusinessLayer.GetGuildConfiguration(guild);
+        var guildConfig = await guildConfigurationBusinessLayer.GetGuildConfiguration(guild);
         if (guildConfig.LogChannelId == null || !ulong.TryParse(guildConfig.LogChannelId, out var logChannelId))
         {
             return null;

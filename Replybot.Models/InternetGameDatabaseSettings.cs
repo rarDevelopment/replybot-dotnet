@@ -1,13 +1,7 @@
 ﻿namespace Replybot.Models;
 
-public class InternetGameDatabaseSettings
+public class InternetGameDatabaseSettings(string clientId, string clientSecret)
 {
-    public InternetGameDatabaseSettings(string clientId, string clientSecret)
-    {
-        ClientId = clientId;
-        ClientSecret = clientSecret;
-    }
-
-    public string ClientId { get; }
-    public string ClientSecret { get; }
+    public string ClientId { get; } = clientId;
+    public string ClientSecret { get; } = clientSecret;
 }

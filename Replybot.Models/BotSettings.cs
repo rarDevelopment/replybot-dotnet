@@ -1,11 +1,6 @@
 ﻿namespace Replybot.Models;
 
-public class BotSettings
+public class BotSettings(int regexTimeoutTicks)
 {
-    public BotSettings(int regexTimeoutTicks)
-    {
-        RegexTimeoutTicks = regexTimeoutTicks;
-    }
-
-    public int RegexTimeoutTicks { get; set; }
+    public int RegexTimeoutTicks { get; set; } = regexTimeoutTicks;
 }
