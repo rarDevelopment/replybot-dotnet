@@ -25,14 +25,31 @@ public static class MessageExtensions
 
         foreach (var nameToCheck in namesToCheck)
         {
+            if (!string.IsNullOrEmpty(botNameFound))
+            {
+                continue;
+            }
+
+            var indexOfName = messageContent.IndexOf(nameToCheck, StringComparison.InvariantCultureIgnoreCase);
+            if (indexOfName != -1)
+            {
+                botNameFound = messageContent.Substring(indexOfName, nameToCheck.Length);
+            }
+
             if (string.IsNullOrEmpty(botNameFound))
             {
-                var indexOfName = messageContent.IndexOf(nameToCheck, StringComparison.InvariantCultureIgnoreCase);
-                if (indexOfName != -1)
+                continue;
+            }
+
+            foreach (var botNameToIgnore in BotNames.NamesToIgnore.ToList())
+            {
+                var indexOfNameToIgnore = messageContent.IndexOf(botNameToIgnore, StringComparison.InvariantCultureIgnoreCase);
+                if (indexOfNameToIgnore != -1 && indexOfNameToIgnore == indexOfName)
                 {
-                    botNameFound = messageContent.Substring(indexOfName, nameToCheck.Length);
+                    botNameFound = null; //remove found name since we ignore this name
                 }
             }
+
         }
 
         return botNameFound;
