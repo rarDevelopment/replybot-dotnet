@@ -28,8 +28,10 @@ public class GuildConfigurationEntity
     public bool EnableFixBlueskyReactions { get; set; }
     [BsonElement("enableDefaultReplies")]
     public bool EnableDefaultReplies { get; set; }
+    [BsonElement("enableFixTikTokReactions")]
+    public bool EnableFixTikTokReactions { get; set; }
 
-    public GuildConfiguration? ToDomain()
+    public GuildConfiguration ToDomain()
     {
         return new GuildConfiguration
         {
@@ -42,7 +44,8 @@ public class GuildConfigurationEntity
             EnableDefaultReplies = EnableDefaultReplies,
             EnableFixTweetReactions = EnableFixTweetReactions,
             EnableFixInstagramReactions = EnableFixInstagramReactions,
-            EnableFixBlueskyReactions = EnableFixBlueskyReactions
+            EnableFixBlueskyReactions = EnableFixBlueskyReactions,
+            EnableFixTikTokReactions = EnableFixTikTokReactions,
         };
     }
 }

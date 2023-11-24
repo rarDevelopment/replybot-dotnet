@@ -101,6 +101,17 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return false;
     }
 
+    public async Task<bool> SetEnableFixTikTok(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableFixTikTokReactions(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
     public async Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
