@@ -54,6 +54,7 @@ public class ReplyDataLayer : IReplyDataLayer
             EnableDefaultReplies = true,
             EnableFixTweetReactions = true,
             EnableFixInstagramReactions = true,
+            EnableFixTikTokReactions = true,
             AdminUserIds = new List<string>()
         });
     }
@@ -131,6 +132,14 @@ public class ReplyDataLayer : IReplyDataLayer
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableFixInstagramReactions, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableFixTikTokReactions(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableFixTikTokReactions, isEnabled);
         var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }
