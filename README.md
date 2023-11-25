@@ -63,7 +63,7 @@ You can say `Toby define [word here]` and he'll try to find a dictionary definit
 
 You can make a (very simple) poll by doing `"Toby poll [question here], [answer 1 here], [answer 2 here], and so on..."`. This will genereate a post with the question, answer choices, and reactions associated with each answer choice.
 
-## Fix Tweet Previews ~~(uses [FixTweet](https://github.com/FixTweet/FixTweet))~~ (uses [BetterTwitFix](https://github.com/ryuuzake/BetterTwitFix))
+## Fix Tweet Previews (uses [BetterTwitFix](https://github.com/ryuuzake/BetterTwitFix))
 
 Tweets posted in Discord will include a preview embed of that tweet. But if there's a video, that video preview might not play properly. Or if there is more than 1 image, those other images won't show on mobile devices. To help with this, Toby will add a reaction emoji to any post that includes a Twitter link. If someone taps on that reaction emoji, Toby will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message. If someone has posted an vxtwitter.com link directly and you'd like the original tweet link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original tweet link. Admins can use the `/set-fix-tweet-reactions` command to turn this on or off.
 
@@ -77,11 +77,15 @@ Instagram links posted in Discord sometimes don't preview at all! Similar to the
 
 ## Fix Bluesky Previews
 
-Instagram links posted in Discord don't preview at all! Similar to the above, Toby will add a reaction emoji to any post that includes an Bluesky post link. If someone taps that reaction emoji, Toby will reply with the text and images (including alt text) from that post. This works with all Bluesky posts in the message. Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
+Similar to the above, Toby will add a reaction emoji to any post that includes a Bluesky post link. If someone taps that reaction emoji, Toby will reply with the text and images (including alt text) from that post, as well as a note if there's a quoted post. This works with all Bluesky posts in the message. Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
+
+## Fix TikTok Previews
+
+Similar to the above, Toby will add a reaction emoji to any post that includes a TikTok post link. If someone taps that reaction emoji, Toby will reply with an updated link that should include a functioning preview for the linked TikTok video. This works with all TikTok links in the message. Admins can use the `/set-fix-tiktok-reactions` command to turn this on or off.
 
 ## Video Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
 
-Use `Toby hltb [game here]` and Toby will tell you how long that game is.
+Use `Toby hltb [game here]` or `Toby how long to beat [game here]` and Toby will tell you how long that game is.
 
 ## Video Game Release Dates (using [IGDB](https://www.igdb.com/))
 
