@@ -1,9 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using Replybot.Models;
+﻿using Replybot.Models;
+using Replybot.TextCommands.Models;
 
 namespace Replybot.ReactionCommands;
 
-public class FixTweetsWithoutAccountCommand(BotSettings botSettings) : IReactionCommand
+public class FixTweetsWithoutAccountCommand(BotSettings botSettings) : FixUrlCommandBase(FixLinkConfig, botSettings), IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a relevant link there.";
     private const string MatchedDomainKey = "matchedDomain";
@@ -13,38 +13,44 @@ public class FixTweetsWithoutAccountCommand(BotSettings botSettings) : IReaction
     public const string ViewTweetsWithoutAccountButtonEmojiName = "view_tweets_without_account";
     private const string OriginalTwitterBaseUrl = "twitter.com";
     private const string NitterBaseUrl = "nitter.net";
-    private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
+
+    private static readonly FixLinkConfig FixLinkConfig = new(TwitterUrlRegexPattern,
+        NitterUrlRegexPattern,
+        FixTweetButtonEmojiId,
+        ViewTweetsWithoutAccountButtonEmojiName,
+        OriginalTwitterBaseUrl,
+        NitterBaseUrl);
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
         return configuration.EnableFixTweetReactions &&
-               (DoesMessageContainTwitterUrl(message) || DoesMessageContainNitterUrl(message));
+               (DoesMessageContainOriginalUrl(message) || DoesMessageContainFixedUrl(message));
     }
 
     public Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
-            GetFixNitterEmote()
+            GetEmote()
         };
         return Task.FromResult(emotes);
     }
 
     public bool IsReacting(IEmote reactionEmote, GuildConfiguration guildConfiguration)
     {
-        return guildConfiguration.EnableFixTweetReactions && Equals(reactionEmote, GetFixNitterEmote());
+        return guildConfiguration.EnableFixTweetReactions && Equals(reactionEmote, GetEmote());
     }
 
     public Task<List<CommandResponse>> HandleMessage(IUserMessage message, IUser reactingUser)
     {
         string? fixedMessage;
-        if (DoesMessageContainTwitterUrl(message.Content))
+        if (DoesMessageContainOriginalUrl(message.Content))
         {
-            fixedMessage = BuildNitterMessage(message, reactingUser, message.Author);
+            fixedMessage = BuildFixedUrlsMessage(message, reactingUser, message.Author);
         }
-        else if (DoesMessageContainNitterUrl(message.Content))
+        else if (DoesMessageContainFixedUrl(message.Content))
         {
-            fixedMessage = BuildOriginalTweetsMessage(message, reactingUser, message.Author);
+            fixedMessage = BuildOriginalUrlsMessage(message, reactingUser, message.Author);
         }
         else
         {
@@ -61,73 +67,5 @@ public class FixTweetsWithoutAccountCommand(BotSettings botSettings) : IReaction
             }
         };
         return Task.FromResult(messagesToSend);
-    }
-
-    private string BuildNitterMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
-    {
-        var fixedTweets = FixTwitterUrls(message);
-        var tweetDescribeText = fixedTweets.Count == 1 ? "that tweet" : "those tweets";
-        var differentUserText = requestingUser.Id != userWhoSentTweets.Id
-            ? $" (in {userWhoSentTweets.Username}'s message)"
-            : "";
-        var authorMentionMessage = $"{requestingUser.Mention} Here you can access {tweetDescribeText}{differentUserText} and their associated thread without an account:\n";
-        return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}\nNote: it is intentional that there is no preview.";
-    }
-
-    private string BuildOriginalTweetsMessage(IMessage message, IUser requestingUser, IUser userWhoSentTweets)
-    {
-        var fixedTweets = FixNitterUrls(message);
-        var tweetDescribeText = fixedTweets.Count == 1 ? "tweet" : "tweets";
-        var isAre = fixedTweets.Count == 1 ? "is" : "are";
-        var differentUserText = requestingUser.Id != userWhoSentTweets.Id
-            ? $" (in {userWhoSentTweets.Username}'s message)"
-            : "";
-        var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {tweetDescribeText}{differentUserText}:\n";
-        return $"{authorMentionMessage}{string.Join("\n", fixedTweets)}";
-    }
-
-    private bool DoesMessageContainTwitterUrl(string message)
-    {
-        return Regex.IsMatch(message, TwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
-    }
-
-    private bool DoesMessageContainNitterUrl(string message)
-    {
-        return Regex.IsMatch(message, NitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
-    }
-
-    private IList<string> FixTwitterUrls(IMessage messageToFix)
-    {
-        var urlsFromMessage = GetTwitterUrlsFromMessage(messageToFix.Content);
-        return urlsFromMessage.Select(url =>
-        {
-            var match = Regex.Match(url, TwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
-            var originalUrl = match.Groups[MatchedDomainKey].Value;
-            return url.Replace(originalUrl, NitterBaseUrl,
-                StringComparison.InvariantCultureIgnoreCase);
-        }).ToList();
-    }
-
-    private IList<string> FixNitterUrls(IMessage messageToFix)
-    {
-        var urlsFromMessage = GetNitterUrlsFromMessage(messageToFix.Content);
-        return urlsFromMessage.Select(url => url.Replace(NitterBaseUrl, OriginalTwitterBaseUrl, StringComparison.InvariantCultureIgnoreCase)).ToList();
-    }
-
-    private IEnumerable<string> GetTwitterUrlsFromMessage(string text)
-    {
-        var matches = Regex.Matches(text, TwitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
-        return matches.Select(t => t.Value).ToList();
-    }
-
-    private IEnumerable<string> GetNitterUrlsFromMessage(string text)
-    {
-        var matches = Regex.Matches(text, NitterUrlRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
-        return matches.Select(t => t.Value).ToList();
-    }
-
-    private static Emote GetFixNitterEmote()
-    {
-        return Emote.Parse($"<:{ViewTweetsWithoutAccountButtonEmojiName}:{FixTweetButtonEmojiId}>");
     }
 }
