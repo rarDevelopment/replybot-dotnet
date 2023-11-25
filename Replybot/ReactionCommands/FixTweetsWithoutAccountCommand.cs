@@ -7,19 +7,22 @@ public class FixTweetsWithoutAccountCommand(BotSettings botSettings) : FixUrlCom
 {
     public readonly string NoLinkMessage = "I don't think there's a relevant link there.";
     private const string MatchedDomainKey = "matchedDomain";
-    private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|t.co|x.com|fxtwitter.com|vxtwitter.com|fixvx.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
-    private const string NitterUrlRegexPattern = "https?:\\/\\/(www.)?(nitter.net)\\/[a-z0-9_]+\\/status\\/[0-9]+";
+    private const string TwitterUrlRegexPattern = $"https?:\\/\\/(www.)?(?<{MatchedDomainKey}>(twitter.com|fxtwitter.com|vxtwitter.com|t.co|x.com|fixvx.com))\\/[a-z0-9_]+\\/status\\/[0-9]+";
+    private const string NitterUrlRegexPattern = $"https?:\\/\\/(www.)?(<{MatchedDomainKey}>(nitter.net))\\/[a-z0-9_]+\\/status\\/[0-9]+";
     public const string FixTweetButtonEmojiId = "1133174470966784100";
     public const string ViewTweetsWithoutAccountButtonEmojiName = "view_tweets_without_account";
     private const string OriginalTwitterBaseUrl = "twitter.com";
     private const string NitterBaseUrl = "nitter.net";
+    private const string AdditionalMessage = "This will let you access that tweet and its thread without an account.\nNote: it is intentional that there is no preview.";
 
     private static readonly FixLinkConfig FixLinkConfig = new(TwitterUrlRegexPattern,
         NitterUrlRegexPattern,
         FixTweetButtonEmojiId,
         ViewTweetsWithoutAccountButtonEmojiName,
         OriginalTwitterBaseUrl,
-        NitterBaseUrl);
+        NitterBaseUrl,
+        MatchedDomainKey,
+        AdditionalMessage);
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {

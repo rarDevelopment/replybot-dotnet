@@ -17,7 +17,7 @@ public abstract class FixUrlCommandBase(FixLinkConfig fixLinkConfig, BotSettings
             ? $" (in {userWhoSentUrls.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the fixed {descriptionText}{differentUserText}:\n";
-        return $"{authorMentionMessage}{string.Join((string?)"\n", fixedUrls)}";
+        return $"{authorMentionMessage}{string.Join((string?)"\n", fixedUrls)}\n{fixLinkConfig.AdditionalMessage ?? ""}";
     }
 
     protected string BuildOriginalUrlsMessage(IMessage message, IUser requestingUser, IUser userWhoSentUrls)
@@ -29,7 +29,7 @@ public abstract class FixUrlCommandBase(FixLinkConfig fixLinkConfig, BotSettings
             ? $" (in {userWhoSentUrls.Username}'s message)"
             : "";
         var authorMentionMessage = $"{requestingUser.Mention} Here {isAre} the original {descriptionText}{differentUserText}: \n";
-        return $"{authorMentionMessage}{string.Join((string?)"\n", fixedUrls)}";
+        return $"{authorMentionMessage}{string.Join((string?)"\n", fixedUrls)}\n{fixLinkConfig.AdditionalMessage ?? ""}";
     }
 
     protected bool DoesMessageContainOriginalUrl(string message)
