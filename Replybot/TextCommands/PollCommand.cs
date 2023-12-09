@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
-using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.TextCommands.Models;
 

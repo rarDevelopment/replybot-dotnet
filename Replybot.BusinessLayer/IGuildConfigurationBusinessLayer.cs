@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.WebSocket;
 using Replybot.Models;
 
 namespace Replybot.BusinessLayer;
