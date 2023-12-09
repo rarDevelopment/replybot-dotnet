@@ -13,7 +13,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
     private readonly string[] _triggers = { "emote", "emoji", "emojis" };
     private const string EmoteIdKey = "emoteId";
     private const string EmoteIdUrlKey = "emoteIdUrl";
-    private readonly string _discordEmoteRegexPattern = $@"<a?:[a-z0-9_]+:(?<{EmoteIdKey}>\d{{18}})>";
+    private readonly string _discordEmoteRegexPattern = $@"<a?:[a-z0-9_]+:(?<{EmoteIdKey}>\d+)>";
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     private const string DiscordEmoteUrlTemplate =
         $"https://cdn.discordapp.com/emojis/{EmoteIdUrlKey}.png?size=96&quality=lossless";
@@ -26,17 +26,6 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
 
     public Task<CommandResponse> Handle(SocketMessage message)
     {
-        //if (message.Channel is not IGuildChannel { Guild: SocketGuild guild })
-        //{
-        //    return Task.FromResult(new CommandResponse
-        //    {
-        //        Embed = discordFormatter.BuildErrorEmbedWithUserFooter("Not a Server",
-        //            "This command can only be used in a Discord server, it will not work in a DM.", message.Author),
-        //        StopProcessing = true,
-        //        NotifyWhenReplying = true,
-        //    });
-        //}
-
         var emoteMatches = Regex.Matches(message.Content, _discordEmoteRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
 
         var emotes = new List<string>();
@@ -45,13 +34,14 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
         {
             foreach (Match emoteMatch in emoteMatches)
             {
-                if (emoteMatch.Success && emoteMatch.Groups.ContainsKey(EmoteIdKey))
+                if (!emoteMatch.Success || !emoteMatch.Groups.ContainsKey(EmoteIdKey))
                 {
-                    var emoteId = emoteMatch.Groups[EmoteIdKey].Value;
-                    var emoteUrl = DiscordEmoteUrlTemplate.Replace(EmoteIdUrlKey, emoteId);
-                    emotes.Add($"<{emoteUrl}>");
-
+                    continue;
                 }
+
+                var emoteId = emoteMatch.Groups[EmoteIdKey].Value;
+                var emoteUrl = DiscordEmoteUrlTemplate.Replace(EmoteIdUrlKey, emoteId);
+                emotes.Add($"<{emoteUrl}>");
             }
 
             return Task.FromResult(new CommandResponse

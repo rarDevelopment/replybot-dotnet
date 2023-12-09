@@ -47,11 +47,8 @@ public class GetAvatarCommand(IReplyBusinessLayer replyBusinessLayer,
 
     private static string GetUserAvatarUrl(IUser user, string messageContent)
     {
-        if (messageContent.ToLower().Contains("server"))
-        {
-            return (user as IGuildUser)?.GetDisplayAvatarUrl() ?? user.GetAvatarUrl(ImageFormat.Png);
-        }
-
-        return user.GetAvatarUrl(ImageFormat.Png);
+        return messageContent.Contains("server", StringComparison.CurrentCultureIgnoreCase)
+            ? (user as IGuildUser)?.GetDisplayAvatarUrl() ?? user.GetAvatarUrl(ImageFormat.Png)
+            : user.GetAvatarUrl(ImageFormat.Png);
     }
 }
