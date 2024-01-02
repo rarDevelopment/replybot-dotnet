@@ -74,6 +74,28 @@ public class ReplyDataLayer : IReplyDataLayer
         return deleteResult.DeletedCount == 1;
     }
 
+    public async Task<bool> AddIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds)
+    {
+        var existingConfig = await GetConfigurationForGuild(guildId, guildName);
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var updatedIgnoreAvatarUsers = existingConfig.IgnoreAvatarChangesUserIds;
+        updatedIgnoreAvatarUsers.AddRange(userIds);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.IgnoreAvatarChangesUserIds, updatedIgnoreAvatarUsers);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> RemoveIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds)
+    {
+        var existingConfig = await GetConfigurationForGuild(guildId, guildName);
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var updatedIgnoreAvatarUsers = existingConfig.IgnoreAvatarChangesUserIds;
+        updatedIgnoreAvatarUsers.RemoveAll(userIds.Contains);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.IgnoreAvatarChangesUserIds, updatedIgnoreAvatarUsers);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
     public async Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds)
     {
         var existingConfig = await GetConfigurationForGuild(guildId, guildName);

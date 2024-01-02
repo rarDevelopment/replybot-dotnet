@@ -46,6 +46,15 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return await replyDataLayer.RemoveAllowedUserIds(guild.Id.ToString(), guild.Name, userIds);
     }
 
+    public async Task<bool> SetIgnoreUsersForAvatarAnnouncements(IGuild guild, List<string> userIds, bool setAllowed)
+    {
+        if (setAllowed)
+        {
+            return await replyDataLayer.AddIgnoreAvatarChangesUserIds(guild.Id.ToString(), guild.Name, userIds);
+        }
+        return await replyDataLayer.RemoveIgnoreAvatarChangesUserIds(guild.Id.ToString(), guild.Name, userIds);
+    }
+
     public async Task<bool> SetEnableAvatarAnnouncements(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);

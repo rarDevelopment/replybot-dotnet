@@ -22,7 +22,7 @@ public class GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLa
             var oldUser = cachedOldUser.Value;
 
             var guildConfig = await guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
-            var announceChange = guildConfig.EnableAvatarAnnouncements;
+            var announceChange = guildConfig.EnableAvatarAnnouncements && !guildConfig.IgnoreAvatarChangesUserIds.Contains(newUser.Id.ToString());
             var tagUserInChange = guildConfig.EnableAvatarMentions;
 
             if (!announceChange)
