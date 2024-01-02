@@ -17,7 +17,7 @@ public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gui
             foreach (var guild in newUser.MutualGuilds)
             {
                 var guildConfig = await guildConfigurationBusinessLayer.GetGuildConfiguration(guild);
-                var announceChange = guildConfig.EnableAvatarAnnouncements;
+                var announceChange = guildConfig.EnableAvatarAnnouncements && !guildConfig.IgnoreAvatarChangesUserIds.Contains(newUser.Id.ToString());
                 var tagUserInChange = guildConfig.EnableAvatarMentions;
 
                 if (!announceChange)

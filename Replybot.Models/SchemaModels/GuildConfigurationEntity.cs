@@ -31,6 +31,9 @@ public class GuildConfigurationEntity
     [BsonElement("enableFixTikTokReactions")]
     public bool EnableFixTikTokReactions { get; set; }
 
+    [BsonElement("ignoreAvatarChangesUserIds")]
+    public List<string> IgnoreAvatarChangesUserIds { get; set; } = new();
+
     public GuildConfiguration ToDomain()
     {
         return new GuildConfiguration
@@ -46,6 +49,7 @@ public class GuildConfigurationEntity
             EnableFixInstagramReactions = EnableFixInstagramReactions,
             EnableFixBlueskyReactions = EnableFixBlueskyReactions,
             EnableFixTikTokReactions = EnableFixTikTokReactions,
+            IgnoreAvatarChangesUserIds = IgnoreAvatarChangesUserIds,
         };
     }
 }

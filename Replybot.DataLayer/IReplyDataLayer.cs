@@ -11,11 +11,13 @@ public interface IReplyDataLayer
     Task<bool> SetEnableAvatarMentions(string guildId, bool isEnabled);
     Task<bool> SetLogChannel(string guildId, string? channelId);
     Task<bool> DeleteGuildConfiguration(string guildId);
-    Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> RemoveAllowedUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> SetEnableFixTweetReactions(string guildId, bool isEnabled);
     Task<bool> SetEnableDefaultReplies(string guildId, bool isEnabled);
     Task<bool> SetEnableFixInstagramReactions(string guildId, bool isEnabled);
     Task<bool> SetEnableFixBlueskyReactions(string guildId, bool isEnabled);
     Task<bool> SetEnableFixTikTokReactions(string guildId, bool isEnabled);
+    Task<bool> AddIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds);
+    Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds);
+    Task<bool> RemoveIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds);
 }
