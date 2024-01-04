@@ -31,7 +31,7 @@ Avatar change announcements will post in the server's system channel (where welc
 
 ## Avatar Change Mentions
 
-This relates to the avatar change announcements above. You can also have the user who updated their avatar be @mentioned in those announcements. You can enable or disable these mentions with the `/set-avatar-mention` command.
+This relates to the avatar change announcements above. You can also have the user who updated their avatar be @mentioned in those announcements. You can enable or disable these mentions with the `/set-avatar-mention` command. You can also choose to omit certain users (including bots) from these announcements by using the `/set-user-avatar-ignore` command.
 
 ## Default Replies
 
@@ -97,11 +97,15 @@ Use `Toby how long is [movie here]` or `Toby how long to watch [movie here]` or 
 
 ## Find Where Movies/TV Shows Are Streaming (using [JustWatch](https://justwatch.com))
 
-If you're looking to watch something, `Toby can I stream "[movie or show here]" in [country here]` will give you links to JustWatch for your specified country, where you can find where it's streaming (if at all). If you need a location that is not supported, you can request it by opening an issue on [this repo](https://github.com/rarDevelopment/justwatch-country-config) or you can change the country on the site itself.
+If you're looking to watch something, `Toby can I stream [movie or show here] in [country here]` will give you links to JustWatch for your specified country, where you can find where it's streaming (if at all). If you need a location that is not supported, you can request it by opening an issue on [this repo](https://github.com/rarDevelopment/justwatch-country-config) or you can change the country on the site itself.
 
 ## Find a Song or Album Link on All Services (using [Odesli](https://odesli.co/))
 
 If you have a song or album link on Apple Music, Spotify, YouTube Music, etc. but you'd like to share it to a server where your friends might use another streaming service, say `Toby songlink [link to the song/album here]` and Toby will generate a link that will show you all of the services where that song or album can be found.
+
+## Get a Link to an Emote's Image
+
+If you have a custom emote you like, you can use `Toby emote [emote here]` and Toby will give you a link to that emote as an image, which you can then save. If someone's used the emote and you just want to reference their message, you can just reply to them and say `Toby emote`.
 
 ## Fortnite Shop Information (using [Fortnite API](https://fortnite-api.com/))
 
