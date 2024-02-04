@@ -17,7 +17,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
     private const string DiscordEmoteRegexPattern = $@"<a?:(?<{EmoteNameKey}>[a-z0-9_]+):(?<{EmoteIdKey}>\d+)>";
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     private const string DiscordEmoteUrlTemplate =
-        $"https://cdn.discordapp.com/emojis/{EmoteIdUrlKey}.png?size=96&quality=lossless";
+        $"https://cdn.discordapp.com/emojis/{EmoteIdUrlKey}.png?size=128&quality=lossless";
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
