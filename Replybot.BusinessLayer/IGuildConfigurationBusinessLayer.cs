@@ -18,5 +18,6 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetEnableAutoFixInstagram(IGuild guild, bool isEnabled);
     Task<bool> SetEnableAutoFixBluesky(IGuild guild, bool isEnabled);
     Task<bool> SetEnableFixTikTok(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableWelcomeMessage(IGuild guild, bool isEnabled);
     Task<bool> SetIgnoreUsersForAvatarAnnouncements(IGuild guild, List<string> userIds, bool setAllowed);
 }
