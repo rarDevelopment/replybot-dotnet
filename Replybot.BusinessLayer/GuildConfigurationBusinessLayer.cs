@@ -143,6 +143,17 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return false;
     }
 
+    public async Task<bool> SetEnableWelcomeMessage(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableWelcomeMessage(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
     public async Task<bool> CanUserAdmin(IGuild guild, IGuildUser user)
     {
         var config = await GetGuildConfiguration(guild);

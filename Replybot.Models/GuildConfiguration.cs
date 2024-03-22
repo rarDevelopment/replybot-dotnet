@@ -14,4 +14,5 @@ public class GuildConfiguration
     public bool EnableFixBlueskyReactions { get; set; }
     public bool EnableFixTikTokReactions { get; set; }
     public List<string> IgnoreAvatarChangesUserIds { get; set; }
+    public bool EnableWelcomeMessage { get; set; }
 }

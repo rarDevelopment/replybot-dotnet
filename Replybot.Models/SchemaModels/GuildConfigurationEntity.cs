@@ -33,6 +33,8 @@ public class GuildConfigurationEntity
 
     [BsonElement("ignoreAvatarChangesUserIds")]
     public List<string> IgnoreAvatarChangesUserIds { get; set; } = new();
+    [BsonElement("enableWelcomeMessage")]
+    public bool EnableWelcomeMessage { get; set; }
 
     public GuildConfiguration ToDomain()
     {
@@ -50,6 +52,7 @@ public class GuildConfigurationEntity
             EnableFixBlueskyReactions = EnableFixBlueskyReactions,
             EnableFixTikTokReactions = EnableFixTikTokReactions,
             IgnoreAvatarChangesUserIds = IgnoreAvatarChangesUserIds,
+            EnableWelcomeMessage = EnableWelcomeMessage
         };
     }
 }
