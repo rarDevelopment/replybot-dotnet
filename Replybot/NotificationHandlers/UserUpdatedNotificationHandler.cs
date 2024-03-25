@@ -4,7 +4,7 @@ using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
-        SystemChannelPoster systemChannelPoster)
+        SystemChannelPoster systemChannelPoster, ILogger<DiscordBot> logger)
     : INotificationHandler<UserUpdatedNotification>
 {
     public Task Handle(UserUpdatedNotification notification, CancellationToken cancellationToken)
@@ -54,6 +54,7 @@ public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gui
                         $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look! Check it out: {newUser.GetAvatarUrl(ImageFormat.Jpeg)}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                         typeof(UserUpdatedNotificationHandler));
+                    logger.LogDebug($"User Avatar Change: {newUser.Username} ({newUser.Id}) | new avatar id: {newUser.AvatarId} ({newUser.GetAvatarUrl()}) | old avatar id: {oldUser.AvatarId} ({oldUser.GetAvatarUrl()}) |");
                 }
             }
 
