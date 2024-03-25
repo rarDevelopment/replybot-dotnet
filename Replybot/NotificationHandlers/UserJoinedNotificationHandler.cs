@@ -22,14 +22,14 @@ public class UserJoinedNotificationHandler(
                 const string usernameKeyword = "{{USER_WHO_JOINED}}";
                 var welcomeMessages = new List<string>
                 {
-                    $"Look out everyone, {usernameKeyword} is here!",
-                    $"Yo {usernameKeyword}!",
-                    $"Howdy {usernameKeyword}!",
-                    $"Did someone invite {usernameKeyword}?",
-                    $"Well well well, look who it is. Hello {usernameKeyword}.",
-                    $"*checks the list* Yep, you're on the list. Come on in, {usernameKeyword}!",
-                    $"Good day to you {usernameKeyword}!",
-                    $"I spy with my little eye, {usernameKeyword}",
+                    $"Look out everyone, {usernameKeyword} is here! Welcome!",
+                    $"Welcome in, {usernameKeyword}!",
+                    $"Someone new is here! Welcome {usernameKeyword}!",
+                    $"Did someone invite {usernameKeyword}? Welcome!",
+                    $"Well well well, look who it is. Welcome, {usernameKeyword}!",
+                    $"*checks the list* Yep, you're on the list. Come on in, {usernameKeyword}! Welcome!",
+                    $"Good day to you {usernameKeyword}! Welcome!",
+                    $"I spy with my little eye, {usernameKeyword}! Welcome!",
                 };
 
                 var randomIndex = new Random().Next(welcomeMessages.Count);
