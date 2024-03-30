@@ -11,6 +11,25 @@ public static class MessageExtensions
         return HttpUtility.UrlPathEncode(text);
     }
 
+    public static string CleanString(this string text)
+    {
+        return text.StripSmartQuotes();
+    }
+
+    private static string StripSmartQuotes(this string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return text;
+        }
+
+        return text
+            .Replace('\u2018', '\'')
+            .Replace('\u2019', '\'')
+            .Replace('\u201c', '\"')
+            .Replace('\u201d', '\"');
+    }
+
     public static string? GetBotNameInMessage(this string messageContent, string? botNickname = null)
     {
         string? botNameFound = null;

@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
+using Replybot.BusinessLayer.Extensions;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
@@ -48,7 +49,7 @@ public class HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
         var match = Regex.Match(message.Content, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         if (match.Success)
         {
-            var searchText = match.Groups[SearchTermKey].Value;
+            var searchText = match.Groups[SearchTermKey].Value.CleanString();
             var searchUrl =
                 SearchUrlTemplate
                     .Replace(UrlKeyword, howLongToBeatSettings.BaseUrl)

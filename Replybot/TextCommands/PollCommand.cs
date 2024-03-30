@@ -72,7 +72,10 @@ public class PollCommand(BotSettings botSettings,
             var reactions = answers.Select((_, index) => _pollOptionsAlphabet[index]).ToList();
             var answersToDisplay = answers.Select((answer, index) => $"{reactions[index]} {answer}").ToList();
 
-            var pollEmbed = discordFormatter.BuildRegularEmbedWithUserFooter(question, string.Join("\n", answersToDisplay), message.Author);
+            var messageToDisplay =
+                $"{string.Join("\n", answersToDisplay)}\n\n(Note: The poll feature has been deprecated and will be removed when Discord official polls roll out to all servers)";
+
+            var pollEmbed = discordFormatter.BuildRegularEmbedWithUserFooter(question, messageToDisplay, message.Author);
             var reactionEmotes = reactions.Select(e => new Emoji(e)).ToList();
 
             return new PollEmbed(pollEmbed, reactionEmotes);
