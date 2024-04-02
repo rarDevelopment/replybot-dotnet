@@ -30,6 +30,18 @@ public static class MessageExtensions
             .Replace('\u201d', '\"');
     }
 
+    public static string GetImageUrlWithCorrectFileExtension(this string url, string emptyText)
+    {
+        var fixedUrl = string.IsNullOrEmpty(url) ? emptyText : url;
+
+        var iconUrlSplit = fixedUrl.Split("/");
+        if (iconUrlSplit.Last().StartsWith("a_"))
+        {
+            fixedUrl = fixedUrl.Replace(".jpg", ".gif").Replace(".png", ".gif");
+        }
+        return fixedUrl;
+    }
+
     public static string? GetBotNameInMessage(this string messageContent, string? botNickname = null)
     {
         string? botNameFound = null;

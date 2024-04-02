@@ -8,7 +8,7 @@ public class GetMemberCountCommand(IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter)
     : ITextCommand
 {
-    private readonly string[] _triggers = { "how many members", "how many people", "member count", "people count", "headcount", "head count" };
+    private readonly string[] _triggers = ["how many members", "how many people", "member count", "people count", "headcount", "head count"];
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {

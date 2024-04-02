@@ -1,5 +1,6 @@
 ﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
+using Replybot.BusinessLayer.Extensions;
 using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
@@ -8,7 +9,7 @@ public class GetGuildIconCommand(IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter)
     : ITextCommand
 {
-    private readonly string[] _triggers = { "server icon" };
+    private readonly string[] _triggers = ["server icon"];
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -31,7 +32,7 @@ public class GetGuildIconCommand(IReplyBusinessLayer replyBusinessLayer,
 
         return Task.FromResult(new CommandResponse
         {
-            Description = string.IsNullOrEmpty(guild?.IconUrl) ? "No icon." : guild.IconUrl,
+            Description = guild.IconUrl.GetImageUrlWithCorrectFileExtension("No icon."),
             Reactions = null,
             StopProcessing = true,
             NotifyWhenReplying = true,

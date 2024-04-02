@@ -1,5 +1,6 @@
 ﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
+using Replybot.BusinessLayer.Extensions;
 using Replybot.TextCommands.Models;
 
 namespace Replybot.TextCommands;
@@ -8,7 +9,7 @@ public class GetGuildBannerCommand(IReplyBusinessLayer replyBusinessLayer,
         IDiscordFormatter discordFormatter)
     : ITextCommand
 {
-    private readonly string[] _triggers = { "server banner" };
+    private readonly string[] _triggers = ["server banner"];
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -31,7 +32,7 @@ public class GetGuildBannerCommand(IReplyBusinessLayer replyBusinessLayer,
 
         return Task.FromResult(new CommandResponse
         {
-            Description = string.IsNullOrEmpty(guild?.BannerUrl) ? "No banner." : guild.BannerUrl,
+            Description = guild.IconUrl.GetImageUrlWithCorrectFileExtension("No banner."),
             Reactions = null,
             StopProcessing = true,
             NotifyWhenReplying = true,
