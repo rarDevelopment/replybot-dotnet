@@ -32,7 +32,7 @@ public class GetGuildBannerCommand(IReplyBusinessLayer replyBusinessLayer,
 
         return Task.FromResult(new CommandResponse
         {
-            Description = guild.IconUrl.GetImageUrlWithCorrectFileExtension("No banner."),
+            Description = guild.BannerUrl.GetImageUrlWithCorrectFileExtension("No banner."),
             Reactions = null,
             StopProcessing = true,
             NotifyWhenReplying = true,
