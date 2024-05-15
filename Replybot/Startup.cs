@@ -119,7 +119,6 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, HowLongToBeatCommand>();
     services.AddSingleton<ITextCommand, HowLongIsMovieCommand>();
     services.AddSingleton<ITextCommand, DefineWordCommand>();
-    services.AddSingleton<ITextCommand, PollCommand>();
     services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
     services.AddSingleton<ITextCommand, GetMemberCountCommand>();
     services.AddSingleton<ITextCommand, GetChannelAgeCommand>();
