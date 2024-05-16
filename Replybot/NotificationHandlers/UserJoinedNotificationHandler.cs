@@ -32,9 +32,7 @@ public class UserJoinedNotificationHandler(
                 $"Someone new is here! Welcome {usernameKeyword}!",
                 $"Did someone invite {usernameKeyword}? Welcome!",
                 $"Well well well, look who it is. Welcome, {usernameKeyword}!",
-                $"*checks the list* Yep, you're on the list. Come on in, {usernameKeyword}! Welcome!",
                 $"Good day to you {usernameKeyword}! Welcome!",
-                $"I spy with my little eye, {usernameKeyword}! Welcome!",
             };
 
             var randomIndex = new Random().Next(welcomeMessages.Count);
@@ -42,7 +40,7 @@ public class UserJoinedNotificationHandler(
 
             await systemChannelPoster.PostEmbedToGuildSystemChannel(
                 notification.UserWhoJoined.Guild,
-                discordFormatter.BuildRegularEmbed("New Member Has Arrived!", welcomeMessageWithMention),
+                discordFormatter.BuildRegularEmbed("Someone New Has Arrived!", welcomeMessageWithMention),
                 $"User: {notification.UserWhoJoined.Id} {notification.UserWhoJoined.GlobalName}",
                 typeof(UserJoinedNotificationHandler));
 
