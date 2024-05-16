@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
+using MediatR;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
@@ -6,6 +7,7 @@ namespace Replybot.NotificationHandlers;
 public class UserJoinedNotificationHandler(
     LogChannelPoster logChannelPoster,
     SystemChannelPoster systemChannelPoster,
+    IDiscordFormatter discordFormatter,
     IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer) : INotificationHandler<UserJoinedNotification>
 {
     public Task Handle(UserJoinedNotification notification, CancellationToken cancellationToken)
@@ -17,30 +19,32 @@ public class UserJoinedNotificationHandler(
             var guildConfiguration =
                 await guildConfigurationBusinessLayer.GetGuildConfiguration(notification.UserWhoJoined.Guild);
 
-            if (guildConfiguration is { EnableWelcomeMessage: true })
+            if (guildConfiguration is not { EnableWelcomeMessage: true })
             {
-                const string usernameKeyword = "{{USER_WHO_JOINED}}";
-                var welcomeMessages = new List<string>
-                {
-                    $"Look out everyone, {usernameKeyword} is here! Welcome!",
-                    $"Welcome in, {usernameKeyword}!",
-                    $"Someone new is here! Welcome {usernameKeyword}!",
-                    $"Did someone invite {usernameKeyword}? Welcome!",
-                    $"Well well well, look who it is. Welcome, {usernameKeyword}!",
-                    $"*checks the list* Yep, you're on the list. Come on in, {usernameKeyword}! Welcome!",
-                    $"Good day to you {usernameKeyword}! Welcome!",
-                    $"I spy with my little eye, {usernameKeyword}! Welcome!",
-                };
-
-                var randomIndex = new Random().Next(welcomeMessages.Count);
-                var welcomeMessageWithMention = welcomeMessages[randomIndex].Replace(usernameKeyword, notification.UserWhoJoined.Mention);
-
-                await systemChannelPoster.PostToGuildSystemChannel(
-                    notification.UserWhoJoined.Guild,
-                    welcomeMessageWithMention,
-                    $"User: {notification.UserWhoJoined.Id} {notification.UserWhoJoined.GlobalName}",
-                    typeof(UserJoinedNotificationHandler));
+                return Task.CompletedTask;
             }
+
+            const string usernameKeyword = "{{USER_WHO_JOINED}}";
+            var welcomeMessages = new List<string>
+            {
+                $"Look out everyone, {usernameKeyword} is here! Welcome!",
+                $"Welcome in, {usernameKeyword}!",
+                $"Someone new is here! Welcome {usernameKeyword}!",
+                $"Did someone invite {usernameKeyword}? Welcome!",
+                $"Well well well, look who it is. Welcome, {usernameKeyword}!",
+                $"*checks the list* Yep, you're on the list. Come on in, {usernameKeyword}! Welcome!",
+                $"Good day to you {usernameKeyword}! Welcome!",
+                $"I spy with my little eye, {usernameKeyword}! Welcome!",
+            };
+
+            var randomIndex = new Random().Next(welcomeMessages.Count);
+            var welcomeMessageWithMention = welcomeMessages[randomIndex].Replace(usernameKeyword, notification.UserWhoJoined.Mention);
+
+            await systemChannelPoster.PostEmbedToGuildSystemChannel(
+                notification.UserWhoJoined.Guild,
+                discordFormatter.BuildRegularEmbed("New Member Has Arrived!", welcomeMessageWithMention),
+                $"User: {notification.UserWhoJoined.Id} {notification.UserWhoJoined.GlobalName}",
+                typeof(UserJoinedNotificationHandler));
 
             return Task.CompletedTask;
         }, cancellationToken);

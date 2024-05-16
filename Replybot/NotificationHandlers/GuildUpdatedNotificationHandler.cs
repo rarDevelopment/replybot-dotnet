@@ -16,7 +16,7 @@ public class GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gu
 
             if (newGuild.Name != oldGuild.Name)
             {
-                await systemChannelPoster.PostToGuildSystemChannel(
+                await systemChannelPoster.PostMessageToGuildSystemChannel(
                     newGuild,
                     $"Wow, a server name change! This server has been renamed from **{oldGuild.Name}** to **{newGuild.Name}**.",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
@@ -25,7 +25,7 @@ public class GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gu
 
             if (newGuild.IconId != oldGuild.IconId)
             {
-                await systemChannelPoster.PostToGuildSystemChannel(
+                await systemChannelPoster.PostMessageToGuildSystemChannel(
                     newGuild,
                     $"Hey look! A new server icon! {newGuild.IconUrl}",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
