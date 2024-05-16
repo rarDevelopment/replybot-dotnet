@@ -27,7 +27,7 @@ public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gui
 
                 if (newUser.Username != oldUser.Username)
                 {
-                    await systemChannelPoster.PostToGuildSystemChannel(
+                    await systemChannelPoster.PostMessageToGuildSystemChannel(
                         guild,
                         $"WOWIE! For your awareness, {oldUser.Username} is now {newUser.Username}! {newUser.Mention}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
@@ -41,7 +41,7 @@ public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gui
 
                 if (guild.CurrentUser.Id == newUser.Id)
                 {
-                    await systemChannelPoster.PostToGuildSystemChannel(
+                    await systemChannelPoster.PostMessageToGuildSystemChannel(
                         guild,
                         $"Hey everyone! Check out my new look: ${newUser.GetAvatarUrl(ImageFormat.Jpeg)}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
@@ -49,7 +49,7 @@ public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gui
                 }
                 else
                 {
-                    await systemChannelPoster.PostToGuildSystemChannel(
+                    await systemChannelPoster.PostMessageToGuildSystemChannel(
                         guild,
                         $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look! Check it out: {newUser.GetAvatarUrl(ImageFormat.Jpeg)}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",

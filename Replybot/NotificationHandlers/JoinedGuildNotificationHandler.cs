@@ -12,7 +12,7 @@ public class JoinedGuildNotificationHandler(IGuildConfigurationBusinessLayer gui
         _ = Task.Run(async () =>
         {
             var guildConfig = await guildConfigurationBusinessLayer.GetGuildConfiguration(notification.JoinedGuild);
-            await systemChannelPoster.PostToGuildSystemChannel(notification.JoinedGuild,
+            await systemChannelPoster.PostMessageToGuildSystemChannel(notification.JoinedGuild,
                 $"Hello, people of {guildConfig.GuildName}! Glad to be here!",
                 "Couldn't post to the system channel on JoinedGuild",
                 typeof(JoinedGuildNotificationHandler));

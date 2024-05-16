@@ -40,7 +40,7 @@ public class GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLa
                 avatarUrl = newUser.GetDisplayAvatarUrl(ImageFormat.Jpeg);
             }
 
-            await systemChannelPoster.PostToGuildSystemChannel(newUser.Guild,
+            await systemChannelPoster.PostMessageToGuildSystemChannel(newUser.Guild,
                 $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look in this server! Check it out: {avatarUrl}",
                 $"Guild: {newUser.Guild.Name} ({newUser.Guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                 typeof(GuildMemberUpdatedNotificationHandler));
