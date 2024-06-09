@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Models;
@@ -7,17 +8,19 @@ using Replybot.TextCommands.Models;
 namespace Replybot.TextCommands;
 
 public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusinessLayer,
-        IDiscordFormatter discordFormatter)
+        IDiscordFormatter discordFormatter, RoleHelper roleHelper)
     : ITextCommand
 {
-    private readonly string[] _triggers = { "emote", "emoji", "emojis" };
+    private readonly string[] _triggers = ["emote", "emoji", "emojis", "emotes"];
+    private readonly string[] _addEmoteTriggers = ["add emote", "add emoji", "add emojis", "add emotes"];
     private const string EmoteIdKey = "emoteId";
     private const string EmoteNameKey = "emoteName";
     private const string EmoteIdUrlKey = "emoteIdUrl";
+    private const string FileExtensionKey = "{{FILE_EXTENSION}}";
     private const string DiscordEmoteRegexPattern = $@"<a?:(?<{EmoteNameKey}>[a-z0-9_]+):(?<{EmoteIdKey}>\d+)>";
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     private const string DiscordEmoteUrlTemplate =
-        $"https://cdn.discordapp.com/emojis/{EmoteIdUrlKey}.png?size=128&quality=lossless";
+        $"https://cdn.discordapp.com/emojis/{EmoteIdUrlKey}.{FileExtensionKey}?size=128&quality=lossless";
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -62,10 +65,39 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
                 continue;
             }
 
+            var isAnimated = emoteMatch.Value.Contains("<a");
             var emoteName = emoteMatch.Groups[EmoteNameKey].Value;
             var emoteId = emoteMatch.Groups[EmoteIdKey].Value;
-            var emoteUrl = DiscordEmoteUrlTemplate.Replace(EmoteIdUrlKey, emoteId);
-            emotes.Add($"{emoteName}: <{emoteUrl}>");
+            var emoteUrl = DiscordEmoteUrlTemplate
+                .Replace(EmoteIdUrlKey, emoteId)
+                .Replace(FileExtensionKey, isAnimated ? "gif" : "png");
+
+            var emoteMessageToSend = $"`{emoteName}`: <{emoteUrl}>";
+
+            if (_addEmoteTriggers.Any(t => message.Content.ToLower().Contains(t)))
+            {
+                if (message is { Channel: IGuildChannel guildChannel, Author: IGuildUser guildUser })
+                {
+                    if (await roleHelper.CanAdministrate(guildChannel.Guild, guildUser, [guildUser.GuildPermissions.ManageEmojisAndStickers]))
+                    {
+                        using var client = new HttpClient();
+                        var imageData = await client.GetByteArrayAsync(emoteUrl);
+                        using var ms = new MemoryStream(imageData);
+                        var addedEmote = await guildChannel.Guild.CreateEmoteAsync(emoteName, new Image(ms));
+                        emoteMessageToSend += $"\nThis emote has been added to this server: {addedEmote}\n";
+                    }
+                    else
+                    {
+                        emoteMessageToSend += "\nThis emote failed to add. You do not have permission to manage emotes in this server.\n";
+                    }
+                }
+                else
+                {
+                    emoteMessageToSend += "\nThis emote failed to add. You can only add emotes in a server and only if you have permission.\n";
+                }
+            }
+
+            emotes.Add(emoteMessageToSend);
         }
 
         return new CommandResponse
@@ -73,18 +105,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
             Description = string.Join("\n", emotes),
             Reactions = null,
             StopProcessing = true,
-            NotifyWhenReplying = true,
+            NotifyWhenReplying = true
         };
-
-    }
-
-    private static string GetUserAvatarUrl(IUser user, string messageContent)
-    {
-        if (messageContent.ToLower().Contains("server"))
-        {
-            return (user as IGuildUser)?.GetDisplayAvatarUrl() ?? user.GetAvatarUrl(ImageFormat.Png);
-        }
-
-        return user.GetAvatarUrl(ImageFormat.Png);
     }
 }
