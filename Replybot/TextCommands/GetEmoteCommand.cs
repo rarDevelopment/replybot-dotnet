@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Models;
@@ -8,7 +7,7 @@ using Replybot.TextCommands.Models;
 namespace Replybot.TextCommands;
 
 public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusinessLayer,
-        IDiscordFormatter discordFormatter, RoleHelper roleHelper)
+        IDiscordFormatter discordFormatter, RoleHelper roleHelper, ILogger<DiscordBot> logger)
     : ITextCommand
 {
     private readonly string[] _triggers = ["emote", "emoji", "emojis", "emotes"];
@@ -80,11 +79,19 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
                 {
                     if (await roleHelper.CanAdministrate(guildChannel.Guild, guildUser, [guildUser.GuildPermissions.ManageEmojisAndStickers]))
                     {
-                        using var client = new HttpClient();
-                        var imageData = await client.GetByteArrayAsync(emoteUrl);
+                        using var httpClient = new HttpClient();
+                        var imageData = await httpClient.GetByteArrayAsync(emoteUrl);
                         using var ms = new MemoryStream(imageData);
-                        var addedEmote = await guildChannel.Guild.CreateEmoteAsync(emoteName, new Image(ms));
-                        emoteMessageToSend += $"\nThis emote has been added to this server: {addedEmote}\n";
+                        try
+                        {
+                            var addedEmote = await guildChannel.Guild.CreateEmoteAsync(emoteName, new Image(ms));
+                            emoteMessageToSend += $"\nThis emote has been added to this server: {addedEmote}\n";
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError($"Failed to save emoji: {ex.Message}");
+                            emoteMessageToSend += "\nThis emote failed to add. Make sure this bot has permission to Manage Expressions (like emotes and stickers).\n";
+                        }
                     }
                     else
                     {
