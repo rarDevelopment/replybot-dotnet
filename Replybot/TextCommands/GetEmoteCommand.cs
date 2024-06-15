@@ -17,6 +17,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
     private const string EmoteIdUrlKey = "emoteIdUrl";
     private const string FileExtensionKey = "{{FILE_EXTENSION}}";
     private const string DiscordEmoteRegexPattern = $@"<a?:(?<{EmoteNameKey}>[a-z0-9_]+):(?<{EmoteIdKey}>\d+)>";
+    private const int MaxEmoteAddCount = 5;
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     private const string DiscordEmoteUrlTemplate =
         $"https://cdn.discordapp.com/emojis/{EmoteIdUrlKey}.{FileExtensionKey}?size=128&quality=lossless";
@@ -57,6 +58,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
             };
         }
 
+        var emoteCount = 0;
         foreach (Match emoteMatch in emoteMatches)
         {
             if (!emoteMatch.Success || !emoteMatch.Groups.ContainsKey(EmoteIdKey) || !emoteMatch.Groups.ContainsKey(EmoteNameKey))
@@ -73,7 +75,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
 
             var emoteMessageToSend = $"`{emoteName}`: <{emoteUrl}>";
 
-            if (_addEmoteTriggers.Any(t => message.Content.ToLower().Contains(t)))
+            if (_addEmoteTriggers.Any(t => message.Content.ToLower().Contains(t)) && emoteCount < MaxEmoteAddCount)
             {
                 if (message is { Channel: IGuildChannel guildChannel, Author: IGuildUser guildUser })
                 {
@@ -105,6 +107,12 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
             }
 
             emotes.Add(emoteMessageToSend);
+            emoteCount++;
+        }
+
+        if (emoteMatches.Count > MaxEmoteAddCount)
+        {
+            emotes.Add($"Only the first {MaxEmoteAddCount} emotes were added. You can only add up to {MaxEmoteAddCount} emotes at a time.");
         }
 
         return new CommandResponse
