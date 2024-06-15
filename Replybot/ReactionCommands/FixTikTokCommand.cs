@@ -8,7 +8,7 @@ public class FixTikTokCommand(BotSettings botSettings) : FixUrlCommandBase(FixLi
     public readonly string NoLinkMessage = "I don't think there's a TikTok link there.";
     private const string TikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(tiktok.com)/[\\@a-z0-9-_//]+";
     private const string VxTikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(vxtiktok.com)/[\\@a-z0-9-_//]+";
-    public const string FixTikTokButtonEmojiId = "1177645488858742844";
+    public const string FixTikTokButtonEmojiId = "1251345753159368714";
     public const string FixTikTokButtonEmojiName = "fixtiktok";
     private const string OriginalTikTokBaseUrl = "tiktok.com";
     private const string FixedTikTokBaseUrl = "vxtiktok.com";
