@@ -84,7 +84,7 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
 
                         var releaseDateDisplay = "No Date Available";
 
-                        if (!string.IsNullOrEmpty(releaseDateGroup.Date) && DateTime.TryParse(releaseDateGroup.Date, out var actualReleaseDate))
+                        if (!string.IsNullOrEmpty(releaseDateGroup.Date) && DateTime.TryParse(releaseDateGroup.Date, out _))
                         {
                             releaseDateDisplay = releaseDateGroup.Date;
                         }
