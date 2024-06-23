@@ -8,7 +8,7 @@ public class FixInstagramCommand(BotSettings botSettings) : FixUrlCommandBase(Fi
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
     private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
     private const string DdInstagramUrlRegexPattern = "https?:\\/\\/(www.)?(ddinstagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
-    public const string FixInstagramButtonEmojiId = "1116574189592260658";
+    public const ulong FixInstagramButtonEmojiId = 1116574189592260658;
     public const string FixInstagramButtonEmojiName = "fixinstagram";
     private const string OriginalInstagramBaseUrl = "instagram.com";
     private const string FixedInstagramBaseUrl = "ddinstagram.com";

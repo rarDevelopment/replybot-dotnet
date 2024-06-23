@@ -84,6 +84,6 @@ public abstract class FixUrlCommandBase(FixLinkConfig fixLinkConfig, BotSettings
 
     protected Emote GetEmote()
     {
-        return Emote.Parse($"<:{fixLinkConfig.FixUrlButtonEmojiName}:{fixLinkConfig.FixUrlButtonEmojiId}>");
+        return new Emote(fixLinkConfig.FixUrlButtonEmojiId, fixLinkConfig.FixUrlButtonEmojiName);
     }
 }

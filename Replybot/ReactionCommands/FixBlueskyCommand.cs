@@ -12,7 +12,7 @@ public class FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi) :
     private const string ContentUnavailableText = "[content unavailable]";
     private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
-    public const string FixTweetButtonEmojiId = "1126862392941367376";
+    public const ulong FixTweetButtonEmojiId = 1126862392941367376;
     public const string FixTweetButtonEmojiName = "fixbluesky";
 
     public bool CanHandle(string message, GuildConfiguration configuration)
@@ -196,6 +196,6 @@ public class FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi) :
 
     private static Emote GetFixBlueskyEmote()
     {
-        return Emote.Parse($"<:{FixTweetButtonEmojiName}:{FixTweetButtonEmojiId}>");
+        return new Emote(FixTweetButtonEmojiId, FixTweetButtonEmojiName);
     }
 }
