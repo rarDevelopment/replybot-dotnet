@@ -38,9 +38,11 @@ public class UserJoinedNotificationHandler(
             var randomIndex = new Random().Next(welcomeMessages.Count);
             var welcomeMessageWithMention = welcomeMessages[randomIndex].Replace(usernameKeyword, notification.UserWhoJoined.Mention);
 
-            await systemChannelPoster.PostEmbedToGuildSystemChannel(
+            var messageToSend = $"## Someone New Has Arrived!\n\n👋🏼 {welcomeMessageWithMention}";
+
+            await systemChannelPoster.PostMessageToGuildSystemChannel(
                 notification.UserWhoJoined.Guild,
-                discordFormatter.BuildRegularEmbed("Someone New Has Arrived!", welcomeMessageWithMention),
+                messageToSend,
                 $"User: {notification.UserWhoJoined.Id} {notification.UserWhoJoined.GlobalName}",
                 typeof(UserJoinedNotificationHandler));
 
