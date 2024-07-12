@@ -27,7 +27,7 @@ public class GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gu
             {
                 await systemChannelPoster.PostMessageToGuildSystemChannel(
                     newGuild,
-                    $"Hey look! A new server icon! {newGuild.IconUrl}",
+                    $"Hey look! A [new server icon]({newGuild.IconUrl})!",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
             }
         }, cancellationToken);

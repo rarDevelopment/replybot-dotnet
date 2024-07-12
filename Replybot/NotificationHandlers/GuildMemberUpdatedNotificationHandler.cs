@@ -4,7 +4,7 @@ using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
-        SystemChannelPoster systemChannelPoster)
+        SystemChannelPoster systemChannelPoster, ILogger<DiscordBot> logger)
     : INotificationHandler<GuildMemberUpdatedNotification>
 {
     public Task Handle(GuildMemberUpdatedNotification notification, CancellationToken cancellationToken)
@@ -22,6 +22,13 @@ public class GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLa
             var oldUser = cachedOldUser.Value;
 
             var guildConfig = await guildConfigurationBusinessLayer.GetGuildConfiguration(newUser.Guild);
+
+            if (guildConfig == null)
+            {
+                logger.LogError($"No guild configuration found for the guild with id {newUser.Guild.Id} ({newUser.Guild.Name})");
+                return Task.CompletedTask;
+            }
+
             var announceChange = guildConfig.EnableAvatarAnnouncements && !guildConfig.IgnoreAvatarChangesUserIds.Contains(newUser.Id.ToString());
             var tagUserInChange = guildConfig.EnableAvatarMentions;
 
@@ -41,7 +48,7 @@ public class GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLa
             }
 
             await systemChannelPoster.PostMessageToGuildSystemChannel(newUser.Guild,
-                $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a new look in this server! Check it out: {avatarUrl}",
+                $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a [new look]({avatarUrl}) in this server!",
                 $"Guild: {newUser.Guild.Name} ({newUser.Guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                 typeof(GuildMemberUpdatedNotificationHandler));
 
