@@ -14,7 +14,7 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
     : ITextCommand
 {
     private const string SearchTermKey = "searchTerm";
-    private const string TriggerRegexPattern = $"(when|how old) +(does|did|will|is) +(?<{SearchTermKey}>(.*)) +(come out|release|drop|releasing|dropping|coming out)\\??";
+    private const string TriggerRegexPattern = $"when +(does|did|will|is) +(?<{SearchTermKey}>(.*)) +(come out|release|drop|releasing|dropping|coming out)\\??";
     private const int MaxGamesToShow = 3;
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
 
