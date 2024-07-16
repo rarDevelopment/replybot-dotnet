@@ -22,6 +22,7 @@ using Replybot.TextCommands;
 using Replybot.TextCommands.Models;
 using TMDbLib.Client;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
+using NodaTime;
 
 var builder = new HostBuilder();
 
@@ -86,6 +87,9 @@ builder.ConfigureServices((host, services) =>
     var defaultRepliesSettings = new DefaultRepliesSettings(host.Configuration["DefaultReplies:Url"]!);
     var internetGameDatabaseSettings = new InternetGameDatabaseSettings(host.Configuration["InternetGameDatabase:ClientId"]!,
         host.Configuration["InternetGameDatabase:ClientSecret"]!);
+
+    IClock clock = SystemClock.Instance;
+    services.AddTransient(_ => clock);
 
     services.AddSingleton(versionSettings);
     services.AddSingleton(botSettings);
