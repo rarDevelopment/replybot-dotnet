@@ -23,6 +23,7 @@ public class JoinedGuildNotificationHandler(
                 $"Hello, people of {guildConfig.GuildName}! Glad to be here!",
                 "Couldn't post to the system channel on JoinedGuild",
                 typeof(JoinedGuildNotificationHandler));
+            return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
     }
