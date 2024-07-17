@@ -56,7 +56,7 @@ public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gui
                 {
                     await systemChannelPoster.PostMessageToGuildSystemChannel(
                         guild,
-                        $"Heads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a [new look]({newUser.GetAvatarUrl(ImageFormat.Jpeg)})!",
+                        $"## Avatar Change\nHeads up! {(tagUserInChange ? newUser.Mention : newUser.Username)} has a [new look]({newUser.GetAvatarUrl(ImageFormat.Jpeg)})!",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                         typeof(UserUpdatedNotificationHandler));
                     logger.Log(LogLevel.Information, $"User Avatar Change: {newUser.Username} ({newUser.Id}) | new avatar id: {newUser.AvatarId} ({newUser.GetAvatarUrl()}) | old avatar id: {oldUser.AvatarId} ({oldUser.GetAvatarUrl()}) |");
