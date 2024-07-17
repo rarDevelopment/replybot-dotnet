@@ -18,7 +18,7 @@ public class GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gu
             {
                 await systemChannelPoster.PostMessageToGuildSystemChannel(
                     newGuild,
-                    $"Wow, a server name change! This server has been renamed from **{oldGuild.Name}** to **{newGuild.Name}**.",
+                    $"## Server Name Change\nWow, a server name change! This server has been renamed from **{oldGuild.Name}** to **{newGuild.Name}**.",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
                 await guildConfigurationBusinessLayer.UpdateGuildConfiguration(newGuild);
             }
@@ -27,7 +27,7 @@ public class GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gu
             {
                 await systemChannelPoster.PostMessageToGuildSystemChannel(
                     newGuild,
-                    $"Hey look! A [new server icon]({newGuild.IconUrl})!",
+                    $"## Server Icon Change\nHey look! A [new server icon]({newGuild.IconUrl})!",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
             }
         }, cancellationToken);
