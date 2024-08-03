@@ -60,7 +60,21 @@ public class HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
                 var howLongToBeatInfo = await howLongToBeatApi.GetHowLongToBeatInformation(searchText);
                 if (howLongToBeatInfo == null)
                 {
-                    return null;
+                    var embedFieldBuilder = new List<EmbedFieldBuilder>
+                    {
+                        new()
+                        {
+                            Name = "Want to search on the website instead?",
+                            Value = $"[Click here to try a manual search]({searchUrl})",
+                            IsInline = false
+                        }
+                    };
+
+                    return discordFormatter.BuildErrorEmbedWithUserFooter("No Response from How Long To Beat",
+                        "I couldn't get a response from How Long To Beat, maybe they changed their URL again.",
+                        message.Author,
+                        embedFieldBuilder,
+                        searchUrl);
                 }
 
                 var gamesToProcess = howLongToBeatInfo.Data.Take(2);
