@@ -52,7 +52,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "api/search/4b4cbe570602c88660f7df8ea0cb6b6e")
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "api/search/5683ebd079f1c360")
         {
             Content = content
         };
