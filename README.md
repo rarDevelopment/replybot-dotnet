@@ -101,7 +101,11 @@ If you have a custom emote you like, you can use `Toby emote [emote(s) here]` an
 
 ## Fortnite Shop Information (using [Fortnite API](https://fortnite-api.com/))
 
-If you're a Fortnite player, "Toby Fortnite shop" will show you a glimpse of what's on the shop currently
+If you're a Fortnite player, "Toby Fortnite shop" will show you a glimpse of what's on the shop currently.
+
+## Fortnite Map Location (using [Fortnite API](https://fortnite-api.com/))
+
+Again, if you're a Fortnite player, "Toby where we droppin" will randomly choose a location from the current Fortnite Battle Royale map for you to drop at.
 
 ## Flip a Coin
 
