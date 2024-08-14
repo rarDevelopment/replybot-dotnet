@@ -8,7 +8,7 @@ namespace Replybot.TextCommands;
 public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings botSettings)
     : ITextCommand
 {
-    private const string TriggerRegexPattern = "where (we|are we) droppin(g)?";
+    private const string TriggerRegexPattern = "(where(( a|')re)? we droppin(g)?)|(whither shall we descend)";
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
