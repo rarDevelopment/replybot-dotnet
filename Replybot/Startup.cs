@@ -152,6 +152,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<IReactionCommand, FixInstagramCommand>();
     services.AddSingleton<IReactionCommand, FixBlueskyCommand>();
     services.AddSingleton<IReactionCommand, FixTikTokCommand>();
+    services.AddSingleton<IReactionCommand, FixRedditCommand>();
 
     services.AddSingleton<HowLongToBeatApi>();
     services.AddSingleton<FreeDictionaryApi>();

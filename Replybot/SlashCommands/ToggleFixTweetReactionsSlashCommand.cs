@@ -7,7 +7,7 @@ public class ToggleFixTweetReactionsSlashCommand(IGuildConfigurationBusinessLaye
     : InteractionModuleBase<SocketInteractionContext>
 {
     [SlashCommand("set-fix-tweet-reactions", "Set fix tweet reactions on or off (true or false).")]
-    public async Task ToggleAutoFixTweets(
+    public async Task ToggleFixTweets(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
     {
         var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);
@@ -19,7 +19,7 @@ public class ToggleFixTweetReactionsSlashCommand(IGuildConfigurationBusinessLaye
 
         if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await guildConfigurationBusinessLayer.SetEnableAutoFixTweets(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableFixTweets(Context.Guild, isEnabled);
             if (success)
             {
                 await RespondAsync($"Consider it done! Fix tweet reactions, which allow you to react to convert twitter.com links to vxtwitter.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");

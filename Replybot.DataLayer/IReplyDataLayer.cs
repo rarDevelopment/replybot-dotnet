@@ -21,4 +21,5 @@ public interface IReplyDataLayer
     Task<bool> AddIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> RemoveIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds);
+    Task<bool> SetEnableFixRedditReactions(string guildId, bool isEnabled);
 }
