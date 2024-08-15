@@ -3,20 +3,17 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.ReactionCommands;
 
-public class FixTikTokCommand(BotSettings botSettings) : FixUrlCommandBase(FixLinkConfig, botSettings), IReactionCommand
+public class FixTikTokCommand(BotSettings botSettings, ApplicationEmojiSettings applicationEmojiSettings, DiscordSocketClient client)
+    : FixUrlCommandBase(FixLinkConfig, botSettings, applicationEmojiSettings.FixTikTok, client), IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a TikTok link there.";
     private const string TikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(tiktok.com)/[\\@a-z0-9-_//]+";
     private const string VxTikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(vxtiktok.com)/[\\@a-z0-9-_//]+";
-    public const ulong FixTikTokButtonEmojiId = 1251345753159368714;
-    public const string FixTikTokButtonEmojiName = "fixtiktok";
     private const string OriginalTikTokBaseUrl = "tiktok.com";
     private const string FixedTikTokBaseUrl = "vxtiktok.com";
 
     private static readonly FixLinkConfig FixLinkConfig = new(TikTokUrlRegexPattern,
         VxTikTokUrlRegexPattern,
-        FixTikTokButtonEmojiId,
-        FixTikTokButtonEmojiName,
         OriginalTikTokBaseUrl,
         FixedTikTokBaseUrl);
 
@@ -26,18 +23,18 @@ public class FixTikTokCommand(BotSettings botSettings) : FixUrlCommandBase(FixLi
                (DoesMessageContainOriginalUrl(message) || DoesMessageContainFixedUrl(message));
     }
 
-    public Task<List<Emote>> HandleReaction(SocketMessage message)
+    public async Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
-            GetEmote()
+            await GetEmote()
         };
-        return Task.FromResult(emotes);
+        return emotes;
     }
 
-    public bool IsReacting(IEmote reactionEmote, GuildConfiguration guildConfiguration)
+    public async Task<bool> IsReactingAsync(IEmote reactionEmote, GuildConfiguration guildConfiguration)
     {
-        return guildConfiguration.EnableFixTikTokReactions && Equals(reactionEmote, GetEmote());
+        return guildConfiguration.EnableFixTikTokReactions && Equals(reactionEmote, await GetEmote());
     }
 
     public Task<List<CommandResponse>> HandleMessage(IUserMessage message, IUser reactingUser)

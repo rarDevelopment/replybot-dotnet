@@ -6,52 +6,54 @@ using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.ReactionCommands;
 
-public class FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi) : IReactionCommand
+public class FixBlueskyCommand(
+    BotSettings botSettings,
+    ApplicationEmojiSettings applicationEmojiSettings,
+    BlueskyApi blueskyApi,
+    DiscordSocketClient client) : IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
     private const string ContentUnavailableText = "[content unavailable]";
     private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
     private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
-    public const ulong FixTweetButtonEmojiId = 1126862392941367376;
-    public const string FixTweetButtonEmojiName = "fixbluesky";
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
         return configuration.EnableFixBlueskyReactions && DoesMessageContainBlueskyUrl(message);
     }
 
-    public Task<List<Emote>> HandleReaction(SocketMessage message)
+    public async Task<List<Emote>> HandleReaction(SocketMessage message)
     {
         var emotes = new List<Emote>
         {
-            GetFixBlueskyEmote()
+            await GetFixBlueskyEmote()
         };
-        return Task.FromResult(emotes);
+        return emotes;
     }
 
-    public bool IsReacting(IEmote reactionEmote, GuildConfiguration guildConfiguration)
+    public async Task<bool> IsReactingAsync(IEmote reactionEmote, GuildConfiguration guildConfiguration)
     {
-        return guildConfiguration.EnableFixBlueskyReactions && Equals(reactionEmote, GetFixBlueskyEmote());
+        return guildConfiguration.EnableFixBlueskyReactions && Equals(reactionEmote, await GetFixBlueskyEmote());
     }
 
     public async Task<List<CommandResponse>> HandleMessage(IUserMessage message, IUser reactingUser)
     {
         if (!DoesMessageContainBlueskyUrl(message.Content))
         {
-            return new List<CommandResponse>
-            {
-                new()
+            return
+            [
+                new CommandResponse
                 {
                     Description = NoLinkMessage
                 }
-            };
+            ];
         }
 
         var blueskyMessages = await GetBlueskyEmbeds(message);
 
         if (!blueskyMessages.Any())
         {
-            return new List<CommandResponse>();
+            return [];
         }
 
         var commandResponses = blueskyMessages.Select(blueskyMessage => BuildCommandResponse(blueskyMessage, reactingUser)).ToList();
@@ -194,8 +196,8 @@ public class FixBlueskyCommand(BotSettings botSettings, BlueskyApi blueskyApi) :
         return matches.Select(t => t.Value).ToList();
     }
 
-    private static Emote GetFixBlueskyEmote()
+    private async Task<Emote> GetFixBlueskyEmote()
     {
-        return new Emote(FixTweetButtonEmojiId, FixTweetButtonEmojiName);
+        return await client.GetApplicationEmoteAsync(Convert.ToUInt64(applicationEmojiSettings.FixBluesky));
     }
 }

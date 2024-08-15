@@ -4,7 +4,7 @@ using Replybot.TextCommands.Models;
 
 namespace Replybot.ReactionCommands;
 
-public abstract class FixUrlCommandBase(FixLinkConfig fixLinkConfig, BotSettings botSettings)
+public abstract class FixUrlCommandBase(FixLinkConfig fixLinkConfig, BotSettings botSettings, string emojiId, DiscordSocketClient client)
 {
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
 
@@ -82,8 +82,8 @@ public abstract class FixUrlCommandBase(FixLinkConfig fixLinkConfig, BotSettings
         return matches.Select(t => t.Value).ToList();
     }
 
-    protected Emote GetEmote()
+    protected async Task<Emote> GetEmote()
     {
-        return new Emote(fixLinkConfig.FixUrlButtonEmojiId, fixLinkConfig.FixUrlButtonEmojiName);
+        return await client.GetApplicationEmoteAsync(Convert.ToUInt64(emojiId));
     }
 }
