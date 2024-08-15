@@ -30,6 +30,8 @@ public class GuildConfigurationEntity
     public bool EnableDefaultReplies { get; set; }
     [BsonElement("enableFixTikTokReactions")]
     public bool EnableFixTikTokReactions { get; set; }
+    [BsonElement("enableFixRedditReactions")]
+    public bool EnableFixRedditReactions { get; set; }
 
     [BsonElement("ignoreAvatarChangesUserIds")]
     public List<string> IgnoreAvatarChangesUserIds { get; set; } = new();
@@ -51,6 +53,7 @@ public class GuildConfigurationEntity
             EnableFixInstagramReactions = EnableFixInstagramReactions,
             EnableFixBlueskyReactions = EnableFixBlueskyReactions,
             EnableFixTikTokReactions = EnableFixTikTokReactions,
+            EnableFixRedditReactions = EnableFixRedditReactions,
             IgnoreAvatarChangesUserIds = IgnoreAvatarChangesUserIds,
             EnableWelcomeMessage = EnableWelcomeMessage
         };

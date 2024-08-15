@@ -7,7 +7,7 @@ public class ToggleFixTikTokReactionsSlashCommand(IGuildConfigurationBusinessLay
     : InteractionModuleBase<SocketInteractionContext>
 {
     [SlashCommand("set-fix-tiktok-reactions", "Set fix TikTok reactions on or off (true or false).")]
-    public async Task ToggleAutoFixTikTok(
+    public async Task ToggleFixTikTok(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
     {
         var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);

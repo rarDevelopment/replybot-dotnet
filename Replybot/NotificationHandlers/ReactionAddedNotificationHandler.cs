@@ -49,9 +49,10 @@ public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer c
         IUser reactingUser)
     {
         ReactionMetadata? fixReaction = null;
-        if (reactCommand.IsReacting(reaction.Emote, config))
+        var isReacting = await reactCommand.IsReactingAsync(reaction.Emote, config);
+        if (isReacting)
         {
-            fixReaction = message.Reactions.FirstOrDefault(r => reactCommand.IsReacting(r.Key, config)).Value;
+            fixReaction = message.Reactions.FirstOrDefault(r => Equals(r.Key, reaction.Emote)).Value;//.Select(async r => await reactCommand.IsReactingAsync(r.Key, config));
         }
 
         if (fixReaction == null || fixReaction.Value.ReactionCount > 2)

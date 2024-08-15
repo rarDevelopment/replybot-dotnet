@@ -2,12 +2,12 @@
 
 namespace Replybot.SlashCommands;
 
-public class ToggleFixBlueskyReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
+public class ToggleFixRedditReactionsSlashCommand(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         RoleHelper roleHelper)
     : InteractionModuleBase<SocketInteractionContext>
 {
-    [SlashCommand("set-fix-bluesky-reactions", "Set fix Bluesky reactions on or off (true or false).")]
-    public async Task ToggleFixBluesky(
+    [SlashCommand("set-fix-reddit-reactions", "Set fix Reddit reactions on or off (true or false).")]
+    public async Task ToggleFixReddit(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
     {
         var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);
@@ -19,10 +19,10 @@ public class ToggleFixBlueskyReactionsSlashCommand(IGuildConfigurationBusinessLa
 
         if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await guildConfigurationBusinessLayer.SetEnableFixBluesky(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableFixReddit(Context.Guild, isEnabled);
             if (success)
             {
-                await RespondAsync($"Consider it done! Fix Bluesky reactions, which allow you to react to get a preview of Bluesky.com links are now {(isEnabled ? "ON" : "OFF")}.");
+                await RespondAsync($"Consider it done! Fix Reddit reactions, which allow you to react to convert reddit.com links to vxreddit.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");
                 return;
             }
 

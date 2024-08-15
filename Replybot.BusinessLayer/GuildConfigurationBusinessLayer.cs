@@ -77,7 +77,7 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return false;
     }
 
-    public async Task<bool> SetEnableAutoFixTweets(IGuild guild, bool isEnabled)
+    public async Task<bool> SetEnableFixTweets(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
@@ -88,7 +88,7 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return false;
     }
 
-    public async Task<bool> SetEnableAutoFixInstagram(IGuild guild, bool isEnabled)
+    public async Task<bool> SetEnableFixInstagram(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
@@ -99,7 +99,7 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return false;
     }
 
-    public async Task<bool> SetEnableAutoFixBluesky(IGuild guild, bool isEnabled)
+    public async Task<bool> SetEnableFixBluesky(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
         if (config != null)
@@ -116,6 +116,17 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         if (config != null)
         {
             return await replyDataLayer.SetEnableFixTikTokReactions(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableFixReddit(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableFixRedditReactions(guild.Id.ToString(), isEnabled);
         }
 
         return false;

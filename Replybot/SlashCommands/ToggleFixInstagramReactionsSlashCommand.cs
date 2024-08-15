@@ -7,7 +7,7 @@ public class ToggleFixInstagramReactionsSlashCommand(IGuildConfigurationBusiness
     : InteractionModuleBase<SocketInteractionContext>
 {
     [SlashCommand("set-fix-instagram-reactions", "Set fix Instagram reactions on or off (true or false).")]
-    public async Task ToggleAutoFixInstagram(
+    public async Task ToggleFixInstagram(
         [Summary("is_enabled", "True for ON, False for OFF")] bool isEnabled)
     {
         var member = Context.Guild.Users.FirstOrDefault(u => u.Id == Context.User.Id);
@@ -19,7 +19,7 @@ public class ToggleFixInstagramReactionsSlashCommand(IGuildConfigurationBusiness
 
         if (await roleHelper.CanAdministrate(Context.Guild, member))
         {
-            var success = await guildConfigurationBusinessLayer.SetEnableAutoFixInstagram(Context.Guild, isEnabled);
+            var success = await guildConfigurationBusinessLayer.SetEnableFixInstagram(Context.Guild, isEnabled);
             if (success)
             {
                 await RespondAsync($"Consider it done! Fix Instagram reactions, which allow you to react to convert instagram.com links to ddinstagram.com (or vice versa) are now {(isEnabled ? "ON" : "OFF")}.");

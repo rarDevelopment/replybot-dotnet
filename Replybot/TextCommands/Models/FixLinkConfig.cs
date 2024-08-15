@@ -2,8 +2,6 @@
 
 public class FixLinkConfig(string originalUrlRegexPattern,
     string fixedUrlRegexPattern,
-    ulong fixUrlButtonEmojiId,
-    string fixUrlButtonEmojiName,
     string originalBaseUrl,
     string fixedBaseUrl,
     string? matchedDomainKey = null,
@@ -11,8 +9,6 @@ public class FixLinkConfig(string originalUrlRegexPattern,
 {
     public string OriginalUrlRegexPattern { get; } = originalUrlRegexPattern;
     public string FixedUrlRegexPattern { get; } = fixedUrlRegexPattern;
-    public ulong FixUrlButtonEmojiId { get; } = fixUrlButtonEmojiId;
-    public string FixUrlButtonEmojiName { get; } = fixUrlButtonEmojiName;
     public string OriginalBaseUrl { get; } = originalBaseUrl;
     public string FixedBaseUrl { get; } = fixedBaseUrl;
     public string? MatchedDomainKey { get; } = matchedDomainKey;

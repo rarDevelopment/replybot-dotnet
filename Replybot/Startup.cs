@@ -87,6 +87,12 @@ builder.ConfigureServices((host, services) =>
     var defaultRepliesSettings = new DefaultRepliesSettings(host.Configuration["DefaultReplies:Url"]!);
     var internetGameDatabaseSettings = new InternetGameDatabaseSettings(host.Configuration["InternetGameDatabase:ClientId"]!,
         host.Configuration["InternetGameDatabase:ClientSecret"]!);
+    var applicationEmojiSettings = new ApplicationEmojiSettings(
+        host.Configuration["ApplicationEmojis:FixTweet"]!,
+        host.Configuration["ApplicationEmojis:FixInstagram"]!,
+        host.Configuration["ApplicationEmojis:FixTikTok"]!,
+        host.Configuration["ApplicationEmojis:FixBluesky"]!,
+        host.Configuration["ApplicationEmojis:FixReddit"]!);
 
     IClock clock = SystemClock.Instance;
     services.AddTransient(_ => clock);
@@ -102,6 +108,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(internetGameDatabaseSettings);
     services.AddSingleton(countryConfigListSettings);
     services.AddSingleton(defaultRepliesSettings);
+    services.AddSingleton(applicationEmojiSettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
@@ -145,6 +152,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<IReactionCommand, FixInstagramCommand>();
     services.AddSingleton<IReactionCommand, FixBlueskyCommand>();
     services.AddSingleton<IReactionCommand, FixTikTokCommand>();
+    services.AddSingleton<IReactionCommand, FixRedditCommand>();
 
     services.AddSingleton<HowLongToBeatApi>();
     services.AddSingleton<FreeDictionaryApi>();
