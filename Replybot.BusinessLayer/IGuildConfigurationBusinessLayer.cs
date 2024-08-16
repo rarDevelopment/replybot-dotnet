@@ -21,4 +21,10 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetEnableFixReddit(IGuild guild, bool isEnabled);
     Task<bool> SetEnableWelcomeMessage(IGuild guild, bool isEnabled);
     Task<bool> SetIgnoreUsersForAvatarAnnouncements(IGuild guild, List<string> userIds, bool setAllowed);
+    Task<bool> SetEnableLoggingUserJoins(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableLoggingUserDepartures(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableLoggingMessageEdits(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableLoggingMessageDeletes(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableLoggingUserBans(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableLoggingUserUnBans(IGuild guild, bool isEnabled);
 }

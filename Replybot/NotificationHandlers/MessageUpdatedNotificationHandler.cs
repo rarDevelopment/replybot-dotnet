@@ -1,9 +1,10 @@
 ﻿using MediatR;
+using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class MessageUpdatedNotificationHandler(LogChannelPoster logChannelPoster,
-        ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
+        ExistingMessageEmbedBuilder logMessageBuilder, IGuildConfigurationBusinessLayer configurationBusinessLayer, DiscordSocketClient client)
     : INotificationHandler<MessageUpdatedNotification>
 {
     public Task Handle(MessageUpdatedNotification notification, CancellationToken cancellationToken)
@@ -17,6 +18,12 @@ public class MessageUpdatedNotificationHandler(LogChannelPoster logChannelPoster
 
             var channel = notification.Channel;
             if (channel is not SocketTextChannel textChannel)
+            {
+                return Task.CompletedTask;
+            }
+
+            var config = await configurationBusinessLayer.GetGuildConfiguration(textChannel.Guild);
+            if (config is not { EnableLoggingMessageEdits: true })
             {
                 return Task.CompletedTask;
             }

@@ -32,11 +32,22 @@ public class GuildConfigurationEntity
     public bool EnableFixTikTokReactions { get; set; }
     [BsonElement("enableFixRedditReactions")]
     public bool EnableFixRedditReactions { get; set; }
-
     [BsonElement("ignoreAvatarChangesUserIds")]
-    public List<string> IgnoreAvatarChangesUserIds { get; set; } = new();
+    public List<string> IgnoreAvatarChangesUserIds { get; set; } = [];
     [BsonElement("enableWelcomeMessage")]
     public bool EnableWelcomeMessage { get; set; }
+    [BsonElement("enableLoggingUserJoins")]
+    public bool EnableLoggingUserJoins { get; set; }
+    [BsonElement("enableLoggingUserDepartures")]
+    public bool EnableLoggingUserDepartures { get; set; }
+    [BsonElement("enableLoggingMessageEdits")]
+    public bool EnableLoggingMessageEdits { get; set; }
+    [BsonElement("enableLoggingMessageDeletes")]
+    public bool EnableLoggingMessageDeletes { get; set; }
+    [BsonElement("enableLoggingUserBans")]
+    public bool EnableLoggingUserBans { get; set; }
+    [BsonElement("enableLoggingUserUnBans")]
+    public bool EnableLoggingUserUnBans { get; set; }
 
     public GuildConfiguration ToDomain()
     {
@@ -46,7 +57,6 @@ public class GuildConfigurationEntity
             GuildName = GuildName,
             EnableAvatarAnnouncements = EnableAvatarAnnouncements,
             EnableAvatarMentions = EnableAvatarMentions,
-            LogChannelId = LogChannelId,
             AdminUserIds = AdminUserIds,
             EnableDefaultReplies = EnableDefaultReplies,
             EnableFixTweetReactions = EnableFixTweetReactions,
@@ -55,7 +65,14 @@ public class GuildConfigurationEntity
             EnableFixTikTokReactions = EnableFixTikTokReactions,
             EnableFixRedditReactions = EnableFixRedditReactions,
             IgnoreAvatarChangesUserIds = IgnoreAvatarChangesUserIds,
-            EnableWelcomeMessage = EnableWelcomeMessage
+            EnableWelcomeMessage = EnableWelcomeMessage,
+            LogChannelId = LogChannelId,
+            EnableLoggingUserJoins = EnableLoggingUserJoins,
+            EnableLoggingUserDepartures = EnableLoggingUserDepartures,
+            EnableLoggingMessageEdits = EnableLoggingMessageEdits,
+            EnableLoggingMessageDeletes = EnableLoggingMessageDeletes,
+            EnableLoggingUserBans = EnableLoggingUserBans,
+            EnableLoggingUserUnBans = EnableLoggingUserUnBans
         };
     }
 }

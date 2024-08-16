@@ -18,6 +18,7 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
         BotSettings botSettings,
         VersionSettings versionSettings,
         DiscordSettings discordSettings,
+        ApplicationEmojiSettings applicationEmojiSettings,
         DiscordSocketClient client,
         ExistingMessageEmbedBuilder logMessageBuilder,
         SiteIgnoreService siteIgnoreService,
@@ -26,7 +27,6 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
     : INotificationHandler<MessageReceivedNotification>
 {
     private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
-    private const string PreviouslyPostedEmoji = "<:slowpoke:1149574363599868004>";
 
     public Task Handle(MessageReceivedNotification notification, CancellationToken cancellationToken)
     {
@@ -207,8 +207,10 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
                 continue;
             }
 
+            var previouslyPostedEmote = await client.GetApplicationEmoteAsync(Convert.ToUInt64(applicationEmojiSettings.Slowpoke));
+
             var embed = discordFormatter.BuildRegularEmbed("Link Posted Previously",
-                $"{PreviouslyPostedEmoji} This link was posted earlier by {relevantMessage.Author.Mention}! {PreviouslyPostedEmoji}\n[Click here to go to the previous discussion]({relevantMessage.GetJumpUrl()}).");
+                $"{previouslyPostedEmote} This link was posted earlier by {relevantMessage.Author.Mention}! {previouslyPostedEmote}\n[Click here to go to the previous discussion]({relevantMessage.GetJumpUrl()}).");
             await messageWithLinks.Channel.SendMessageAsync(embed: embed, messageReference: new MessageReference(messageWithLinks.Id));
         }
     }

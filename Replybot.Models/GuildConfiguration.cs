@@ -16,4 +16,10 @@ public class GuildConfiguration
     public bool EnableFixTikTokReactions { get; set; }
     public List<string> IgnoreAvatarChangesUserIds { get; set; }
     public bool EnableWelcomeMessage { get; set; }
+    public bool EnableLoggingUserJoins { get; set; }
+    public bool EnableLoggingUserDepartures { get; set; }
+    public bool EnableLoggingMessageEdits { get; set; }
+    public bool EnableLoggingMessageDeletes { get; set; }
+    public bool EnableLoggingUserBans { get; set; }
+    public bool EnableLoggingUserUnBans { get; set; }
 }
