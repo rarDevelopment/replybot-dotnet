@@ -143,6 +143,54 @@ public class ReplyDataLayer : IReplyDataLayer
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }
 
+    public async Task<bool> SetEnableLoggingUserJoins(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableLoggingUserJoins, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableLoggingUserDepartures(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableLoggingUserDepartures, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableLoggingMessageEdits(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableLoggingMessageEdits, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableLoggingMessageDeletes(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableLoggingMessageDeletes, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableLoggingUserBans(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableLoggingUserBans, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableLoggingUserUnBans(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableLoggingUserUnBans, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
     public async Task<bool> SetEnableFixTweetReactions(string guildId, bool isEnabled)
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);

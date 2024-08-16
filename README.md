@@ -39,7 +39,7 @@ By default, Toby has replies to give him some personality. However, if you'd lik
 
 ## Server Activity Logging
 
-For moderators, you might want to keep a more detailed log of the activity on your server than the default audit log functionality in Discord is capable of doing. You can have Toby log server activity to a particular channel by using the `/set-logs-channel` command and specifying the channel where you want the logs to appear.
+For moderators, you might want to keep a more detailed log of the activity on your server than the default audit log functionality in Discord is capable of doing. You can have Toby log server activity to a particular channel by using the `/set-logging` command and specifying the channel where you want the logs to appear. You can individually specify to log user server joins, user server departures, user bans, user unbans, message edits, and message deletes.
 
 ## View Settings
 

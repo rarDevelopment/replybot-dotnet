@@ -92,7 +92,9 @@ builder.ConfigureServices((host, services) =>
         host.Configuration["ApplicationEmojis:FixInstagram"]!,
         host.Configuration["ApplicationEmojis:FixTikTok"]!,
         host.Configuration["ApplicationEmojis:FixBluesky"]!,
-        host.Configuration["ApplicationEmojis:FixReddit"]!);
+        host.Configuration["ApplicationEmojis:FixReddit"]!,
+        host.Configuration["ApplicationEmojis:Slowpoke"]!
+        );
 
     IClock clock = SystemClock.Instance;
     services.AddTransient(_ => clock);

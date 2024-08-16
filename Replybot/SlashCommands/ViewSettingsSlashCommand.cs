@@ -34,9 +34,20 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
             message += $"Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarAnnouncements)}\n";
             message += $"Mention User on Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarMentions)}\n";
             message += $"Log Channel: {(guildConfig.LogChannelId != null ? $"<#{guildConfig.LogChannelId}>" : "Not Set")}\n";
+            if (guildConfig.LogChannelId != null)
+            {
+                message += $"- Logging for User Joins is {GetEnabledText(guildConfig.EnableLoggingUserJoins)}\n";
+                message += $"- Logging for User Departures is {GetEnabledText(guildConfig.EnableLoggingUserDepartures)}\n";
+                message += $"- Logging for User Bans is {GetEnabledText(guildConfig.EnableLoggingUserBans)}\n";
+                message += $"- Logging for User Unbans is {GetEnabledText(guildConfig.EnableLoggingUserUnBans)}\n";
+                message += $"- Logging for Message Edits is {GetEnabledText(guildConfig.EnableLoggingMessageEdits)}\n";
+                message += $"- Logging for Message Deletes is {GetEnabledText(guildConfig.EnableLoggingMessageDeletes)}\n";
+            }
             message += $"Fix Tweet Reactions: {GetEnabledText(guildConfig.EnableFixTweetReactions)}\n";
             message += $"Fix Instagram Reactions: {GetEnabledText(guildConfig.EnableFixInstagramReactions)}\n";
             message += $"Fix Bluesky Reactions: {GetEnabledText(guildConfig.EnableFixBlueskyReactions)}\n";
+            message += $"Fix TikTok Reactions: {GetEnabledText(guildConfig.EnableFixTikTokReactions)}\n";
+            message += $"Fix Reddit Reactions: {GetEnabledText(guildConfig.EnableFixRedditReactions)}\n";
             message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (+ any users with the Administrator permission)\n";
 
             await RespondAsync(embed: discordFormatter.BuildRegularEmbedWithUserFooter($"Settings for {Context.Guild.Name}",

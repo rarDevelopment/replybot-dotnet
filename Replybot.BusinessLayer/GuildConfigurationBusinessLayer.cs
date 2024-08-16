@@ -154,6 +154,72 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return false;
     }
 
+    public async Task<bool> SetEnableLoggingUserJoins(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableLoggingUserJoins(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableLoggingUserDepartures(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableLoggingUserDepartures(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableLoggingMessageEdits(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableLoggingMessageEdits(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableLoggingMessageDeletes(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableLoggingMessageDeletes(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableLoggingUserBans(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableLoggingUserBans(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetEnableLoggingUserUnBans(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableLoggingUserUnBans(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
     public async Task<bool> SetEnableWelcomeMessage(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);

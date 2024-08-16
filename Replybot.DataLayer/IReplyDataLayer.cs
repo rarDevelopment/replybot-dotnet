@@ -22,4 +22,10 @@ public interface IReplyDataLayer
     Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> RemoveIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> SetEnableFixRedditReactions(string guildId, bool isEnabled);
+    Task<bool> SetEnableLoggingUserJoins(string guildId, bool isEnabled);
+    Task<bool> SetEnableLoggingUserDepartures(string guildId, bool isEnabled);
+    Task<bool> SetEnableLoggingMessageEdits(string guildId, bool isEnabled);
+    Task<bool> SetEnableLoggingMessageDeletes(string guildId, bool isEnabled);
+    Task<bool> SetEnableLoggingUserBans(string guildId, bool isEnabled);
+    Task<bool> SetEnableLoggingUserUnBans(string guildId, bool isEnabled);
 }

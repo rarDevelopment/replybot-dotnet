@@ -1,9 +1,10 @@
 ﻿using MediatR;
+using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class MessageDeletedNotificationHandler(LogChannelPoster logChannelPoster,
-        ExistingMessageEmbedBuilder logMessageBuilder, DiscordSocketClient client)
+        ExistingMessageEmbedBuilder logMessageBuilder, IGuildConfigurationBusinessLayer configurationBusinessLayer, DiscordSocketClient client)
     : INotificationHandler<MessageDeletedNotification>
 {
     public Task Handle(MessageDeletedNotification notification, CancellationToken cancellationToken)
@@ -12,6 +13,12 @@ public class MessageDeletedNotificationHandler(LogChannelPoster logChannelPoster
         {
             var channel = await notification.Channel.GetOrDownloadAsync();
             if (channel is not SocketTextChannel textChannel)
+            {
+                return Task.CompletedTask;
+            }
+
+            var config = await configurationBusinessLayer.GetGuildConfiguration(textChannel.Guild);
+            if (config is not { EnableLoggingMessageDeletes: true })
             {
                 return Task.CompletedTask;
             }
