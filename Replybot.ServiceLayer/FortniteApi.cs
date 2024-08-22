@@ -22,4 +22,15 @@ public class FortniteApi(FortniteApiClient client)
             ? null
             : mapInfo.Data;
     }
+
+    public async Task<BrStatsV2V1?> GetFortniteStats(string username)
+    {
+        var stats = await client.V2.Stats.GetBrV2Async(properties =>
+        {
+            properties.Name = username;
+        });
+        return stats is not { IsSuccess: true }
+            ? null
+            : stats.Data;
+    }
 }
