@@ -134,6 +134,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, DefineWordCommand>();
     services.AddSingleton<ITextCommand, GetFortniteShopInformationCommand>();
     services.AddSingleton<ITextCommand, GetFortniteMapLocationCommand>();
+    services.AddSingleton<ITextCommand, GetFortniteStatsCommand>();
     services.AddSingleton<ITextCommand, GetMemberCountCommand>();
     services.AddSingleton<ITextCommand, GetChannelAgeCommand>();
     services.AddSingleton<ITextCommand, GetEmoteCommand>();
