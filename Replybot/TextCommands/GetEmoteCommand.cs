@@ -44,7 +44,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
             }
         }
 
-        var emotes = new List<string>();
+        var emoteMessages = new List<string>();
 
         if (emoteMatches.Count <= 0)
         {
@@ -59,6 +59,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
         }
 
         var emoteCount = 0;
+        var isAddingEmotes = _addEmoteTriggers.Any(t => message.Content.ToLower().Contains(t));
         foreach (Match emoteMatch in emoteMatches)
         {
             if (!emoteMatch.Success || !emoteMatch.Groups.ContainsKey(EmoteIdKey) || !emoteMatch.Groups.ContainsKey(EmoteNameKey))
@@ -73,51 +74,53 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
                 .Replace(EmoteIdUrlKey, emoteId)
                 .Replace(FileExtensionKey, isAnimated ? "gif" : "png");
 
-            var emoteMessageToSend = $"`{emoteName}`: <{emoteUrl}>";
+            var emoteMessageToSend = $"`{emoteName}` [Emote Image Link](<{emoteUrl}>)";
 
-            if (_addEmoteTriggers.Any(t => message.Content.ToLower().Contains(t)) && emoteCount < MaxEmoteAddCount)
+            if (isAddingEmotes)
             {
-                if (message is { Channel: IGuildChannel guildChannel, Author: IGuildUser guildUser })
+                if (emoteCount > MaxEmoteAddCount)
                 {
-                    if (await roleHelper.CanAdministrate(guildChannel.Guild, guildUser, [guildUser.GuildPermissions.ManageEmojisAndStickers]))
+                    emoteMessageToSend += $"\nThis emote was not added. You can only add up to {MaxEmoteAddCount} emotes at a time.\n";
+                }
+                else
+                {
+                    if (message is { Channel: IGuildChannel guildChannel, Author: IGuildUser guildUser })
                     {
-                        using var httpClient = new HttpClient();
-                        var imageData = await httpClient.GetByteArrayAsync(emoteUrl);
-                        using var ms = new MemoryStream(imageData);
-                        try
+                        if (await roleHelper.CanAdministrate(guildChannel.Guild, guildUser, [guildUser.GuildPermissions.ManageEmojisAndStickers]))
                         {
-                            var addedEmote = await guildChannel.Guild.CreateEmoteAsync(emoteName, new Image(ms));
-                            emoteMessageToSend += $"\nThis emote has been added to this server: {addedEmote}\n";
+                            using var httpClient = new HttpClient();
+                            var imageData = await httpClient.GetByteArrayAsync(emoteUrl);
+                            using var ms = new MemoryStream(imageData);
+                            try
+                            {
+                                var addedEmote = await guildChannel.Guild.CreateEmoteAsync(emoteName, new Image(ms));
+                                emoteMessageToSend += $"\nThis emote has been added to this server: {addedEmote}\n";
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.LogError($"Failed to save emoji: {ex.Message}");
+                                emoteMessageToSend += "\nThis emote failed to add. Make sure this bot has permission to Manage Expressions (like emotes and stickers).\n";
+                            }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            logger.LogError($"Failed to save emoji: {ex.Message}");
-                            emoteMessageToSend += "\nThis emote failed to add. Make sure this bot has permission to Manage Expressions (like emotes and stickers).\n";
+                            emoteMessageToSend += "\nThis emote failed to add. You do not have permission to manage emotes in this server.\n";
                         }
                     }
                     else
                     {
-                        emoteMessageToSend += "\nThis emote failed to add. You do not have permission to manage emotes in this server.\n";
+                        emoteMessageToSend += "\nThis emote failed to add. You can only add emotes in a server and only if you have permission.\n";
                     }
-                }
-                else
-                {
-                    emoteMessageToSend += "\nThis emote failed to add. You can only add emotes in a server and only if you have permission.\n";
                 }
             }
 
-            emotes.Add(emoteMessageToSend);
+            emoteMessages.Add(emoteMessageToSend);
             emoteCount++;
-        }
-
-        if (emoteMatches.Count > MaxEmoteAddCount)
-        {
-            emotes.Add($"Only the first {MaxEmoteAddCount} emotes were added. You can only add up to {MaxEmoteAddCount} emotes at a time.");
         }
 
         return new CommandResponse
         {
-            Description = string.Join("\n", emotes),
+            Description = string.Join("\n", emoteMessages),
             Reactions = null,
             StopProcessing = true,
             NotifyWhenReplying = true
