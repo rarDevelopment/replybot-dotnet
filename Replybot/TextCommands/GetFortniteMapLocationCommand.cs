@@ -59,7 +59,7 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
 
         using var g = Graphics.FromImage(bitmap);
 
-        g.TranslateTransform(dx: 1024, dy: 1129);
+        g.TranslateTransform(dx: 1028, dy: 1129);
 
         const float scaleFactor = 0.007f;
         g.ScaleTransform(scaleFactor, scaleFactor);
@@ -68,15 +68,25 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
 
         //foreach (var color in colors)
         //{
-        var namedLocations = mapLocations.POIs.Where(l => !l.Id.ToLower().Contains("unnamed")).ToList();
+        var namedLocations = mapLocations.POIs.Where(l => l.Name != null && l.Name.ToLower().Contains("steppes")).ToList();//.Where(l => !l.Id.ToLower().Contains("unnamed")).ToList();
         var randomIndex = random.Next(namedLocations.Count);
         var randomLocation = namedLocations[randomIndex];
 
         //var x = (randomLocation.Location.Y + worldRadius) / (worldRadius * 2) * bitmap.Width;
         //var y = (1 - (randomLocation.Location.X + worldRadius) / (worldRadius * 2)) * bitmap.Height;
-        float radius = DistanceFromOrigin(-6890f, -75716);
-        float x = randomLocation.Location.X - radius;
-        float y = randomLocation.Location.Y - radius;
+        //float radius = DistanceFromOrigin(-6890f, -75716);
+
+        // var point = new PointF(x: -105459.998877f, y: -47044.000421f);
+        //var point = new PointF(0, 0);
+        var point = new PointF(randomLocation.Location.X, randomLocation.Location.Y);
+
+        //float x = randomLocation.Location.X / scaleFactor;
+        //float y = randomLocation.Location.Y / scaleFactor;
+
+        var x = point.X;
+        var y = point.Y;
+
+        //var distanceFromOrigin = DistanceFromOrigin(x, y);
 
         using var pen = new Pen(Color.Red, 7);
 
@@ -84,8 +94,8 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         g.DrawLine(pen, (int)(x - xSize / 2f), (int)(y - xSize / 2f), (int)(x + xSize / 2f), (int)(y + xSize / 2f));
         g.DrawLine(pen, (int)(x - xSize / 2f), (int)(y + xSize / 2f), (int)(x + xSize / 2f), (int)(y - xSize / 2f));
 
-        using SolidBrush b1 = new SolidBrush(Color.FromArgb(alpha: 64, baseColor: Color.Gold));
-        FillCircleAroundPXPoint(g, b1, x, y);
+        //using SolidBrush b1 = new SolidBrush(Color.FromArgb(alpha: 64, baseColor: Color.Gold));
+        //FillCircleAroundPXPoint(g, b1, x, y);
 
         //stringOutput +=
         //    $"{randomLocation.Name} || {color.Name} || original: ({randomLocation.Location.X} , {randomLocation.Location.Y}) || scaled: ({x} , {y})\n";
@@ -106,26 +116,9 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         return radius;
     }
 
-    static void FillCircleAroundPXPoint(Graphics g, SolidBrush b, Single x, Single y)
-    {
-        Single radius = DistanceFromOrigin(x, y);
+    //private static void DrawX(Graphics g, PointF centre, Single sideLength, Color color)
+    //{
 
-        Single topLeftX = x - radius;
-        Single topLeftY = y - radius;
-
-        g.FillEllipse(b, x: topLeftX, y: topLeftY, width: radius * 2, height: radius * 2);
-
-        using (Pen p = new Pen(Color.FromArgb(alpha: 255, baseColor: b.Color)))
-        {
-            g.DrawEllipse(p, x: topLeftX, y: topLeftY, width: radius * 2, height: radius * 2);
-        }
-
-        const Int32 dotSize = 5000;
-
-        using (SolidBrush sb = new SolidBrush(Color.FromArgb(alpha: 255, baseColor: b.Color)))
-        {
-            g.FillEllipse(sb, x: x - (dotSize / 2), y: y - (dotSize / 2), width: (dotSize / 2), height: (dotSize / 2));
-        }
-    }
+    //}
 
 }
