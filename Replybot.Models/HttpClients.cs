@@ -7,5 +7,6 @@ public enum HttpClients
     Bluesky,
     SiteIgnoreList,
     CountryConfigList,
-    DefaultReplies
+    DefaultReplies,
+    WebsiteApi
 }
