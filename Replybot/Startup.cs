@@ -87,6 +87,7 @@ builder.ConfigureServices((host, services) =>
     var defaultRepliesSettings = new DefaultRepliesSettings(host.Configuration["DefaultReplies:Url"]!);
     var internetGameDatabaseSettings = new InternetGameDatabaseSettings(host.Configuration["InternetGameDatabase:ClientId"]!,
         host.Configuration["InternetGameDatabase:ClientSecret"]!);
+    var websiteApiSettings = new WebsiteApiSettings(host.Configuration["WebsiteApi:BaseUrl"]!);
     var applicationEmojiSettings = new ApplicationEmojiSettings(
         host.Configuration["ApplicationEmojis:FixTweet"]!,
         host.Configuration["ApplicationEmojis:FixInstagram"]!,
@@ -111,6 +112,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(countryConfigListSettings);
     services.AddSingleton(defaultRepliesSettings);
     services.AddSingleton(applicationEmojiSettings);
+    services.AddSingleton(websiteApiSettings);
 
     services.AddScoped<IDiscordFormatter, DiscordFormatter>();
     services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
@@ -212,6 +214,11 @@ builder.ConfigureServices((host, services) =>
     services.AddHttpClient(HttpClients.DefaultReplies.ToString(), config =>
     {
         config.BaseAddress = new Uri(defaultRepliesSettings.Url);
+    });
+
+    services.AddHttpClient(HttpClients.WebsiteApi.ToString(), config =>
+    {
+        config.BaseAddress = new Uri(websiteApiSettings.BaseUrl);
     });
 });
 
