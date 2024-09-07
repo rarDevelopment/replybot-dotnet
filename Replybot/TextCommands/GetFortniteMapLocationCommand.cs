@@ -78,7 +78,8 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
 
         // var point = new PointF(x: -105459.998877f, y: -47044.000421f);
         //var point = new PointF(0, 0);
-        var point = new PointF(randomLocation.Location.X, randomLocation.Location.Y);
+        //var point = new PointF(randomLocation.Location.X, randomLocation.Location.Y);
+        var point = new PointF(-78214, -70796);
 
         //float x = randomLocation.Location.X / scaleFactor;
         //float y = randomLocation.Location.Y / scaleFactor;
