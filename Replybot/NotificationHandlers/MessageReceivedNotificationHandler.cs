@@ -134,13 +134,11 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
         return Task.CompletedTask;
     }
 
-    private static async Task<CommandResponse> HandleCommandForMessage(ITextCommand command, SocketMessage message,
+    private async Task<CommandResponse> HandleCommandForMessage(ITextCommand command, SocketMessage message,
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
         try
         {
-
-
             var commandResponse = await command.Handle(message);
             if (commandResponse.Embed == null && string.IsNullOrEmpty(commandResponse.Description))
             {
@@ -181,7 +179,8 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            logger.Log(LogLevel.Error, "Error in MessageReceived: " + ex.Message);
+            await message.Channel.SendMessageAsync("Something went wrong.");
             return new CommandResponse
             {
                 Description = "Something went wrong."
