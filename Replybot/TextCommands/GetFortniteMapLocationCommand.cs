@@ -1,10 +1,8 @@
-﻿using System.Drawing;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
-using Color = System.Drawing.Color;
-using ImageFormat = System.Drawing.Imaging.ImageFormat;
+using SkiaSharp;
 
 namespace Replybot.TextCommands;
 
@@ -38,7 +36,10 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         var image = fortniteMapLocationAndImage.Value.LocationImage;
 
         var memoryStream = new MemoryStream();
-        image.Save(memoryStream, ImageFormat.Jpeg);
+        using (var skiaStream = new SKManagedWStream(memoryStream))
+        {
+            image.Encode(skiaStream, SKEncodedImageFormat.Jpeg, 100);
+        }
 
         var locationName = fortniteMapLocationAndImage.Value.LocationName;
         var fileAttachment = new FileAttachment(memoryStream, $"{locationName}.jpg", locationName);
@@ -53,7 +54,7 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         };
     }
 
-    private async Task<(string LocationName, Bitmap LocationImage)?> GetFortniteMapLocation()
+    private async Task<(string LocationName, SKBitmap LocationImage)?> GetFortniteMapLocation()
     {
         var mapLocations = await fortniteApi.GetFortniteMapLocations();
         if (mapLocations == null)
@@ -62,35 +63,44 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         }
 
         using var httpClient = new HttpClient();
-
-        await using var stream = await httpClient.GetStreamAsync(mapLocations.Images.POIs.AbsoluteUri);
-        var bitmap = new Bitmap(stream);
+        await using var stream = await httpClient.GetStreamAsync(mapLocations.Images.Blank.AbsoluteUri);
+        var bitmap = SKBitmap.Decode(stream);
 
         var random = new Random();
 
-        using var g = Graphics.FromImage(bitmap);
-
-        g.TranslateTransform(dx: 1028, dy: 1129);
+        using var canvas = new SKCanvas(bitmap);
+        canvas.Translate(1028, 1129);
 
         const float scaleFactor = 0.007f;
-        g.ScaleTransform(scaleFactor, scaleFactor);
+        canvas.Scale(scaleFactor, scaleFactor);
 
-        g.RotateTransform(-90);
+        canvas.RotateDegrees(-90);
 
         var randomIndex = random.Next(mapLocations.POIs.Count);
         var randomLocation = mapLocations.POIs[randomIndex];
 
-        var point = new PointF(randomLocation.Location.X, randomLocation.Location.Y);
+        var point = new SKPoint(randomLocation.Location.X, randomLocation.Location.Y);
 
         var x = point.X;
         var y = point.Y;
 
-        using var pen = new Pen(Color.Black, 7000);
+        using var paint = new SKPaint
+        {
+            Color = SKColors.Aqua,
+            StrokeWidth = 7000,
+            IsStroke = true
+        };
 
-        const double lineLength = 25000f;
+        const float lineLength = 25000f; // Adjust this value to control the length of the lines
+        canvas.DrawLine(x - lineLength / 2f, y - lineLength / 2f, x + lineLength / 2f, y + lineLength / 2f, paint);
+        canvas.DrawLine(x - lineLength / 2f, y + lineLength / 2f, x + lineLength / 2f, y - lineLength / 2f, paint);
 
-        g.DrawLine(pen, (int)(x - lineLength / 2f), (int)(y - lineLength / 2f), (int)(x + lineLength / 2f), (int)(y + lineLength / 2f));
-        g.DrawLine(pen, (int)(x - lineLength / 2f), (int)(y + lineLength / 2f), (int)(x + lineLength / 2f), (int)(y - lineLength / 2f));
+        //write to desktop for testing
+        //using var image = SKImage.FromBitmap(bitmap);
+        //using var data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+        //var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "output.jpg");
+        //await using var fileStream = File.OpenWrite(filePath);
+        //data.SaveTo(fileStream);
 
         return (randomLocation.Name, bitmap);
     }
