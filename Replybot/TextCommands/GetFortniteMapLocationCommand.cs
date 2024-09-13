@@ -1,10 +1,9 @@
-﻿using System.Drawing;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using Fortnite_API.Objects.V1;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
-using Color = System.Drawing.Color;
-using ImageFormat = System.Drawing.Imaging.ImageFormat;
+using SkiaSharp;
 
 namespace Replybot.TextCommands;
 
@@ -30,22 +29,28 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         {
             return new CommandResponse
             {
-                Description = "Failed to grab a location.",
+                Description = "Failed to pick a location. Just go to Tilted Towers I guess.",
                 StopProcessing = true,
                 NotifyWhenReplying = false
             };
         }
+
+        var location = fortniteMapLocationAndImage.Value.Location;
         var image = fortniteMapLocationAndImage.Value.LocationImage;
 
         var memoryStream = new MemoryStream();
-        image.Save(memoryStream, ImageFormat.Jpeg);
+        using (var skiaStream = new SKManagedWStream(memoryStream))
+        {
+            image.Encode(skiaStream, SKEncodedImageFormat.Jpeg, 100);
+        }
 
-        var locationName = fortniteMapLocationAndImage.Value.LocationName;
-        var fileAttachment = new FileAttachment(memoryStream, $"{locationName}.jpg", locationName);
+        var locationName = location.Name;
+        var imageDescription = $"{locationName} at {location.Location.X}, {location.Location.Y}, {location.Location.Z}";
+        var fileAttachment = new FileAttachment(memoryStream, $"{locationName}.jpg", imageDescription);
 
         return new CommandResponse
         {
-            Description = locationName,
+            Description = $"## {locationName}",
             FileAttachments = [fileAttachment],
             Reactions = null,
             StopProcessing = true,
@@ -53,7 +58,7 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         };
     }
 
-    private async Task<(string LocationName, Bitmap LocationImage)?> GetFortniteMapLocation()
+    private async Task<(MapV1POI Location, SKBitmap LocationImage)?> GetFortniteMapLocation()
     {
         var mapLocations = await fortniteApi.GetFortniteMapLocations();
         if (mapLocations == null)
@@ -61,37 +66,47 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
             return null;
         }
 
-        using var httpClient = new HttpClient();
-
-        await using var stream = await httpClient.GetStreamAsync(mapLocations.Images.POIs.AbsoluteUri);
-        var bitmap = new Bitmap(stream);
-
         var random = new Random();
-
-        using var g = Graphics.FromImage(bitmap);
-
-        g.TranslateTransform(dx: 1028, dy: 1129);
-
-        const float scaleFactor = 0.007f;
-        g.ScaleTransform(scaleFactor, scaleFactor);
-
-        g.RotateTransform(-90);
-
         var randomIndex = random.Next(mapLocations.POIs.Count);
         var randomLocation = mapLocations.POIs[randomIndex];
 
-        var point = new PointF(randomLocation.Location.X, randomLocation.Location.Y);
+        var bitmap = await GetMapImage(mapLocations);
 
+        MarkLocationWithX(bitmap, randomLocation);
+
+        return (randomLocation, bitmap);
+    }
+
+    private static void MarkLocationWithX(SKBitmap bitmap, MapV1POI location)
+    {
+        using var canvas = new SKCanvas(bitmap);
+        canvas.Translate(1028, 1129);
+
+        const float scaleFactor = 0.007f;
+        canvas.Scale(scaleFactor, scaleFactor);
+
+        canvas.RotateDegrees(-90);
+        var point = new SKPoint(location.Location.X, location.Location.Y);
         var x = point.X;
         var y = point.Y;
 
-        using var pen = new Pen(Color.Black, 7000);
+        using var paint = new SKPaint();
+        paint.Color = SKColors.Black;
+        paint.StrokeWidth = 7000;
+        paint.IsStroke = true;
 
-        const double lineLength = 25000f;
+        const float lineLength = 25000f;
+        canvas.DrawLine(x - lineLength / 2f, y - lineLength / 2f, x + lineLength / 2f, y + lineLength / 2f, paint);
+        canvas.DrawLine(x - lineLength / 2f, y + lineLength / 2f, x + lineLength / 2f, y - lineLength / 2f, paint);
+    }
 
-        g.DrawLine(pen, (int)(x - lineLength / 2f), (int)(y - lineLength / 2f), (int)(x + lineLength / 2f), (int)(y + lineLength / 2f));
-        g.DrawLine(pen, (int)(x - lineLength / 2f), (int)(y + lineLength / 2f), (int)(x + lineLength / 2f), (int)(y - lineLength / 2f));
-
-        return (randomLocation.Name, bitmap);
+    private static async Task<SKBitmap> GetMapImage(MapV1 mapLocations)
+    {
+        using var httpClient = new HttpClient();
+        await using var stream = await httpClient.GetStreamAsync(mapLocations.Images.POIs.AbsoluteUri);
+        await using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        memoryStream.Position = 0;
+        return SKBitmap.Decode(memoryStream);
     }
 }
