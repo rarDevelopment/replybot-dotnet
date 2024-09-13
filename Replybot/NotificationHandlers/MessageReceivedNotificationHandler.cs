@@ -10,7 +10,6 @@ using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
 using static System.Text.RegularExpressions.Regex;
-using Discord;
 
 namespace Replybot.NotificationHandlers;
 public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
