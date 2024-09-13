@@ -11,6 +11,13 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
 {
     public async Task<HowLongToBeatResponse?> GetHowLongToBeatInformation(string searchTerm)
     {
+        var apiSearchString = await GetApiSearchString();
+
+        if (apiSearchString == null)
+        {
+            return null;
+        }
+
         var client = httpClientFactory.CreateClient(HttpClients.HowLongToBeat.ToString());
         var request = new HowLongToBeatRequest
         {
@@ -52,18 +59,40 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "api/search/5683ebd079f1c360")
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/search/{apiSearchString}")
         {
             Content = content
         };
 
         var response = await client.SendAsync(httpRequest);
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            var hltbResponse = await response.Content.ReadFromJsonAsync<HowLongToBeatResponse>();
-            return hltbResponse;
+            return null;
         }
 
-        return null;
+        var hltbResponse = await response.Content.ReadFromJsonAsync<HowLongToBeatResponse>();
+        return hltbResponse;
+
+    }
+
+    private async Task<string?> GetApiSearchString()
+    {
+        try
+        {
+            var client = httpClientFactory.CreateClient(HttpClients.WebsiteApi.ToString());
+            var response = await client.GetAsync("now/json/hltb");
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var json = await response.Content.ReadFromJsonAsync<HowLongToBeatApiSearchInfo>();
+            return json?.Key;
+        }
+        catch (Exception ex)
+        {
+
+            return null;
+        }
     }
 }
