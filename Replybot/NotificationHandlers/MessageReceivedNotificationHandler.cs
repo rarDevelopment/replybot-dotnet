@@ -3,6 +3,7 @@ using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
+using Discord.Rest;
 using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer.Extensions;
 using Replybot.ReactionCommands;
@@ -148,10 +149,24 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
             MentionRepliedUser = commandResponse.NotifyWhenReplying
         };
 
-        var messageSent = await messageChannel.SendMessageAsync(text: commandResponse.Description,
-            embed: commandResponse.Embed,
-            messageReference: messageReference,
-            allowedMentions: allowedMentions);
+        RestUserMessage? messageSent;
+        if (commandResponse.FileAttachments.Any())
+        {
+            messageSent = await message.Channel.SendFilesAsync(
+                commandResponse.FileAttachments,
+                commandResponse.Description,
+                embed: commandResponse.Embed,
+                messageReference: messageReference,
+                allowedMentions: allowedMentions);
+        }
+        else
+        {
+            messageSent = await messageChannel.SendMessageAsync(
+                text: commandResponse.Description,
+                embed: commandResponse.Embed,
+                messageReference: messageReference,
+                allowedMentions: allowedMentions);
+        }
         if (messageSent != null && commandResponse.Reactions != null)
         {
             await messageSent.AddReactionsAsync(commandResponse.Reactions);
