@@ -183,7 +183,8 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
             await message.Channel.SendMessageAsync("Something went wrong.");
             return new CommandResponse
             {
-                Description = "Something went wrong."
+                Description = "Something went wrong.",
+                StopProcessing = true,
             };
         }
     }
