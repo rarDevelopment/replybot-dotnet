@@ -137,42 +137,56 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
     private static async Task<CommandResponse> HandleCommandForMessage(ITextCommand command, SocketMessage message,
         ISocketMessageChannel messageChannel, MessageReference? messageReference)
     {
-        var commandResponse = await command.Handle(message);
-        if (commandResponse.Embed == null && string.IsNullOrEmpty(commandResponse.Description))
+        try
         {
+
+
+            var commandResponse = await command.Handle(message);
+            if (commandResponse.Embed == null && string.IsNullOrEmpty(commandResponse.Description))
+            {
+                return commandResponse;
+            }
+
+            var allowedMentions = new AllowedMentions
+            {
+                AllowedTypes = AllowedMentionTypes.Users | AllowedMentionTypes.Roles | AllowedMentionTypes.Everyone,
+                MentionRepliedUser = commandResponse.NotifyWhenReplying
+            };
+
+            RestUserMessage? messageSent;
+            if (commandResponse.FileAttachments.Any())
+            {
+                messageSent = await message.Channel.SendFilesAsync(
+                    commandResponse.FileAttachments,
+                    commandResponse.Description,
+                    embed: commandResponse.Embed,
+                    messageReference: messageReference,
+                    allowedMentions: allowedMentions);
+            }
+            else
+            {
+                messageSent = await messageChannel.SendMessageAsync(
+                    text: commandResponse.Description,
+                    embed: commandResponse.Embed,
+                    messageReference: messageReference,
+                    allowedMentions: allowedMentions);
+            }
+
+            if (messageSent != null && commandResponse.Reactions != null)
+            {
+                await messageSent.AddReactionsAsync(commandResponse.Reactions);
+            }
+
             return commandResponse;
         }
-
-        var allowedMentions = new AllowedMentions
+        catch (Exception ex)
         {
-            AllowedTypes = AllowedMentionTypes.Users | AllowedMentionTypes.Roles | AllowedMentionTypes.Everyone,
-            MentionRepliedUser = commandResponse.NotifyWhenReplying
-        };
-
-        RestUserMessage? messageSent;
-        if (commandResponse.FileAttachments.Any())
-        {
-            messageSent = await message.Channel.SendFilesAsync(
-                commandResponse.FileAttachments,
-                commandResponse.Description,
-                embed: commandResponse.Embed,
-                messageReference: messageReference,
-                allowedMentions: allowedMentions);
+            Console.WriteLine(ex.Message);
+            return new CommandResponse
+            {
+                Description = "Something went wrong."
+            };
         }
-        else
-        {
-            messageSent = await messageChannel.SendMessageAsync(
-                text: commandResponse.Description,
-                embed: commandResponse.Embed,
-                messageReference: messageReference,
-                allowedMentions: allowedMentions);
-        }
-        if (messageSent != null && commandResponse.Reactions != null)
-        {
-            await messageSent.AddReactionsAsync(commandResponse.Reactions);
-        }
-
-        return commandResponse;
     }
 
     private async Task HandleLinks(SocketGuildChannel channel, SocketMessage messageWithLinks)
