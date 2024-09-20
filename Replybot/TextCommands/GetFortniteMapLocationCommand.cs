@@ -91,13 +91,20 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         var y = point.Y;
 
         using var paint = new SKPaint();
-        paint.Color = SKColors.Black;
-        paint.StrokeWidth = 7000;
         paint.IsStroke = true;
 
-        const float lineLength = 25000f;
-        canvas.DrawLine(x - lineLength / 2f, y - lineLength / 2f, x + lineLength / 2f, y + lineLength / 2f, paint);
-        canvas.DrawLine(x - lineLength / 2f, y + lineLength / 2f, x + lineLength / 2f, y - lineLength / 2f, paint);
+        const float xLineLength = 25000f;
+        const float whiteXLineLength = xLineLength * 1.1f;
+
+        paint.Color = SKColors.White;
+        paint.StrokeWidth = 9000;
+        canvas.DrawLine(x - whiteXLineLength / 2f, y - whiteXLineLength / 2f, x + whiteXLineLength / 2f, y + whiteXLineLength / 2f, paint);
+        canvas.DrawLine(x - whiteXLineLength / 2f, y + whiteXLineLength / 2f, x + whiteXLineLength / 2f, y - whiteXLineLength / 2f, paint);
+
+        paint.Color = SKColors.Black;
+        paint.StrokeWidth = 7000; // Original stroke width for the black X
+        canvas.DrawLine(x - xLineLength / 2f, y - xLineLength / 2f, x + xLineLength / 2f, y + xLineLength / 2f, paint);
+        canvas.DrawLine(x - xLineLength / 2f, y + xLineLength / 2f, x + xLineLength / 2f, y - xLineLength / 2f, paint);
     }
 
     private static async Task<SKBitmap> GetMapImage(MapV1 mapLocations)
