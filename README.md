@@ -47,7 +47,7 @@ When a user joins the server, welcome messages will post in the server's system 
 
 ## Departure Messages
 
-When a user leaves the server, departure messages can be posted in the server's system channel (where Discord's default welcome messages are posted). If you're an administrator in the server, you can enable or disable welcome messages by using the `/set-welcome-message` command. This setting defaults to off.
+When a user leaves the server, departure messages can be posted in the server's system channel (where Discord's default welcome messages are posted). If you're an administrator in the server, you can enable or disable departure messages by using the `/set-departure-message` command. This setting defaults to off.
 
 ## View Settings
 
