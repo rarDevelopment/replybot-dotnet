@@ -231,6 +231,14 @@ public class ReplyDataLayer : IReplyDataLayer
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }
 
+    public async Task<bool> SetEnableDepartureMessage(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableDepartureMessage, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
     public async Task<bool> SetEnableFixBlueskyReactions(string guildId, bool isEnabled)
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);

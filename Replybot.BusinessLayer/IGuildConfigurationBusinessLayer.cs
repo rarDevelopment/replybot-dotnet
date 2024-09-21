@@ -20,6 +20,7 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetEnableFixTikTok(IGuild guild, bool isEnabled);
     Task<bool> SetEnableFixReddit(IGuild guild, bool isEnabled);
     Task<bool> SetEnableWelcomeMessage(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableDepartureMessage(IGuild guild, bool isEnabled);
     Task<bool> SetIgnoreUsersForAvatarAnnouncements(IGuild guild, List<string> userIds, bool setAllowed);
     Task<bool> SetEnableLoggingUserJoins(IGuild guild, bool isEnabled);
     Task<bool> SetEnableLoggingUserDepartures(IGuild guild, bool isEnabled);
