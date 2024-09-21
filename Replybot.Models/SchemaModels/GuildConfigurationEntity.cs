@@ -36,6 +36,8 @@ public class GuildConfigurationEntity
     public List<string> IgnoreAvatarChangesUserIds { get; set; } = [];
     [BsonElement("enableWelcomeMessage")]
     public bool EnableWelcomeMessage { get; set; }
+    [BsonElement("enableDepartureMessage")]
+    public bool EnableDepartureMessage { get; set; }
     [BsonElement("enableLoggingUserJoins")]
     public bool EnableLoggingUserJoins { get; set; }
     [BsonElement("enableLoggingUserDepartures")]
@@ -66,6 +68,7 @@ public class GuildConfigurationEntity
             EnableFixRedditReactions = EnableFixRedditReactions,
             IgnoreAvatarChangesUserIds = IgnoreAvatarChangesUserIds,
             EnableWelcomeMessage = EnableWelcomeMessage,
+            EnableDepartureMessage = EnableDepartureMessage,
             LogChannelId = LogChannelId,
             EnableLoggingUserJoins = EnableLoggingUserJoins,
             EnableLoggingUserDepartures = EnableLoggingUserDepartures,

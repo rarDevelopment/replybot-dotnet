@@ -18,6 +18,7 @@ public interface IReplyDataLayer
     Task<bool> SetEnableFixBlueskyReactions(string guildId, bool isEnabled);
     Task<bool> SetEnableFixTikTokReactions(string guildId, bool isEnabled);
     Task<bool> SetEnableWelcomeMessage(string guildId, bool isEnabled);
+    Task<bool> SetEnableDepartureMessage(string guildId, bool isEnabled);
     Task<bool> AddIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> AddAllowedUserIds(string guildId, string guildName, List<string> userIds);
     Task<bool> RemoveIgnoreAvatarChangesUserIds(string guildId, string guildName, List<string> userIds);
