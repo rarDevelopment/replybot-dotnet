@@ -32,6 +32,8 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
             var message = "";
             message += $"Default Replies: {GetEnabledText(guildConfig.EnableDefaultReplies)}\n";
             message += $"Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarAnnouncements)}\n";
+            message += $"Member Welcome Message: {GetEnabledText(guildConfig.EnableWelcomeMessage)}\n";
+            message += $"Member Departure Message: {GetEnabledText(guildConfig.EnableDepartureMessage)}\n";
             message += $"Mention User on Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarMentions)}\n";
             message += $"Log Channel: {(guildConfig.LogChannelId != null ? $"<#{guildConfig.LogChannelId}>" : "Not Set")}\n";
             if (guildConfig.LogChannelId != null)
