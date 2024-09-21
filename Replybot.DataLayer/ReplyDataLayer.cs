@@ -56,6 +56,16 @@ public class ReplyDataLayer : IReplyDataLayer
             EnableFixInstagramReactions = true,
             EnableFixTikTokReactions = true,
             EnableFixRedditReactions = true,
+            EnableFixBlueskyReactions = true,
+            EnableWelcomeMessage = true,
+            EnableDepartureMessage = false,
+            EnableLoggingUserJoins = false,
+            EnableLoggingUserDepartures = false,
+            EnableLoggingMessageEdits = false,
+            EnableLoggingMessageDeletes = false,
+            EnableLoggingUserBans = false,
+            EnableLoggingUserUnBans = false,
+            IgnoreAvatarChangesUserIds = [],
             AdminUserIds = []
         });
     }
