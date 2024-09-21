@@ -27,7 +27,7 @@ Toby will also answer to whatever his nickname is in your server.
 
 ## Avatar Change Announcements
 
-Avatar change announcements will post in the server's system channel (where welcome messages are posted) when a user in the server updates their avatar. This includes both user avatar changes and server profile avatar changes. If you're an administrator in the server, you can enable or disable avatar announcements by using the `/set-avatar-announcement` command.
+Avatar change announcements will post in the server's system channel (where Discord's default welcome messages are posted) when a user in the server updates their avatar. This includes both user avatar changes and server profile avatar changes. If you're an administrator in the server, you can enable or disable avatar announcements by using the `/set-avatar-announcement` command.
 
 ## Avatar Change Mentions
 
@@ -40,6 +40,14 @@ By default, Toby has replies to give him some personality. However, if you'd lik
 ## Server Activity Logging
 
 For moderators, you might want to keep a more detailed log of the activity on your server than the default audit log functionality in Discord is capable of doing. You can have Toby log server activity to a particular channel by using the `/set-logging` command and specifying the channel where you want the logs to appear. You can individually specify to log user server joins, user server departures, user bans, user unbans, message edits, and message deletes.
+
+## Welcome Messages
+
+When a user joins the server, welcome messages will post in the server's system channel (where Discord's default welcome messages are posted). If you're an administrator in the server, you can enable or disable welcome messages by using the `/set-welcome-message` command.
+
+## Departure Messages
+
+When a user leaves the server, departure messages can be posted in the server's system channel (where Discord's default welcome messages are posted). If you're an administrator in the server, you can enable or disable departure messages by using the `/set-departure-message` command. This setting defaults to off.
 
 ## View Settings
 
