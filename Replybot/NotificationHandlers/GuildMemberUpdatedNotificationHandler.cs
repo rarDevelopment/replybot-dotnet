@@ -41,10 +41,10 @@ public class GuildMemberUpdatedNotificationHandler(IGuildConfigurationBusinessLa
                 return Task.CompletedTask;
             }
 
-            var avatarUrl = newUser.GetGuildAvatarUrl(ImageFormat.Jpeg);
+            var avatarUrl = newUser.GetGuildAvatarUrl();
             if (string.IsNullOrEmpty(avatarUrl))
             {
-                avatarUrl = newUser.GetDisplayAvatarUrl(ImageFormat.Jpeg);
+                avatarUrl = newUser.GetDisplayAvatarUrl();
             }
 
             await systemChannelPoster.PostMessageToGuildSystemChannel(newUser.Guild,
