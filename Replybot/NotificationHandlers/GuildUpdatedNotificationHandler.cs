@@ -25,9 +25,10 @@ public class GuildUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gu
 
             if (newGuild.IconId != oldGuild.IconId)
             {
+                var guildIcon = CDN.GetGuildIconUrl(newGuild.Id, newGuild.IconId, format: newGuild.IconId.StartsWith("a_") ? ImageFormat.Gif : ImageFormat.Png);
                 await systemChannelPoster.PostMessageToGuildSystemChannel(
                     newGuild,
-                    $"## Server Icon Change\nHey look! A [new server icon]({newGuild.IconUrl})!",
+                    $"## Server Icon Change\nHey look! A [new server icon]({guildIcon})!",
                     $"Guild: {newGuild.Name} ({newGuild.Id})", typeof(GuildUpdatedNotificationHandler));
             }
         }, cancellationToken);
