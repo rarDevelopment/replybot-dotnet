@@ -36,6 +36,10 @@ builder.ConfigureAppConfiguration(options
     });
 
 var loggerConfig = new LoggerConfiguration()
+    .Filter.ByExcluding(logEvent =>
+        logEvent.Properties.TryGetValue("SourceContext", out var sourceContext) &&
+        sourceContext.ToString().Contains("System.Net.Http.HttpClient") &&
+        logEvent.Level == Serilog.Events.LogEventLevel.Information)
     .WriteTo.Console()
     .WriteTo.File($"logs/log-{DateTime.Now:dd.MM.yy_HH.mm}.log")
     .CreateLogger();
