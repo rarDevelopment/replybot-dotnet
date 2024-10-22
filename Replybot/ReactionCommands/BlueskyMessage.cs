@@ -6,5 +6,6 @@ public class BlueskyMessage
 {
     public string? Title { get; set; }
     public string? Description { get; set; }
-    public List<ImageWithMetadata>? Images { get; set; }
+    public List<MediaWithMetadata>? Images { get; set; }
+    public MediaWithMetadata? Video { get; set; }
 }
