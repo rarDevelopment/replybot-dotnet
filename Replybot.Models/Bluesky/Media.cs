@@ -8,4 +8,6 @@ public class Media
     public string Type { get; set; }
     [JsonPropertyName("images")]
     public List<Image> Images { get; set; }
+    [JsonPropertyName("video")]
+    public Video Video { get; set; }
 }

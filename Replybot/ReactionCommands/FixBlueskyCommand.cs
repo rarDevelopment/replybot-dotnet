@@ -68,7 +68,12 @@ public class FixBlueskyCommand(
         var fileDate = DateTime.Now.ToShortDateString();
         if (blueskyMessage.Images != null && blueskyMessage.Images.Any())
         {
-            fileAttachments = blueskyMessage.Images.Select(BuildFileAttachmentFromImage(fileDate)).ToList();
+            fileAttachments = blueskyMessage.Images.Select(BuildFileAttachmentFromMedia(fileDate, "png")).ToList();
+        }
+        else if (blueskyMessage.Video != null)
+        {
+            var func = BuildFileAttachmentFromMedia(fileDate, "mp4");
+            fileAttachments = [func(blueskyMessage.Video, 0)];
         }
 
         var description =
@@ -82,12 +87,12 @@ public class FixBlueskyCommand(
         };
     }
 
-    private static Func<ImageWithMetadata, int, FileAttachment> BuildFileAttachmentFromImage(string fileDate)
+    private static Func<MediaWithMetadata, int, FileAttachment> BuildFileAttachmentFromMedia(string fileDate, string fileType)
     {
         return (image, index) =>
         {
-            var fileName = $"bsky_{fileDate}_{index}.png";
-            var fileAttachment = new FileAttachment(image.Image, fileName, image.AltText);
+            var fileName = $"bsky_{fileDate}_{index}.{fileType}";
+            var fileAttachment = new FileAttachment(image.mediaStream, fileName, image.AltText);
             return fileAttachment;
         };
     }
@@ -122,6 +127,8 @@ public class FixBlueskyCommand(
             var images = blueskyRecord.Value.Embed?.Media?.Images ?? blueskyRecord.Value.Embed?.Images;
             var imageCount = images?.Count ?? 0;
 
+            var video = blueskyRecord.Value.Embed?.Media?.Video ?? blueskyRecord.Value.Embed?.Video;
+
             var quotedRecord = blueskyRecord.Value.Embed?.Record ?? null;
 
             var postText = blueskyRecord.Value.Text;
@@ -129,8 +136,10 @@ public class FixBlueskyCommand(
             if (quotedRecord != null)
             {
                 postText += "\n**Quoted Post:**\n";
-                var quotedUserDid = GetUserDidFromUri(quotedRecord.Uri);
-                var quotedRkey = GetRkeyFromUri(quotedRecord.Uri);
+                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper is still warning me here because quotedRecord.Uri shouldn't be able to be null, but it is!
+                var quotedUserDid = quotedRecord?.Uri != null ? GetUserDidFromUri(quotedRecord.Uri) : null;
+                var quotedRkey = quotedRecord?.Uri != null ? GetRkeyFromUri(quotedRecord.Uri) : null;
                 if (quotedUserDid != null && quotedRkey != null)
                 {
                     var quotedBlueskyRecord = await blueskyApi.GetRecord(quotedUserDid, quotedRkey);
@@ -155,16 +164,26 @@ public class FixBlueskyCommand(
                 continue;
             }
 
-            var imagesToSend = new List<ImageWithMetadata>();
+            var imagesToSend = new List<MediaWithMetadata>();
             if (images != null && imageCount > 0)
             {
                 foreach (var image in images)
                 {
-                    var blueskyImage = await blueskyApi.GetImage(did, image.ImageData.Ref.Link);
+                    var blueskyImage = await blueskyApi.GetImageOrVideo(did, image.ImageData.Ref.Link);
                     if (blueskyImage != null)
                     {
-                        imagesToSend.Add(new ImageWithMetadata(blueskyImage, image.Alt));
+                        imagesToSend.Add(new MediaWithMetadata(blueskyImage, image.Alt));
                     }
+                }
+            }
+
+            MediaWithMetadata? videoToSend = null;
+            if (video != null)
+            {
+                var blueskyVideo = await blueskyApi.GetImageOrVideo(did, video.Ref.Link);
+                if (blueskyVideo != null)
+                {
+                    videoToSend = new MediaWithMetadata(blueskyVideo, "test");
                 }
             }
 
@@ -172,7 +191,8 @@ public class FixBlueskyCommand(
             {
                 Title = $"@{repo}",
                 Description = postText,
-                Images = imagesToSend
+                Images = imagesToSend,
+                Video = videoToSend
             });
         }
         return blueskyEmbeds;

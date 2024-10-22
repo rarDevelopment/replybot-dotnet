@@ -20,7 +20,7 @@ public class BlueskyApi(IHttpClientFactory httpClientFactory)
         return blueskyRecordResponse;
     }
 
-    public async Task<Stream?> GetImage(string did, string cid)
+    public async Task<Stream?> GetImageOrVideo(string did, string cid)
     {
         var client = httpClientFactory.CreateClient(HttpClients.Bluesky.ToString());
         var response =
