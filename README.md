@@ -107,6 +107,10 @@ If you have a song or album link on Apple Music, Spotify, YouTube Music, etc. bu
 
 If you have a custom emote you like, you can use `Toby emote [emote(s) here]` and Toby will give you a link to that emote as an image, which you can then save. If someone's used the emote(s) and you just want to reference their message, you can just reply to them and say `Toby emote`. If you have permission to manage emotes in the server, you can also say `Toby add emote [emote(s) here]` (or reply to the message with the emote(s) as mentioned previously) and it will also be added to the server.
 
+## Stickers (Add to your Server or Get a Link to the Image)
+
+If you have a sticker you like, you can reply to a message with a sticker and say `Toby sticker` and Toby will give you a link to that sticker as an image, which you can then save. If you have permission to manage stickers in the server, you can also reply and say `Toby add sticker` and it will also be added to the server.
+
 ## Fortnite Shop Information (using [Fortnite API](https://fortnite-api.com/))
 
 If you're a Fortnite player, `Toby Fortnite shop` will show you a glimpse of what's on the shop currently.
