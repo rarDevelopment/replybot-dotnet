@@ -98,7 +98,7 @@ public class GetEmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyB
                             }
                             catch (Exception ex)
                             {
-                                logger.LogError($"Failed to save emoji: {ex.Message}");
+                                logger.LogError($"Failed to save emote: {ex.Message}");
                                 emoteMessageToSend += "\nThis emote failed to add. Make sure this bot has permission to Manage Expressions (like emotes and stickers).\n";
                             }
                         }

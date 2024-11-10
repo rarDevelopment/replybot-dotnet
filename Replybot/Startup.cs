@@ -144,6 +144,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<ITextCommand, GetMemberCountCommand>();
     services.AddSingleton<ITextCommand, GetChannelAgeCommand>();
     services.AddSingleton<ITextCommand, GetEmoteCommand>();
+    services.AddSingleton<ITextCommand, GetStickerCommand>();
     services.AddSingleton<ITextCommand, CanIStreamCommand>();
     services.AddSingleton<ITextCommand, GetGuildBannerCommand>();
     services.AddSingleton<ITextCommand, GetAvatarCommand>();
