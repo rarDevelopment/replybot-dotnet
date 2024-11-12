@@ -72,7 +72,7 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
 
         var bitmap = await GetMapImage(mapLocations);
 
-        MarkLocationWithX(bitmap, randomLocation);
+        //MarkLocationWithX(bitmap, randomLocation);
 
         return (randomLocation, bitmap);
     }
