@@ -48,6 +48,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
                 },
                 Users = new SearchOptionsUsers
                 {
+                    Id = apiSearchString,
                     SortCategory = "postcount"
                 },
                 Filter = "",
@@ -59,7 +60,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/search/{apiSearchString}")
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/search/")
         {
             Content = content
         };
