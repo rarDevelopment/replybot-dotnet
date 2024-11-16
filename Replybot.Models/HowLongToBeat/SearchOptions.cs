@@ -14,5 +14,6 @@ public class SearchOptions
     public int Sort { get; set; }
     [JsonPropertyName("randomizer")]
     public int Randomizer { get; set; }
-
+    [JsonPropertyName("lists")]
+    public SearchOptionsLists Lists { get; set; }
 }
