@@ -7,8 +7,8 @@ public class FixRedditCommand(BotSettings botSettings, ApplicationEmojiSettings 
     : FixUrlCommandBase(FixLinkConfig, botSettings, applicationEmojiSettings.FixReddit, client), IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a Reddit link there.";
-    private const string RedditUrlRegexPattern = @"https?:\/\/(www.)?(reddit.com)\/r\/[\\a-z0-9-_\/\/]+";
-    private const string VxRedditUrlRegexPattern = @"https?:\/\/(www.)?(vxreddit.com)\/r\/[\\a-z0-9-_\/\/]+";
+    private const string RedditUrlRegexPattern = @"https?:\/\/(www.)?(reddit.com)\/(r|gallery)\/[\\a-z0-9-_\/\/]+";
+    private const string VxRedditUrlRegexPattern = @"https?:\/\/(www.)?(vxreddit.com)\/(r|gallery)\/[\\a-z0-9-_\/\/]+";
     private const string OriginalRedditBaseUrl = "reddit.com";
     private const string FixedRedditBaseUrl = "vxreddit.com";
 
@@ -40,9 +40,15 @@ public class FixRedditCommand(BotSettings botSettings, ApplicationEmojiSettings 
     public Task<List<CommandResponse>> HandleMessage(IUserMessage message, IUser reactingUser)
     {
         string? fixedMessage;
+        var isGallery = message.Content.Contains("/gallery/", StringComparison.CurrentCultureIgnoreCase);
+
         if (DoesMessageContainOriginalUrl(message.Content))
         {
             fixedMessage = BuildFixedUrlsMessage(message, reactingUser, message.Author);
+            if (isGallery)
+            {
+                fixedMessage = $"Note: /gallery/ links are not supported by this feature. Please provide the link to the comments of the reddit post for previews to work.\n" + $"{fixedMessage}";
+            }
         }
         else if (DoesMessageContainFixedUrl(message.Content))
         {
