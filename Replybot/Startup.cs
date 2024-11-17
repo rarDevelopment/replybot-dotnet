@@ -98,6 +98,7 @@ builder.ConfigureServices((host, services) =>
         host.Configuration["ApplicationEmojis:FixTikTok"]!,
         host.Configuration["ApplicationEmojis:FixBluesky"]!,
         host.Configuration["ApplicationEmojis:FixReddit"]!,
+        host.Configuration["ApplicationEmojis:FixThreads"]!,
         host.Configuration["ApplicationEmojis:Slowpoke"]!
         );
 
@@ -163,6 +164,7 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<IReactionCommand, FixBlueskyCommand>();
     services.AddSingleton<IReactionCommand, FixTikTokCommand>();
     services.AddSingleton<IReactionCommand, FixRedditCommand>();
+    services.AddSingleton<IReactionCommand, FixThreadsCommand>();
 
     services.AddSingleton<HowLongToBeatApi>();
     services.AddSingleton<FreeDictionaryApi>();

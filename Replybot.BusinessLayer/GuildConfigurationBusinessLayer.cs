@@ -132,6 +132,17 @@ public class GuildConfigurationBusinessLayer(IReplyDataLayer replyDataLayer) : I
         return false;
     }
 
+    public async Task<bool> SetEnableFixThreads(IGuild guild, bool isEnabled)
+    {
+        GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);
+        if (config != null)
+        {
+            return await replyDataLayer.SetEnableFixThreadsReactions(guild.Id.ToString(), isEnabled);
+        }
+
+        return false;
+    }
+
     public async Task<bool> SetEnableDefaultReplies(IGuild guild, bool isEnabled)
     {
         GuildConfiguration? config = await replyDataLayer.GetConfigurationForGuild(guild.Id.ToString(), guild.Name);

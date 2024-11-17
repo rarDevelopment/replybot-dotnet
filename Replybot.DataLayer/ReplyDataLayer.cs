@@ -56,6 +56,7 @@ public class ReplyDataLayer : IReplyDataLayer
             EnableFixInstagramReactions = true,
             EnableFixTikTokReactions = true,
             EnableFixRedditReactions = true,
+            EnableFixThreadsReactions = true,
             EnableFixBlueskyReactions = true,
             EnableWelcomeMessage = true,
             EnableDepartureMessage = false,
@@ -229,6 +230,14 @@ public class ReplyDataLayer : IReplyDataLayer
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableFixRedditReactions, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableFixThreadsReactions(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableFixThreadsReactions, isEnabled);
         var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }

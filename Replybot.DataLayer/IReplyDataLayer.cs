@@ -29,4 +29,5 @@ public interface IReplyDataLayer
     Task<bool> SetEnableLoggingMessageDeletes(string guildId, bool isEnabled);
     Task<bool> SetEnableLoggingUserBans(string guildId, bool isEnabled);
     Task<bool> SetEnableLoggingUserUnBans(string guildId, bool isEnabled);
+    Task<bool> SetEnableFixThreadsReactions(string guildId, bool isEnabled);
 }

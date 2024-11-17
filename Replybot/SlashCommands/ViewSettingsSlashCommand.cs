@@ -50,6 +50,7 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
             message += $"Fix Bluesky Reactions: {GetEnabledText(guildConfig.EnableFixBlueskyReactions)}\n";
             message += $"Fix TikTok Reactions: {GetEnabledText(guildConfig.EnableFixTikTokReactions)}\n";
             message += $"Fix Reddit Reactions: {GetEnabledText(guildConfig.EnableFixRedditReactions)}\n";
+            message += $"Fix Threads Reactions: {GetEnabledText(guildConfig.EnableFixThreadsReactions)}\n";
             message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (+ any users with the Administrator permission)\n";
 
             await RespondAsync(embed: discordFormatter.BuildRegularEmbedWithUserFooter($"Settings for {Context.Guild.Name}",

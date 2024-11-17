@@ -28,4 +28,5 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetEnableLoggingMessageDeletes(IGuild guild, bool isEnabled);
     Task<bool> SetEnableLoggingUserBans(IGuild guild, bool isEnabled);
     Task<bool> SetEnableLoggingUserUnBans(IGuild guild, bool isEnabled);
+    Task<bool> SetEnableFixThreads(IGuild guild, bool isEnabled);
 }
