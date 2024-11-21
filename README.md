@@ -111,9 +111,13 @@ If you're looking to watch something, `Toby can I stream [movie or show here] in
 
 If you have a song or album link on Apple Music, Spotify, YouTube Music, etc. but you'd like to share it to a server where your friends might use another streaming service, say `Toby songlink [link to the song/album here]` and Toby will generate a link that will show you all of the services where that song or album can be found.
 
-## Emotes (Add to your Server or Get a Link to the Image)
+## Existing Emotes (Add to your Server or Get a Link to the Image)
 
 If you have a custom emote you like, you can use `Toby emote [emote(s) here]` and Toby will give you a link to that emote as an image, which you can then save. If someone's used the emote(s) and you just want to reference their message, you can just reply to them and say `Toby emote`. If you have permission to manage emotes in the server, you can also say `Toby add emote [emote(s) here]` (or reply to the message with the emote(s) as mentioned previously) and it will also be added to the server.
+
+## Create New Emotes
+
+If you have an image you'd like to make into an emote, you can use `Toby add emote` and include the image attached to the message and Toby will create the emote with that image. You can also say something like `Toby add emote bob 123` and Toby will create the emote with the name `Bob123`. If a name isn't specified, Toby will use the file name (without the extension) as the emote name.
 
 ## Stickers (Add to your Server or Get a Link to the Image)
 

@@ -52,7 +52,7 @@ public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer c
         var isReacting = await reactCommand.IsReactingAsync(reaction.Emote, config);
         if (isReacting)
         {
-            fixReaction = message.Reactions.FirstOrDefault(r => Equals(r.Key, reaction.Emote)).Value;//.Select(async r => await reactCommand.IsReactingAsync(r.Key, config));
+            fixReaction = message.Reactions.FirstOrDefault(r => Equals(r.Key, reaction.Emote)).Value;
         }
 
         if (fixReaction == null || fixReaction.Value.ReactionCount > 2)
