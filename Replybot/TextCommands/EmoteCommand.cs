@@ -102,7 +102,7 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             catch (Exception ex)
             {
                 logger.LogError($"Failed to save emote: {ex.Message}");
-                if (ex.Message.Contains("BINARY_TYPE_MAX_SIZE"))
+                if (ex.Message.Contains("BINARY_TYPE_MAX_SIZE") || ex.Message.Contains("Asset exceeds maximum size"))
                 {
                     emoteMessages.Add($"The file `{image.Filename}` was too large. File size cannot be larger than 2048kb.");
                 }
@@ -110,13 +110,17 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
                 {
                     emoteMessages.Add($"The name `{emoteName}` is invalid");
                 }
+                else if (ex.Message.Contains("BASE_TYPE_BAD_LENGTH"))
+                {
+                    emoteMessages.Add($"The name `{emoteName}` is too long. The emote name can be no longer than 32 characters.");
+                }
                 else if (ex.Message.Contains("Maximum number of emojis reached"))
                 {
                     emoteMessages.Add("There are no emoji slots remaining in this server.");
                 }
                 else
                 {
-                    emoteMessages.Add($"`{image.Filename}` [Emote Image Link](<{url}>)\nThere are an error adding this emote.");
+                    emoteMessages.Add($"`{image.Filename}` [Emote Image Link](<{url}>)\nThere are an error adding this emote. Try a smaller image maybe.");
                 }
             }
             //}
