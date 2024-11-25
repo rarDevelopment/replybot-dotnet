@@ -195,7 +195,7 @@ builder.ConfigureServices((host, services) =>
         config.DefaultRequestHeaders.Add("Referer", howLongToBeatSettings.Referer);
         config.DefaultRequestHeaders.Add("Connection", "keep-alive");
         config.DefaultRequestHeaders.Add("Accept", "*/*");
-        config.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.29.2");
+        config.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0");
     });
 
     services.AddHttpClient(HttpClients.Dictionary.ToString(), config =>
