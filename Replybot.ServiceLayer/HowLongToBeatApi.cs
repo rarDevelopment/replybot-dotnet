@@ -43,7 +43,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
                         Perspective = "",
                         Flow = "",
                         Genre = "",
-                        SubGenre = "",
+                        SubGenre = " ", //this is a load-bearing space
                     },
                     Modifier = ""
                 },
