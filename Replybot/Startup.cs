@@ -182,7 +182,7 @@ builder.ConfigureServices((host, services) =>
 
     services.AddTransient(_ => new IGDBClient(internetGameDatabaseSettings.ClientId, internetGameDatabaseSettings.ClientSecret));
 
-    services.AddTransient<RoleHelper>();
+    services.AddSingleton<RoleHelper>();
 
     services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(DiscordBot).GetTypeInfo().Assembly));
 
