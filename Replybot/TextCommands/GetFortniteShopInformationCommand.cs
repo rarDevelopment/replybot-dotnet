@@ -16,24 +16,31 @@ public class GetFortniteShopInformationCommand(FortniteApi fortniteApi,
 {
     private const string MoreText = "\n(see shop for more)";
     private const string SectionSeparator = "\n";
-    private readonly string[] _triggers = { "fortnite shop" };
+    private readonly string[] _triggers = ["fortnite shop"];
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
         return replyCriteria.IsBotNameMentioned && _triggers.Any(t => replyBusinessLayer.GetWordMatch(t, replyCriteria.MessageText));
     }
 
-    public async Task<CommandResponse> Handle(SocketMessage message)
+    public Task<CommandResponse> Handle(SocketMessage message)
     {
-        var embed = await GetFortniteShopInformationEmbed(message);
-
-        return new CommandResponse
+        return Task.FromResult(new CommandResponse
         {
-            Embed = embed,
+            Description = "The Fortnite API deprecated this endpoint. Maybe it will return in the future!",
             Reactions = null,
             StopProcessing = true,
             NotifyWhenReplying = false
-        };
+        });
+        //var embed = await GetFortniteShopInformationEmbed(message);
+
+        //return new CommandResponse
+        //{
+        //    Embed = embed,
+        //    Reactions = null,
+        //    StopProcessing = true,
+        //    NotifyWhenReplying = false
+        //};
     }
 
     private async Task<Embed?> GetFortniteShopInformationEmbed(SocketMessage message)

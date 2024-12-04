@@ -119,11 +119,10 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(applicationEmojiSettings);
     services.AddSingleton(websiteApiSettings);
 
-    services.AddScoped<IDiscordFormatter, DiscordFormatter>();
-    services.AddScoped<IReplyBusinessLayer, ReplyBusinessLayer>();
-    services.AddScoped<IGuildConfigurationBusinessLayer, GuildConfigurationBusinessLayer>();
-    services.AddScoped<IReplyDataLayer, ReplyDataLayer>();
-
+    services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
+    services.AddSingleton<IReplyBusinessLayer, ReplyBusinessLayer>();
+    services.AddSingleton<IGuildConfigurationBusinessLayer, GuildConfigurationBusinessLayer>();
+    services.AddSingleton<IReplyDataLayer, ReplyDataLayer>();
     services.AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
     services.AddSingleton<InteractionHandler>();
 
@@ -176,14 +175,14 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton<DefaultRepliesService>();
 
     services.AddSingleton<FortniteApi>();
-    services.AddSingleton(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
+    services.AddTransient(_ => new FortniteApiClient(host.Configuration["FortniteApi:ApiKey"]));
 
-    services.AddSingleton<TheMovieDbApi>();
-    services.AddSingleton(_ => new TMDbClient(host.Configuration["TheMovieDB:ApiKey"]));
+    services.AddTransient<TheMovieDbApi>();
+    services.AddTransient(_ => new TMDbClient(host.Configuration["TheMovieDB:ApiKey"]));
 
-    services.AddSingleton(_ => new IGDBClient(internetGameDatabaseSettings.ClientId, internetGameDatabaseSettings.ClientSecret));
+    services.AddTransient(_ => new IGDBClient(internetGameDatabaseSettings.ClientId, internetGameDatabaseSettings.ClientSecret));
 
-    services.AddScoped<RoleHelper>();
+    services.AddSingleton<RoleHelper>();
 
     services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(DiscordBot).GetTypeInfo().Assembly));
 

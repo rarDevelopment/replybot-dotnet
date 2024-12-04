@@ -83,7 +83,7 @@ public class HowLongIsMovieCommand(TheMovieDbApi theMovieDbApi,
                         message.Author);
                 }
 
-                return discordFormatter.BuildRegularEmbedWithUserFooter("Movie Duration(s)",
+                return discordFormatter.BuildRegularEmbedWithUserFooter("Movie Info",
                     "",
                     message.Author,
                     embedFieldBuilders);
@@ -91,13 +91,13 @@ public class HowLongIsMovieCommand(TheMovieDbApi theMovieDbApi,
             catch (Exception ex)
             {
                 logger.Log(LogLevel.Error, "Error in HowLongIsMovie command - {0}", ex.Message);
-                return discordFormatter.BuildErrorEmbed("Movie Duration",
+                return discordFormatter.BuildErrorEmbed("Movie Info",
                     "Hmm, couldn't do that search for some reason. Try again later!");
             }
         }
 
         logger.Log(LogLevel.Error, $"Error in HowLongIsMovieCommand: CanHandle passed, but regular expression was not a match. Input: {message.Content}");
-        return discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Movie Duration",
+        return discordFormatter.BuildErrorEmbedWithUserFooter("Error Finding Movie Info",
             "Sorry, I couldn't make sense of that for some reason. This shouldn't happen, so try again or let the developer know there's an issue!",
             message.Author);
     }
