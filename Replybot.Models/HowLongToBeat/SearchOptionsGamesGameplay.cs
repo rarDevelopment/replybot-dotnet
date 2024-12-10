@@ -10,6 +10,6 @@ public class SearchOptionsGamesGameplay
     public string Flow { get; set; }
     [JsonPropertyName("genre")]
     public string Genre { get; set; }
-    [JsonPropertyName("subGenre")]
-    public string SubGenre { get; set; }
+    [JsonPropertyName("difficulty")]
+    public string Difficulty { get; set; }
 }
