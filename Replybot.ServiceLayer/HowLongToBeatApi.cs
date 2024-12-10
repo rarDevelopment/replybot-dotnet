@@ -43,7 +43,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
                         Perspective = "",
                         Flow = "",
                         Genre = "",
-                        SubGenre = "",
+                        Difficulty = "",
                     },
                     Modifier = ""
                 },
@@ -64,7 +64,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/search/{apiSearchString}")
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/find/{apiSearchString}")
         {
             Content = content
         };
