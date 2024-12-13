@@ -66,7 +66,8 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             return new CommandResponse
             {
                 Embed = discordFormatter.BuildErrorEmbedWithUserFooter("No emotes specified!",
-                    "This command only works with custom Discord emotes (and does not include standard emojis)!",
+                    "This command only works with custom Discord emotes (and does not include standard emojis)! " +
+                    "If you're trying to use an image, it has to be in your own message, not one you're replying to.",
                     message.Author),
                 StopProcessing = true,
                 NotifyWhenReplying = true,
@@ -81,8 +82,7 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
         if (isEmoteFromImage)
         {
             var image = validImages.First();
-            //foreach (var image in validImages)
-            //{
+
             var url = image.Url;
             using var httpClient = new HttpClient();
             var imageData = await httpClient.GetByteArrayAsync(url);
@@ -102,9 +102,13 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             catch (Exception ex)
             {
                 logger.LogError($"Failed to save emote: {ex.Message}");
-                if (ex.Message.Contains("BINARY_TYPE_MAX_SIZE") || ex.Message.Contains("Asset exceeds maximum size"))
+                if (ex.Message.Contains("BINARY_TYPE_MAX_SIZE"))
                 {
                     emoteMessages.Add($"The file `{image.Filename}` was too large. File size cannot be larger than 2048kb.");
+                }
+                else if (ex.Message.Contains("Asset exceeds maximum size"))
+                {
+                    emoteMessages.Add($"The image `{image.Filename}` was too large. This isn't an issue with the file size, so try making the image itself smaller.");
                 }
                 else if (ex.Message.Contains("STRING_TYPE_REGEX"))
                 {
@@ -123,7 +127,6 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
                     emoteMessages.Add($"`{image.Filename}` [Emote Image Link](<{url}>)\nThere are an error adding this emote. Try a smaller image maybe.");
                 }
             }
-            //}
         }
         else
         {
