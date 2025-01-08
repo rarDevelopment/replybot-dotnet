@@ -2,7 +2,7 @@
 
 A Discord bot for responding to you with messages based on triggers.
 
-Now written in C# and .NET 8.
+Now written in C# and .NET 9.
 
 Previous Version: https://github.com/rarDevelopment/replybot
 
