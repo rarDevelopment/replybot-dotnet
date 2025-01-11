@@ -123,13 +123,9 @@ If you have an image you'd like to make into an emote, you can use `Toby add emo
 
 If you have a sticker you like, you can reply to a message with a sticker and say `Toby sticker` and Toby will give you a link to that sticker as an image, which you can then save. If you have permission to manage stickers in the server, you can also reply and say `Toby add sticker` and it will also be added to the server.
 
-## Fortnite Shop Information (using [Fortnite API](https://fortnite-api.com/))
-
-If you're a Fortnite player, `Toby Fortnite shop` will show you a glimpse of what's on the shop currently.
-
 ## Fortnite Map Location (using [Fortnite API](https://fortnite-api.com/))
 
-Again, if you're a Fortnite player, `Toby where we droppin` will randomly choose a location from the current Fortnite Battle Royale map for you to drop at.
+Again, if you're a Fortnite player, `Toby where we droppin` or `Toby wwd` will randomly choose a location from the current Fortnite Battle Royale map for you to drop at. You can set this command to only use named locations using the `/set-fortnite-named-locations` command.
 
 ## Fortnite User Stats (using [Fortnite API](https://fortnite-api.com/))
 
