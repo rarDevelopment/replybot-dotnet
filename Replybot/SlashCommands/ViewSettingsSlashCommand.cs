@@ -51,6 +51,8 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
             message += $"Fix TikTok Reactions: {GetEnabledText(guildConfig.EnableFixTikTokReactions)}\n";
             message += $"Fix Reddit Reactions: {GetEnabledText(guildConfig.EnableFixRedditReactions)}\n";
             message += $"Fix Threads Reactions: {GetEnabledText(guildConfig.EnableFixThreadsReactions)}\n";
+            message += $"Fortnite Settings:\n";
+            message += $"- Map Command: Only Named Locations: {GetEnabledText(guildConfig.FortniteMapOnlyNamedLocations)}\n";
             message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (+ any users with the Administrator permission)\n";
 
             await RespondAsync(embed: discordFormatter.BuildRegularEmbedWithUserFooter($"Settings for {Context.Guild.Name}",
@@ -69,6 +71,6 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
 
     private static string GetEnabledText(bool isEnabled)
     {
-        return isEnabled ? "ON" : "OFF";
+        return isEnabled ? "✅ ON" : "❌ OFF";
     }
 }

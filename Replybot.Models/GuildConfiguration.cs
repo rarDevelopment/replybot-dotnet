@@ -24,4 +24,5 @@ public class GuildConfiguration
     public bool EnableLoggingMessageDeletes { get; set; }
     public bool EnableLoggingUserBans { get; set; }
     public bool EnableLoggingUserUnBans { get; set; }
+    public bool FortniteMapOnlyNamedLocations { get; set; }
 }

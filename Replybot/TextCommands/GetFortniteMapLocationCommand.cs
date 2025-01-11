@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Fortnite_API.Objects.V1;
+using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
@@ -7,11 +8,16 @@ using SkiaSharp;
 
 namespace Replybot.TextCommands;
 
-public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings botSettings)
+public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings botSettings, IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
     : ITextCommand
 {
     private const string TriggerRegexPattern = "(where(( a|')re)? we droppin(g)?)|(whither shall we descend)|(wwd)";
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
+
+    // values for translating the X and Y coordinates of the map image for drawing an X on the location
+    private const int MapTranslationX = 969;
+    private const int MapTranslationY = 1020;
+    private const float ScaleFactor = 0.00685f;
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
     {
@@ -24,7 +30,17 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
 
     public async Task<CommandResponse> Handle(SocketMessage message)
     {
-        var fortniteMapLocationAndImage = await GetFortniteMapLocation();
+        var onlyNamedLocations = false;
+        if (message.Channel is IGuildChannel guildChannel)
+        {
+            var config = await guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel.Guild);
+            if (config != null)
+            {
+                onlyNamedLocations = config.FortniteMapOnlyNamedLocations;
+            }
+        }
+
+        var fortniteMapLocationAndImage = await GetFortniteMapLocation(onlyNamedLocations);
         if (fortniteMapLocationAndImage == null)
         {
             return new CommandResponse
@@ -58,7 +74,7 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
         };
     }
 
-    private async Task<(MapV1POI Location, SKBitmap LocationImage)?> GetFortniteMapLocation()
+    private async Task<(MapV1POI Location, SKBitmap LocationImage)?> GetFortniteMapLocation(bool onlyNamedLocations)
     {
         var mapLocations = await fortniteApi.GetFortniteMapLocations();
         if (mapLocations == null)
@@ -66,13 +82,19 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
             return null;
         }
 
+        var locations = mapLocations.POIs;
+        if (onlyNamedLocations)
+        {
+            locations = locations.Where(s => s.Name.Replace(" ", "").All(char.IsUpper)).ToList();
+        }
+
         var random = new Random();
-        var randomIndex = random.Next(mapLocations.POIs.Count);
-        var randomLocation = mapLocations.POIs[randomIndex];
+        var randomIndex = random.Next(locations.Count);
+        var randomLocation = locations[randomIndex];
 
         var bitmap = await GetMapImage(mapLocations);
 
-        //MarkLocationWithX(bitmap, randomLocation);
+        MarkLocationWithX(bitmap, randomLocation);
 
         return (randomLocation, bitmap);
     }
@@ -80,12 +102,11 @@ public class GetFortniteMapLocationCommand(FortniteApi fortniteApi, BotSettings 
     private static void MarkLocationWithX(SKBitmap bitmap, MapV1POI location)
     {
         using var canvas = new SKCanvas(bitmap);
-        canvas.Translate(1028, 1129);
 
-        const float scaleFactor = 0.007f;
-        canvas.Scale(scaleFactor, scaleFactor);
+        canvas.Translate(MapTranslationX, MapTranslationY);
 
-        canvas.RotateDegrees(-90);
+        canvas.Scale(ScaleFactor, ScaleFactor);
+
         var point = new SKPoint(location.Location.X, location.Location.Y);
         var x = point.X;
         var y = point.Y;
