@@ -30,4 +30,5 @@ public interface IReplyDataLayer
     Task<bool> SetEnableLoggingUserBans(string guildId, bool isEnabled);
     Task<bool> SetEnableLoggingUserUnBans(string guildId, bool isEnabled);
     Task<bool> SetEnableFixThreadsReactions(string guildId, bool isEnabled);
+    Task<bool> SetFortniteMapOnlyNamedLocations(string guildId, bool isEnabled);
 }

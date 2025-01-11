@@ -53,6 +53,9 @@ public class GuildConfigurationEntity
     [BsonElement("enableLoggingUserUnBans")]
     public bool EnableLoggingUserUnBans { get; set; }
 
+    [BsonElement("fortniteMapOnlyNamedLocations")]
+    public bool FortniteMapOnlyNamedLocations { get; set; }
+
     public GuildConfiguration ToDomain()
     {
         return new GuildConfiguration
@@ -78,7 +81,8 @@ public class GuildConfigurationEntity
             EnableLoggingMessageEdits = EnableLoggingMessageEdits,
             EnableLoggingMessageDeletes = EnableLoggingMessageDeletes,
             EnableLoggingUserBans = EnableLoggingUserBans,
-            EnableLoggingUserUnBans = EnableLoggingUserUnBans
+            EnableLoggingUserUnBans = EnableLoggingUserUnBans,
+            FortniteMapOnlyNamedLocations = FortniteMapOnlyNamedLocations
         };
     }
 }

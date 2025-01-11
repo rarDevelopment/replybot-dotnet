@@ -29,4 +29,5 @@ public interface IGuildConfigurationBusinessLayer
     Task<bool> SetEnableLoggingUserBans(IGuild guild, bool isEnabled);
     Task<bool> SetEnableLoggingUserUnBans(IGuild guild, bool isEnabled);
     Task<bool> SetEnableFixThreads(IGuild guild, bool isEnabled);
+    Task<bool> SetFortniteMapOnlyNamedLocations(IGuild guild, bool isEnabled);
 }
