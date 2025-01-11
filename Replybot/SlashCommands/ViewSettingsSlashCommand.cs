@@ -29,35 +29,39 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
                 return;
             }
 
+            var title = $"Settings for {Context.Guild.Name}";
+
             var message = "";
-            message += $"Default Replies: {GetEnabledText(guildConfig.EnableDefaultReplies)}\n";
-            message += $"Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarAnnouncements)}\n";
-            message += $"Member Welcome Message: {GetEnabledText(guildConfig.EnableWelcomeMessage)}\n";
-            message += $"Member Departure Message: {GetEnabledText(guildConfig.EnableDepartureMessage)}\n";
-            message += $"Mention User on Avatar Announcements: {GetEnabledText(guildConfig.EnableAvatarMentions)}\n";
-            message += $"Log Channel: {(guildConfig.LogChannelId != null ? $"<#{guildConfig.LogChannelId}>" : "Not Set")}\n";
+            message += MakeSectionTitle("Bot Behaviour", true);
+            message += $"{GetEnabledText(guildConfig.EnableDefaultReplies)} Default Replies\n";
+            message += $"{GetEnabledText(guildConfig.EnableAvatarAnnouncements)} Avatar Announcements\n";
+            message += $"{GetEnabledText(guildConfig.EnableWelcomeMessage)} Member Welcome Message\n";
+            message += $"{GetEnabledText(guildConfig.EnableDepartureMessage)} Member Departure Message\n";
+            message += $"{GetEnabledText(guildConfig.EnableAvatarMentions)} Mention User on Avatar Announcements\n";
+            message += MakeSectionTitle("Link Preview Fixes (as reactions)");
+            message += $"{GetEnabledText(guildConfig.EnableFixBlueskyReactions)} Bluesky\n";
+            message += $"{GetEnabledText(guildConfig.EnableFixRedditReactions)} Reddit\n";
+            message += $"{GetEnabledText(guildConfig.EnableFixTikTokReactions)} TikTok\n";
+            message += $"{GetEnabledText(guildConfig.EnableFixTweetReactions)} Tweet\n";
+            message += $"{GetEnabledText(guildConfig.EnableFixInstagramReactions)} Instagram\n";
+            message += $"{GetEnabledText(guildConfig.EnableFixThreadsReactions)} Threads\n";
+            message += MakeSectionTitle("Fortnite");
+            message += $"{GetEnabledText(guildConfig.FortniteMapOnlyNamedLocations)} Map Command: Only Named Locations\n";
+            message += MakeSectionTitle("Logging");
+            message += $"Channel: {(guildConfig.LogChannelId != null ? $"<#{guildConfig.LogChannelId}>" : "Not Set")}\n";
             if (guildConfig.LogChannelId != null)
             {
-                message += $"- Logging for User Joins is {GetEnabledText(guildConfig.EnableLoggingUserJoins)}\n";
-                message += $"- Logging for User Departures is {GetEnabledText(guildConfig.EnableLoggingUserDepartures)}\n";
-                message += $"- Logging for User Bans is {GetEnabledText(guildConfig.EnableLoggingUserBans)}\n";
-                message += $"- Logging for User Unbans is {GetEnabledText(guildConfig.EnableLoggingUserUnBans)}\n";
-                message += $"- Logging for Message Edits is {GetEnabledText(guildConfig.EnableLoggingMessageEdits)}\n";
-                message += $"- Logging for Message Deletes is {GetEnabledText(guildConfig.EnableLoggingMessageDeletes)}\n";
+                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserJoins)} User Joins\n";
+                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserDepartures)} User Departures\n";
+                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserBans)} User Bans\n";
+                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserUnBans)} User Unbans\n";
+                message += $"- {GetEnabledText(guildConfig.EnableLoggingMessageEdits)} Message Edits\n";
+                message += $"- {GetEnabledText(guildConfig.EnableLoggingMessageDeletes)} Message Deletes\n";
             }
-            message += $"Fix Tweet Reactions: {GetEnabledText(guildConfig.EnableFixTweetReactions)}\n";
-            message += $"Fix Instagram Reactions: {GetEnabledText(guildConfig.EnableFixInstagramReactions)}\n";
-            message += $"Fix Bluesky Reactions: {GetEnabledText(guildConfig.EnableFixBlueskyReactions)}\n";
-            message += $"Fix TikTok Reactions: {GetEnabledText(guildConfig.EnableFixTikTokReactions)}\n";
-            message += $"Fix Reddit Reactions: {GetEnabledText(guildConfig.EnableFixRedditReactions)}\n";
-            message += $"Fix Threads Reactions: {GetEnabledText(guildConfig.EnableFixThreadsReactions)}\n";
-            message += $"Fortnite Settings:\n";
-            message += $"- Map Command: Only Named Locations: {GetEnabledText(guildConfig.FortniteMapOnlyNamedLocations)}\n";
-            message += $"Bot Managers: {GetAdminUserDisplayText(guildConfig.AdminUserIds)} (+ any users with the Administrator permission)\n";
+            message += MakeSectionTitle("Bot Managers in this Server");
+            message += $"{GetAdminUserDisplayText(guildConfig.AdminUserIds)} (& any users with the Administrator permission)\n";
 
-            await RespondAsync(embed: discordFormatter.BuildRegularEmbedWithUserFooter($"Settings for {Context.Guild.Name}",
-                message,
-                Context.User));
+            await RespondAsync(embed: discordFormatter.BuildRegularEmbedWithUserFooter(title, message, Context.User));
             return;
         }
 
@@ -71,6 +75,11 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
 
     private static string GetEnabledText(bool isEnabled)
     {
-        return isEnabled ? "✅ ON" : "❌ OFF";
+        return isEnabled ? "✅" : "❌";
+    }
+
+    private static string MakeSectionTitle(string text, bool isFirst = false)
+    {
+        return $"{(isFirst ? "" : "\n")}**{text}**\n";
     }
 }
