@@ -18,4 +18,7 @@ public class Embed
 
     [JsonPropertyName("record")]
     public QuotedRecord? Record { get; set; }
+
+    [JsonPropertyName("external")]
+    public External? External { get; set; }
 }
