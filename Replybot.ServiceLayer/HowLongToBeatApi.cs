@@ -64,7 +64,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/lookup/{apiSearchString}")
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/s/{apiSearchString}")
         {
             Content = content
         };
