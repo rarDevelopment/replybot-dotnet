@@ -129,6 +129,8 @@ public class FixBlueskyCommand(
 
             var video = blueskyRecord.Value.Embed?.Media?.Video ?? blueskyRecord.Value.Embed?.Video;
 
+            var externalMediaUri = blueskyRecord.Value.Embed?.External?.Uri ?? "";
+
             var quotedRecord = blueskyRecord.Value.Embed?.Record ?? null;
 
             var postText = blueskyRecord.Value.Text;
@@ -190,7 +192,7 @@ public class FixBlueskyCommand(
             blueskyEmbeds.Add(new BlueskyMessage
             {
                 Title = $"@{repo}",
-                Description = postText,
+                Description = postText + externalMediaUri,
                 Images = imagesToSend,
                 Video = videoToSend
             });

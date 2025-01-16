@@ -11,9 +11,9 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
 {
     public async Task<HowLongToBeatResponse?> GetHowLongToBeatInformation(string searchTerm)
     {
-        var apiSearchString = await GetApiSearchString();
+        var hltbApiInfo = await GetHltbApiInfo();
 
-        if (apiSearchString == null)
+        if (hltbApiInfo.apiSearchKey == null || hltbApiInfo.urlPath == null)
         {
             return null;
         }
@@ -64,7 +64,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/s/{apiSearchString}")
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/{hltbApiInfo.urlPath}/{hltbApiInfo.apiSearchKey}")
         {
             Content = content
         };
@@ -80,7 +80,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
 
     }
 
-    private async Task<string?> GetApiSearchString()
+    private async Task<(string? apiSearchKey, string? urlPath)> GetHltbApiInfo()
     {
         try
         {
@@ -88,16 +88,15 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
             var response = await client.GetAsync("now/json/hltb");
             if (!response.IsSuccessStatusCode)
             {
-                return null;
+                return (null, null);
             }
 
             var json = await response.Content.ReadFromJsonAsync<HowLongToBeatApiSearchInfo>();
-            return json?.Key;
+            return (json?.ApiSearchKey, json?.UrlPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-
-            return null;
+            return (null, null);
         }
     }
 }
