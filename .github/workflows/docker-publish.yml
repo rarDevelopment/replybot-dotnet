@@ -2,8 +2,8 @@ name: Docker
 
 on:
   push:
-    tags:
-      - "*"
+    branches:
+      - main
 env:
   IMAGE_NAME: replybot
   REGISTRY: ghcr.io
