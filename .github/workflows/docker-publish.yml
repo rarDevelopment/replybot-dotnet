@@ -77,8 +77,8 @@ jobs:
       - name: Create Tag
         id: create_tag
         run: |
-          git tag -a "${{ env.APP_VERSION }}" -m "Release version ${{ env.APP_VERSION }}"
-          git push origin "${{ env.APP_VERSION }}"
+          git tag -a "v${{ env.APP_VERSION }}" -m "Release version ${{ env.APP_VERSION }}"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
