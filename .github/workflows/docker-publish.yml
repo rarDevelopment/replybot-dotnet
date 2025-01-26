@@ -82,13 +82,7 @@ jobs:
           git tag -a "v${{ env.APP_VERSION }}" -m "Release version ${{ env.APP_VERSION }}"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} "v${{ env.APP_VERSION }}"
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: "${{ env.APP_VERSION }}"
-          release_name: "${{ env.APP_VERSION }}"
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+        run: |
+          gh release create "${{ env.APP_VERSION }}" --generate-notes --title "${{ env.APP_VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
