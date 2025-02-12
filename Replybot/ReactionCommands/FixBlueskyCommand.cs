@@ -15,7 +15,7 @@ public class FixBlueskyCommand(
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
     private const string ContentUnavailableText = "[content unavailable]";
     private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
-    private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
+    private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.-]+\\/post\\/[a-z0-9]+";
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
