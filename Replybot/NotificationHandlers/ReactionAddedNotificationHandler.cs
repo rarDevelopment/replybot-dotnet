@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using System.Net;
+using Discord.Net;
+using MediatR;
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
@@ -86,8 +88,14 @@ public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer c
                 catch (Exception ex)
                 {
                     logger.LogError(ex, $"Error Sending Files - {ex.Message}");
-                    await message.ReplyAsync(
-                        $"Sorry {reactingUser.Mention}, there was an error trying to respond to that, possibly related to the file attachment.");
+                    var errorText = $"Sorry {reactingUser.Mention}, there was an error trying to respond to that.";
+
+                    if (ex is HttpException { HttpCode: HttpStatusCode.RequestEntityTooLarge })
+                    {
+                        errorText += " The file attachment was too large.";
+                    }
+
+                    await message.ReplyAsync(errorText);
                 }
             }
             else
