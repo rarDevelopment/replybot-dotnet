@@ -42,7 +42,7 @@ public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer c
         return Task.CompletedTask;
     }
 
-    private static async Task ProcessReactions(IReactionCommand reactCommand,
+    private async Task ProcessReactions(IReactionCommand reactCommand,
         IReaction reaction,
         GuildConfiguration config,
         IUserMessage message,
@@ -75,11 +75,20 @@ public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer c
 
             if (commandResponse.FileAttachments.Any())
             {
-                await message.Channel.SendFilesAsync(commandResponse.FileAttachments, commandResponse.Description,
-                    messageReference: new MessageReference(message.Id,
-                        failIfNotExists: false),
-                    allowedMentions: allowedMentions,
-                    components: buttonBuilder?.Build());
+                try
+                {
+                    await message.Channel.SendFilesAsync(commandResponse.FileAttachments, commandResponse.Description,
+                        messageReference: new MessageReference(message.Id,
+                            failIfNotExists: false),
+                        allowedMentions: allowedMentions,
+                        components: buttonBuilder?.Build());
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, $"Error Sending Files - {ex.Message}");
+                    await message.ReplyAsync(
+                        $"Sorry {reactingUser.Mention}, there was an error trying to respond to that, possibly related to the file attachment.");
+                }
             }
             else
             {
