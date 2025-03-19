@@ -15,7 +15,7 @@ public class FixBlueskyCommand(
     public readonly string NoLinkMessage = "I don't think there's a Bluesky link there.";
     private const string ContentUnavailableText = "[content unavailable]";
     private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
-    private const string BlueskyUrlRegexPattern = "https?:\\/\\/(www.)?(bsky.app)\\/profile\\/[a-z0-9_.-]+\\/post\\/[a-z0-9]+";
+    private const string BlueskyUrlRegexPattern = @"https?:\/\/(www.)?(bsky.app)\/profile\/[a-z0-9_.-]+\/post\/[a-z0-9]+";
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {
@@ -77,7 +77,7 @@ public class FixBlueskyCommand(
         }
 
         var description =
-            $"{reactingUser.Mention} Here's the Bluesky post content you requested:\n>>> ### {blueskyMessage.Title}\n {blueskyMessage.Description}";
+            $"{reactingUser.Mention} Here's the Bluesky post content you requested:\n{(blueskyMessage.OriginalUrl != null ? $"[Original Post URL](<{blueskyMessage.OriginalUrl}>)\n" : "")}>>> ### {blueskyMessage.Title}\n {blueskyMessage.Description}";
         return new CommandResponse
         {
             Description = description,
@@ -194,7 +194,8 @@ public class FixBlueskyCommand(
                 Title = $"@{repo}",
                 Description = postText + externalMediaUri,
                 Images = imagesToSend,
-                Video = videoToSend
+                Video = videoToSend,
+                OriginalUrl = urlToFix
             });
         }
         return blueskyEmbeds;
