@@ -55,6 +55,8 @@ public class GuildConfigurationEntity
 
     [BsonElement("fortniteMapOnlyNamedLocations")]
     public bool FortniteMapOnlyNamedLocations { get; set; }
+    [BsonElement("enableRepeatLinkNotifications")]
+    public bool EnableRepeatLinkNotifications { get; set; }
 
     public GuildConfiguration ToDomain()
     {
@@ -82,7 +84,8 @@ public class GuildConfigurationEntity
             EnableLoggingMessageDeletes = EnableLoggingMessageDeletes,
             EnableLoggingUserBans = EnableLoggingUserBans,
             EnableLoggingUserUnBans = EnableLoggingUserUnBans,
-            FortniteMapOnlyNamedLocations = FortniteMapOnlyNamedLocations
+            FortniteMapOnlyNamedLocations = FortniteMapOnlyNamedLocations,
+            EnableRepeatLinkNotifications = EnableRepeatLinkNotifications
         };
     }
 }
