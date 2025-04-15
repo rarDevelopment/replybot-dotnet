@@ -40,13 +40,13 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
             }
 
             var guildChannel = message.Channel as SocketGuildChannel;
-
-            if (guildChannel != null)
+            IGuild? guild = guildChannel?.Guild;
+            var config = await guildConfigurationBusinessLayer.GetGuildConfiguration(guild);
+            if (guildChannel != null && config != null)
             {
-                await HandleLinks(guildChannel, notification.Message);
+                await HandleLinks(guildChannel, notification.Message, config);
             }
 
-            IGuild? guild = guildChannel?.Guild;
             var guildUsers = guild != null ? await guild.GetUsersAsync() : null;
 
             foreach (var command in textCommands)
@@ -68,7 +68,6 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
                 }
             }
 
-            var config = await guildConfigurationBusinessLayer.GetGuildConfiguration(guildChannel?.Guild);
             if (config != null)
             {
                 foreach (var reactionCommand in reactionCommands)
@@ -189,7 +188,7 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
         }
     }
 
-    private async Task HandleLinks(SocketGuildChannel channel, SocketMessage messageWithLinks)
+    private async Task HandleLinks(SocketGuildChannel channel, SocketMessage messageWithLinks, GuildConfiguration config)
     {
         const string pattern = @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)";
 
@@ -202,11 +201,11 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
 
             await HandleDiscordMessageLinks(channel, messageWithLinks, discordLinks);
 
-            await HandleGeneralLinks(messageWithLinks, otherLinks);
+            await HandleGeneralLinks(messageWithLinks, otherLinks, config);
         }
     }
 
-    private async Task HandleGeneralLinks(SocketMessage messageWithLinks, IEnumerable<string> otherLinks)
+    private async Task HandleGeneralLinks(SocketMessage messageWithLinks, IEnumerable<string> otherLinks, GuildConfiguration config)
     {
         if (messageWithLinks.Channel is not SocketTextChannel textChannel)
         {
@@ -216,6 +215,11 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
         var messages = (await textChannel.GetMessagesAsync(messageWithLinks, Direction.Before, 150).FlattenAsync()).ToList();
 
         if (!messages.Any())
+        {
+            return;
+        }
+
+        if (!config.EnableRepeatLinkNotifications)
         {
             return;
         }

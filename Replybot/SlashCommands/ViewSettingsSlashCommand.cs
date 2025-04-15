@@ -38,6 +38,7 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
             message += $"{GetEnabledText(guildConfig.EnableWelcomeMessage)} Member Welcome Message\n";
             message += $"{GetEnabledText(guildConfig.EnableDepartureMessage)} Member Departure Message\n";
             message += $"{GetEnabledText(guildConfig.EnableAvatarMentions)} Mention User on Avatar Announcements\n";
+            message += $"{GetEnabledText(guildConfig.EnableRepeatLinkNotifications)} Recently Repeated Post Notifications\n";
             message += MakeSectionTitle("Link Preview Fixes (as reactions)");
             message += $"{GetEnabledText(guildConfig.EnableFixBlueskyReactions)} Bluesky\n";
             message += $"{GetEnabledText(guildConfig.EnableFixRedditReactions)} Reddit\n";
