@@ -61,7 +61,7 @@ If you post a link to another message in the same server, Toby will preview that
 
 ## Identifies Previously Posted Links
 
-If you post a link to that has already been posted recently in the same channel, Toby will notify you of this and link you to the previous post. This can help catch up on any discussion that already happened for that link. You can enable or disable this setting by using the `/set-repeat-links` command. This setting default to on.
+If you post a link to that has already been posted recently in the same channel, Toby will notify you of this and link you to the previous post. This can help catch up on any discussion that already happened for that link. You can enable or disable this setting by using the `/set-repeat-links` command. This setting defaults to on.
 
 ## Define Words (uses [Free Dictionary API](https://github.com/meetDeveloper/freeDictionaryAPI))
 
