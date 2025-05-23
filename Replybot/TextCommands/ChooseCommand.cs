@@ -11,7 +11,7 @@ public class ChooseCommand(
 {
     private const string SearchTermKey = "searchTerm";
     private const string NumberOfItemsKey = "numberOfItems";
-    private const string TriggerRegexPattern = $"(choose|select|random|decide|pick) *(?<{NumberOfItemsKey}>( \\d+)*): (?<{SearchTermKey}>(.*))";
+    private const string TriggerRegexPattern = $"(choose|select|random|decide|pick) *(?<{NumberOfItemsKey}>( \\d+)*):* (?<{SearchTermKey}>(.*))";
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     private static readonly string[] DelimiterOptions = ["|", ",", " "];
 
@@ -23,18 +23,18 @@ public class ChooseCommand(
             _matchTimeout);
     }
 
-    public Task<CommandResponse> Handle(SocketMessage message)
+    public async Task<CommandResponse> Handle(SocketMessage message)
     {
-        var response = ChooseResponse(message);
-        return Task.FromResult(new CommandResponse
+        var response = await ChooseResponse(message);
+        return new CommandResponse
         {
             Description = response,
             StopProcessing = true,
             NotifyWhenReplying = true
-        });
+        };
     }
 
-    private string? ChooseResponse(IMessage message)
+    private async Task<string?> ChooseResponse(IMessage message)
     {
         var match = Regex.Match(message.Content, TriggerRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
         var matchedGroup = match.Groups[SearchTermKey];
@@ -47,10 +47,6 @@ public class ChooseCommand(
             return "You need to give me at least two options to choose from!\nNote: You can separate options with a comma, pipe, or space.";
         }
 
-        var delimiter = DetermineDelimiter(messageWithoutTrigger);
-
-        var splitArgs = messageWithoutTrigger.Split(delimiter).Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
-
         var numberOfItemsToChoose = 0;
         var isNumberSpecified = !string.IsNullOrWhiteSpace(numberOfItemsInput) && int.TryParse(numberOfItemsInput, out numberOfItemsToChoose) && numberOfItemsToChoose > 1;
         if (!isNumberSpecified)
@@ -58,19 +54,54 @@ public class ChooseCommand(
             numberOfItemsToChoose = 1;
         }
 
-        if (splitArgs.Count <= numberOfItemsToChoose)
-        {
-            return $"If you want me to pick {numberOfItemsToChoose}, you need to give me at least {numberOfItemsToChoose + 1} options to choose from!";
-        }
+        List<string> itemsToChooseFrom = [];
 
+        if (message.MentionedChannelIds.Any() && message.Channel is IGuildChannel guildChannel)
+        {
+            foreach (var mentionedChannelId in message.MentionedChannelIds)
+            {
+                var mentionedChannel = await guildChannel.Guild.GetVoiceChannelAsync(mentionedChannelId);
+                if (mentionedChannel is not SocketVoiceChannel mentionedVoiceChannel)
+                {
+                    continue;
+                }
+
+                var usersInChat = mentionedVoiceChannel.ConnectedUsers;
+                if (usersInChat != null && usersInChat.Any())
+                {
+                    itemsToChooseFrom.AddRange(usersInChat.Select(u => u.Mention).ToList());
+                }
+            }
+
+            if (!itemsToChooseFrom.Any())
+            {
+                return "No users were found to add in the provided channel(s). You must provide valid voice channels with users connected.";
+            }
+        }
+        else
+        {
+            var delimiter = DetermineDelimiter(messageWithoutTrigger);
+
+            var splitArgs = messageWithoutTrigger.Split(delimiter).Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
+
+            if (splitArgs.Count > numberOfItemsToChoose)
+            {
+                itemsToChooseFrom = splitArgs;
+            }
+            else
+            {
+                return
+                    $"If you want me to pick {numberOfItemsToChoose}, you need to give me at least {numberOfItemsToChoose + 1} options to choose from!";
+            }
+        }
         if (match.Success)
         {
             var chosenOptions = new List<string>();
             while (chosenOptions.Count < numberOfItemsToChoose)
             {
-                var randomIndex = new Random().Next(0, splitArgs.Count);
-                chosenOptions.Add(splitArgs[randomIndex]);
-                splitArgs.RemoveAt(randomIndex);
+                var randomIndex = new Random().Next(0, itemsToChooseFrom.Count);
+                chosenOptions.Add(itemsToChooseFrom[randomIndex]);
+                itemsToChooseFrom.RemoveAt(randomIndex);
             }
             return string.Join("\n", chosenOptions);
         }
