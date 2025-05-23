@@ -63,17 +63,13 @@ public class ChooseCommand(
                 var mentionedChannel = await guildChannel.Guild.GetVoiceChannelAsync(mentionedChannelId);
                 if (mentionedChannel is not SocketVoiceChannel mentionedVoiceChannel)
                 {
-                    return "invalid voice channel?";
+                    continue;
                 }
 
                 var usersInChat = mentionedVoiceChannel.ConnectedUsers;
                 if (usersInChat != null && usersInChat.Any())
                 {
                     itemsToChooseFrom.AddRange(usersInChat.Select(u => u.Mention).ToList());
-                }
-                else
-                {
-                    return "no users in chat apparently";
                 }
             }
 
