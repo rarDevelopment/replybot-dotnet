@@ -83,27 +83,25 @@ public class ChooseCommand(
             var delimiter = DetermineDelimiter(messageWithoutTrigger);
 
             var splitArgs = messageWithoutTrigger.Split(delimiter).Select(a => a.Trim()).Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
-
-            if (splitArgs.Count > numberOfItemsToChoose)
-            {
-                itemsToChooseFrom = splitArgs;
-            }
-            else
-            {
-                return
-                    $"If you want me to pick {numberOfItemsToChoose}, you need to give me at least {numberOfItemsToChoose + 1} options to choose from!";
-            }
+            itemsToChooseFrom = splitArgs;
         }
+
         if (match.Success)
         {
-            var chosenOptions = new List<string>();
-            while (chosenOptions.Count < numberOfItemsToChoose)
+            if (itemsToChooseFrom.Count > numberOfItemsToChoose)
             {
-                var randomIndex = new Random().Next(0, itemsToChooseFrom.Count);
-                chosenOptions.Add(itemsToChooseFrom[randomIndex]);
-                itemsToChooseFrom.RemoveAt(randomIndex);
+                var chosenOptions = new List<string>();
+                while (chosenOptions.Count < numberOfItemsToChoose)
+                {
+                    var randomIndex = new Random().Next(0, itemsToChooseFrom.Count);
+                    chosenOptions.Add(itemsToChooseFrom[randomIndex]);
+                    itemsToChooseFrom.RemoveAt(randomIndex);
+                }
+                return string.Join("\n", chosenOptions);
             }
-            return string.Join("\n", chosenOptions);
+
+            return
+                $"If you want me to pick {numberOfItemsToChoose}, you need to give me at least {numberOfItemsToChoose + 1} options to choose from!";
         }
 
         logger.Log(LogLevel.Error,
