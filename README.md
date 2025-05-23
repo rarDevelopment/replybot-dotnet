@@ -137,7 +137,7 @@ Make those challenging decisions - say `Toby flip a coin` and he'll do so.
 
 ## Choose For Me
 
-Make _more_ challenging decisions - say something like `"Toby pick: [option 1], [option 2], [option 3], ..."` and he'll pick one of the options for you. You can also specify how many options you want chosen by sasying `"Toby pick 3: [option 1], [option 2], [option 3], [option 4]"` and he'll pick 3 of those options at random. You can trigger this with a variety of phrases, like `Toby choose:` or `Toby please select 1:` or `Toby random:` or `Toby decide 4:`, but the colon `:` is important! You can choose to separate your options with commas, spaces, or pipes (|). Finally, you can also specify voice channels instead of options and Toby will pick the number of users you specify from the users connected to those voice channels.
+Make _more_ challenging decisions - say something like `"Toby pick: [option 1], [option 2], [option 3], ..."` and he'll pick one of the options for you. You can also specify how many options you want chosen by saying `"Toby pick 3: [option 1], [option 2], [option 3], [option 4]"` and he'll pick 3 of those options at random. You can trigger this with a variety of phrases, like `Toby choose:` or `Toby please select 1:` or `Toby random:` or `Toby decide 4:`, but the colon `:` is important! You can choose to separate your options with commas, spaces, or pipes (|). Finally, you can also specify voice channels instead of options and Toby will pick the number of users you specify from the users connected to those voice channels.
 
 ## Get a Quick Search Link
 
