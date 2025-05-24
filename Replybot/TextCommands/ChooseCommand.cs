@@ -11,7 +11,7 @@ public class ChooseCommand(
 {
     private const string SearchTermKey = "searchTerm";
     private const string NumberOfItemsKey = "numberOfItems";
-    private const string TriggerRegexPattern = $"(choose|select|random|decide|pick) *(?<{NumberOfItemsKey}>( \\d+)*):* (?<{SearchTermKey}>(.*))";
+    private const string TriggerRegexPattern = $"(choose|select|random|decide|pick) *(?<{NumberOfItemsKey}>(\\d+)?)(:| |: )(?<{SearchTermKey}>.*)";
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(botSettings.RegexTimeoutTicks);
     private static readonly string[] DelimiterOptions = ["|", ",", " "];
 
