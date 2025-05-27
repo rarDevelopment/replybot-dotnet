@@ -56,7 +56,8 @@ builder.ConfigureServices((host, services) =>
                              GatewayIntents.GuildMessageReactions |
                              GatewayIntents.MessageContent |
                              GatewayIntents.GuildBans |
-                             GatewayIntents.DirectMessages,
+                             GatewayIntents.DirectMessages |
+                             GatewayIntents.GuildVoiceStates,
             FormatUsersInBidirectionalUnicode = false,
             AlwaysDownloadUsers = true,
             LogGatewayIntentWarnings = false,
