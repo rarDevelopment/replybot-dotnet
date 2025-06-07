@@ -66,6 +66,8 @@ public class ReplyDataLayer : IReplyDataLayer
             EnableLoggingMessageDeletes = false,
             EnableLoggingUserBans = false,
             EnableLoggingUserUnBans = false,
+            EnableRepeatLinkNotifications = true,
+            EnableChannelUpdateAnnouncements = false,
             IgnoreAvatarChangesUserIds = [],
             AdminUserIds = []
         });
@@ -278,6 +280,14 @@ public class ReplyDataLayer : IReplyDataLayer
     {
         var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
         var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableRepeatLinkNotifications, isEnabled);
+        var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
+        return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
+    }
+
+    public async Task<bool> SetEnableChannelUpdates(string guildId, bool isEnabled)
+    {
+        var filter = Builders<GuildConfigurationEntity>.Filter.Eq("guildId", guildId);
+        var update = Builders<GuildConfigurationEntity>.Update.Set(config => config.EnableChannelUpdateAnnouncements, isEnabled);
         var updateResult = await _guildConfigurationCollection.UpdateOneAsync(filter, update);
         return updateResult.ModifiedCount == 1 || updateResult.MatchedCount == 1;
     }

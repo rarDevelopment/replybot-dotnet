@@ -26,4 +26,5 @@ public class GuildConfiguration
     public bool EnableLoggingUserUnBans { get; set; }
     public bool FortniteMapOnlyNamedLocations { get; set; }
     public bool EnableRepeatLinkNotifications { get; set; }
+    public bool EnableChannelUpdateAnnouncements { get; set; }
 }
