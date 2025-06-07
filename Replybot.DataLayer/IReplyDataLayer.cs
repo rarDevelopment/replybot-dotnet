@@ -32,4 +32,5 @@ public interface IReplyDataLayer
     Task<bool> SetEnableFixThreadsReactions(string guildId, bool isEnabled);
     Task<bool> SetFortniteMapOnlyNamedLocations(string guildId, bool isEnabled);
     Task<bool> SetEnableRepeatLinkNotifications(string guildId, bool isEnabled);
+    Task<bool> SetEnableChannelUpdates(string guildId, bool isEnabled);
 }

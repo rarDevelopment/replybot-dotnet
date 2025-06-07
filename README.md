@@ -33,6 +33,10 @@ Avatar change announcements will post in the server's system channel (where Disc
 
 This relates to the avatar change announcements above. You can also have the user who updated their avatar be @mentioned in those announcements. You can enable or disable these mentions with the `/set-avatar-mention` command. You can also choose to omit certain users (including bots) from these announcements by using the `/set-user-avatar-ignore` command.
 
+## Channel Update Announcements
+
+When a channel is renamed or the topic changes, Toby can announce those changes. You can enable or disable these announcements by using the `/set-channel-updates` command.
+
 ## Default Replies
 
 By default, Toby has replies to give him some personality. However, if you'd like to turn this off, you can use the `/set-default-replies` command.

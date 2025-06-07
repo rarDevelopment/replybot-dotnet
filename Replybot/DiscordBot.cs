@@ -84,6 +84,7 @@ public class DiscordBot(DiscordSocketClient client,
         client.UserUnbanned += (userWhoWasUnbanned, guild) => Publish(new UserUnbannedNotification(userWhoWasUnbanned, guild));
         client.UserJoined += user => Publish(new UserJoinedNotification(user));
         client.ReactionAdded += (cacheableMessage, cacheableChannel, reaction) => Publish(new ReactionAddedNotification(cacheableMessage, cacheableChannel, reaction));
+        client.ChannelUpdated += (oldChannel, newChannel) => Publish(new ChannelUpdatedNotification(oldChannel, newChannel));
     }
 
     private Task Publish<TEvent>(TEvent @event) where TEvent : INotification
