@@ -48,6 +48,11 @@ public class ChannelUpdatedNotificationHandler(IGuildConfigurationBusinessLayer 
                 messageText += $"This channel's topic has been updated to: **{newChannel.Topic ?? "[no topic]"}**";
             }
 
+            if (messageText.Trim() == string.Empty)
+            {
+                return Task.CompletedTask;
+            }
+
             await newChannel.SendMessageAsync(messageText);
 
             return Task.CompletedTask;
