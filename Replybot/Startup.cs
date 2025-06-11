@@ -181,7 +181,8 @@ builder.ConfigureServices((host, services) =>
     services.AddTransient<TheMovieDbApi>();
     services.AddTransient(_ => new TMDbClient(host.Configuration["TheMovieDB:ApiKey"]));
 
-    services.AddTransient(_ => new IGDBClient(internetGameDatabaseSettings.ClientId, internetGameDatabaseSettings.ClientSecret));
+    services.AddTransient(_ =>
+        IGDBClient.CreateWithDefaults(internetGameDatabaseSettings.ClientId, internetGameDatabaseSettings.ClientSecret));
 
     services.AddSingleton<RoleHelper>();
 

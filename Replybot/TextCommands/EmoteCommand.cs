@@ -1,8 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using DiscordDotNetUtilities.Interfaces;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.TextCommands.Models;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace Replybot.TextCommands;
 
@@ -22,6 +23,9 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
         "create emojis",
         "create emotes"
     ];
+
+    private readonly string[] _allEmoteTriggers = ["all emotes", "all emojis", "download emotes", "download emojis"];
+
     private const string EmoteIdKey = "emoteId";
     private const string EmoteNameKey = "emoteName";
     private const string EmoteIdUrlKey = "emoteIdUrl";
@@ -41,6 +45,71 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
 
     public async Task<CommandResponse> Handle(SocketMessage message)
     {
+        var allEmotesTrigger = _allEmoteTriggers.FirstOrDefault(t => message.Content.ToLower().Contains(t));
+        var isGettingAllEmotes = allEmotesTrigger != null;
+        var guild = (message.Channel as IGuildChannel)?.Guild;
+
+        if (isGettingAllEmotes)
+        {
+            if (guild == null || message.Author is not IGuildUser guildUser)
+            {
+                return new CommandResponse
+                {
+                    Embed = discordFormatter.BuildErrorEmbedWithUserFooter("Not a server!",
+                        "This command only works in a server.",
+                        message.Author),
+                    StopProcessing = true,
+                    NotifyWhenReplying = true,
+                };
+            }
+            var emotes = await guild.GetEmotesAsync();
+            var canAdministrate = await roleHelper.CanAdministrate(guild, guildUser,
+                [guildUser.GuildPermissions.ManageEmojisAndStickers]);
+            if (!canAdministrate)
+            {
+                return new CommandResponse
+                {
+                    Embed = discordFormatter.BuildErrorEmbedWithUserFooter("No permission!",
+                        "This command only works with custom Discord emotes (and does not include standard emojis)! " +
+                        "If you're trying to use an image, it has to be in your own message, not one you're replying to.",
+                        message.Author),
+                    StopProcessing = true,
+                    NotifyWhenReplying = true,
+                };
+            }
+            if (emotes != null)
+            {
+                var urls = emotes.Select(e => e.Url).ToList();
+
+                var httpClient = new HttpClient();
+                var zipStream = new MemoryStream();
+                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+                {
+                    foreach (var url in urls)
+                    {
+                        var imageData = await httpClient.GetByteArrayAsync(url);
+                        var fileName = Path.GetFileName(new Uri(url).AbsolutePath);
+                        var entry = archive.CreateEntry(fileName, CompressionLevel.Fastest);
+                        await using var entryStream = entry.Open();
+                        await entryStream.WriteAsync(imageData);
+                    }
+                }
+
+                zipStream.Position = 0;
+
+                var fileAttachment = new FileAttachment(zipStream, $"{guild.Name} emotes.zip", "application/zip");
+
+                return new CommandResponse
+                {
+                    Description = "All server emotes are in this zip file.",
+                    FileAttachments = [fileAttachment],
+                    Reactions = null,
+                    StopProcessing = true,
+                    NotifyWhenReplying = true
+                };
+            }
+        }
+
         var emoteMatches = Regex.Matches(message.Content, DiscordEmoteRegexPattern, RegexOptions.IgnoreCase, _matchTimeout);
 
         if (emoteMatches.Count == 0)
@@ -65,9 +134,8 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
         {
             return new CommandResponse
             {
-                Embed = discordFormatter.BuildErrorEmbedWithUserFooter("No emotes specified!",
-                    "This command only works with custom Discord emotes (and does not include standard emojis)! " +
-                    "If you're trying to use an image, it has to be in your own message, not one you're replying to.",
+                Embed = discordFormatter.BuildErrorEmbedWithUserFooter("No permission!",
+                    "You do not have permission to manage emotes in this server.",
                     message.Author),
                 StopProcessing = true,
                 NotifyWhenReplying = true,
@@ -96,7 +164,7 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             using var ms = new MemoryStream(imageData);
             try
             {
-                var addedEmote = await (message.Channel as IGuildChannel)?.Guild.CreateEmoteAsync(emoteName, new Image(ms))!;
+                var addedEmote = await guild?.CreateEmoteAsync(emoteName, new Image(ms))!;
                 emoteMessages.Add($"`{emoteName}` [Emote Image Link](<{addedEmote.Url}>)\nThis emote has been added to this server: {addedEmote}");
             }
             catch (Exception ex)
