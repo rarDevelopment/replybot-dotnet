@@ -123,6 +123,10 @@ If you have a custom emote you like, you can use `Toby emote [emote(s) here]` an
 
 If you have an image you'd like to make into an emote, you can use `Toby add emote` and include the image attached to the message and Toby will create the emote with that image. You can also say something like `Toby add emote bob 123` and Toby will create the emote with the name `Bob123`. If a name isn't specified, Toby will use the file name (without the extension) as the emote name.
 
+## Download All Emotes
+
+If you want to download all of the emotes from a server, you can use `Toby download emotes` and Toby will send you a zip file with all of the emotes in the server. If you want to download all of the emotes from a specific user, you can use `Toby download emotes [user]` and Toby will reply with a .zip file with all of the emotes in that server. Only users with permissions to Manage Expressions will be allowed to use this command.
+
 ## Stickers (Add to your Server or Get a Link to the Image)
 
 If you have a sticker you like, you can reply to a message with a sticker and say `Toby sticker` and Toby will give you a link to that sticker as an image, which you can then save. If you have permission to manage stickers in the server, you can also reply and say `Toby add sticker` and it will also be added to the server.
