@@ -65,6 +65,8 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             var emotes = await guild.GetEmotesAsync();
             var canAdministrate = await roleHelper.CanAdministrate(guild, guildUser,
                 [guildUser.GuildPermissions.ManageEmojisAndStickers]);
+            var httpClient = new HttpClient();
+
             if (!canAdministrate)
             {
                 return new CommandResponse
@@ -81,7 +83,6 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             {
                 var urls = emotes.Select(e => e.Url).ToList();
 
-                var httpClient = new HttpClient();
                 var zipStream = new MemoryStream();
                 using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
                 {
