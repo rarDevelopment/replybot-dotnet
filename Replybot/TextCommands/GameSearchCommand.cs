@@ -72,7 +72,7 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
                         .Select(x => new
                         {
                             Date = x.Key,
-                            Regions = x.ToList().GroupBy(y => y.Region),
+                            Regions = x.ToList().GroupBy(y => y.ReleaseRegion.Value),
                             Platforms = x.ToList().GroupBy(z => z.Platform)
                         });
 
@@ -108,13 +108,13 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
 
                         var platforms = string.Join(", ", platformNames);
 
-                        var regions = string.Join(", ", releaseDateGroup.Regions.Select(r => r.Key != null ? r.Key.Value.ToString() : "N/A"));
+                        var regions = string.Join(", ", releaseDateGroup.Regions.Select(r => r.Key != null ? r.Key.ToString() : "N/A"));
 
                         releaseDateDisplayStrings.Add(
-                            $"{releaseDateDisplay}\n_Platform(s): {platforms}_\n_Region(s): {regions}_");
+                            $"{releaseDateDisplay}\n_Platform(s): {platforms}_\n_Region(s): (temporarily removed)_");
                     }
 
-                    var statusDisplay = game.Status != null ? $"Release Status: **{game.Status}**\n" : "";
+                    var statusDisplay = game.GameStatus != null ? $"Release Status: **{game.GameStatus.Value}**\n" : "";
 
                     var releaseDates = string.Join("\n", releaseDateDisplayStrings.OrderBy(s => s));
 
