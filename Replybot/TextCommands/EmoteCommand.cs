@@ -135,8 +135,8 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
         {
             return new CommandResponse
             {
-                Embed = discordFormatter.BuildErrorEmbedWithUserFooter("No permission!",
-                    "You do not have permission to manage emotes in this server.",
+                Embed = discordFormatter.BuildErrorEmbedWithUserFooter("No emotes found!",
+                    "There were no emotes or images found.",
                     message.Author),
                 StopProcessing = true,
                 NotifyWhenReplying = true,
