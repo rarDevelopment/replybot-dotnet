@@ -1,9 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using DiscordDotNetUtilities.Interfaces;
+﻿using DiscordDotNetUtilities.Interfaces;
 using NodaTime;
 using NodaTime.Text;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands.Models;
+using System.Text.RegularExpressions;
 
 namespace Replybot.TextCommands;
 
@@ -108,10 +108,11 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
 
                         var platforms = string.Join(", ", platformNames);
 
-                        var regions = string.Join(", ", releaseDateGroup.Regions.Select(r => r.Key != null ? r.Key.ToString() : "N/A"));
+                        var regions = string.Join(", ", releaseDateGroup.Regions.Select(r =>
+                            r.Key.Region != null ? RegionToTitleCase(r.Key.Region) : "N/A"));
 
                         releaseDateDisplayStrings.Add(
-                            $"{releaseDateDisplay}\n_Platform(s): {platforms}_\n_Region(s): (temporarily removed)_");
+                            $"{releaseDateDisplay}\n_Platform(s): {platforms}_\n_Region(s): {regions}_");
                     }
 
                     var statusDisplay = game.GameStatus != null ? $"Release Status: **{game.GameStatus.Value}**\n" : "";
@@ -230,5 +231,10 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
     private static int ConvertStringToNumber(string input)
     {
         return int.TryParse(input, out var number) ? number : 0;
+    }
+
+    private static string RegionToTitleCase(string input)
+    {
+        return string.Join(" ", input.Split("_").Select(str => char.ToUpperInvariant(str[0]) + str[1..].ToLower()));
     }
 }
