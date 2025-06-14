@@ -109,7 +109,7 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
                         var platforms = string.Join(", ", platformNames);
 
                         var regions = string.Join(", ", releaseDateGroup.Regions.Select(r =>
-                            r.Key.Region != null ? RegionToTitleCase(r.Key.Region) : "N/A"));
+                            r.Key?.Region != null ? RegionToTitleCase(r.Key.Region) : "N/A"));
 
                         releaseDateDisplayStrings.Add(
                             $"{releaseDateDisplay}\n_Platform(s): {platforms}_\n_Region(s): {regions}_");
