@@ -1,4 +1,4 @@
-﻿using DiscordDotNetUtilities.Interfaces;
+using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 
 namespace Replybot.SlashCommands;
@@ -50,15 +50,6 @@ public class ViewSettingsSlashCommand(IGuildConfigurationBusinessLayer guildConf
             message += $"{GetEnabledText(guildConfig.FortniteMapOnlyNamedLocations)} Map Command: Only Named Locations\n";
             message += MakeSectionTitle("Logging");
             message += $"Channel: {(guildConfig.LogChannelId != null ? $"<#{guildConfig.LogChannelId}>" : "Not Set")}\n";
-            if (guildConfig.LogChannelId != null)
-            {
-                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserJoins)} User Joins\n";
-                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserDepartures)} User Departures\n";
-                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserBans)} User Bans\n";
-                message += $"- {GetEnabledText(guildConfig.EnableLoggingUserUnBans)} User Unbans\n";
-                message += $"- {GetEnabledText(guildConfig.EnableLoggingMessageEdits)} Message Edits\n";
-                message += $"- {GetEnabledText(guildConfig.EnableLoggingMessageDeletes)} Message Deletes\n";
-            }
             message += MakeSectionTitle("Bot Managers in this Server");
             message += $"{GetAdminUserDisplayText(guildConfig.AdminUserIds)} (& any users with the Administrator permission)\n";
 
