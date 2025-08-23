@@ -3,10 +3,11 @@ using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
-public class ChannelUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
-        SystemChannelPoster systemChannelPoster, ILogger<DiscordBot> logger)
+public class ChannelUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, ILogger<DiscordBot> logger)
     : INotificationHandler<ChannelUpdatedNotification>
 {
+    private const string NoTopicText = "[no topic]";
+
     public Task Handle(ChannelUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
@@ -42,10 +43,10 @@ public class ChannelUpdatedNotificationHandler(IGuildConfigurationBusinessLayer 
                     : ".";
             }
 
-            if (oldChannel?.Topic != null && oldChannel.Topic != newChannel.Topic)
+            if (oldChannel?.Topic != newChannel.Topic)
             {
                 messageText += "\n## Channel Topic Update\n";
-                messageText += $"This channel's topic has been updated to: **{newChannel.Topic ?? "[no topic]"}**";
+                messageText += $"This channel's topic has been updated to: **{GetTopicOrNoTopic(newChannel.Topic)}** (previously **{GetTopicOrNoTopic(oldChannel?.Topic)}**)";
             }
 
             if (messageText.Trim() == string.Empty)
@@ -58,5 +59,10 @@ public class ChannelUpdatedNotificationHandler(IGuildConfigurationBusinessLayer 
             return Task.CompletedTask;
         }, cancellationToken);
         return Task.CompletedTask;
+    }
+
+    private static string GetTopicOrNoTopic(string? text)
+    {
+        return text != null && text.Trim() != "" ? text : NoTopicText;
     }
 }
