@@ -1,13 +1,13 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class MessageUpdatedNotificationHandler(LogChannelPoster logChannelPoster,
         ExistingMessageEmbedBuilder logMessageBuilder, IGuildConfigurationBusinessLayer configurationBusinessLayer, DiscordSocketClient client)
-    : INotificationHandler<MessageUpdatedNotification>
+    : IEventHandler<MessageUpdatedNotification>
 {
-    public Task Handle(MessageUpdatedNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(MessageUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {

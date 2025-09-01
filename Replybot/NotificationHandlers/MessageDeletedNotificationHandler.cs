@@ -1,13 +1,13 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class MessageDeletedNotificationHandler(LogChannelPoster logChannelPoster,
         ExistingMessageEmbedBuilder logMessageBuilder, IGuildConfigurationBusinessLayer configurationBusinessLayer, DiscordSocketClient client)
-    : INotificationHandler<MessageDeletedNotification>
+    : IEventHandler<MessageDeletedNotification>
 {
-    public Task Handle(MessageDeletedNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(MessageDeletedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {

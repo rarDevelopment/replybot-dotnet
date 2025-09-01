@@ -5,24 +5,25 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.Logging;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Replybot;
-using Serilog;
-using System.Reflection;
 using Fortnite_API;
 using IGDB;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using NodaTime;
+using Replybot;
 using Replybot.BusinessLayer;
 using Replybot.DataLayer;
 using Replybot.Models;
 using Replybot.NotificationHandlers;
+using Replybot.Notifications;
 using Replybot.ReactionCommands;
 using Replybot.ServiceLayer;
 using Replybot.TextCommands;
 using Replybot.TextCommands.Models;
+using Serilog;
+using System.Reflection;
 using TMDbLib.Client;
 using FortniteApi = Replybot.ServiceLayer.FortniteApi;
-using NodaTime;
 
 var builder = new HostBuilder();
 
@@ -186,8 +187,23 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton<RoleHelper>();
 
-    services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(DiscordBot).GetTypeInfo().Assembly));
+    services.AddScoped<IEventBus, EventBus>();
 
+    services.AddScoped<IEventHandler<MessageReceivedNotification>, MessageReceivedNotificationHandler>();
+    services.AddScoped<IEventHandler<UserJoinedNotification>, UserJoinedNotificationHandler>();
+    services.AddScoped<IEventHandler<JoinedGuildNotification>, JoinedGuildNotificationHandler>();
+    services.AddScoped<IEventHandler<LeftGuildNotification>, LeftGuildNotificationHandler>();
+    services.AddScoped<IEventHandler<UserUpdatedNotification>, UserUpdatedNotificationHandler>();
+    services.AddScoped<IEventHandler<GuildMemberUpdatedNotification>, GuildMemberUpdatedNotificationHandler>();
+    services.AddScoped<IEventHandler<GuildUpdatedNotification>, GuildUpdatedNotificationHandler>();
+    services.AddScoped<IEventHandler<MessageUpdatedNotification>, MessageUpdatedNotificationHandler>();
+    services.AddScoped<IEventHandler<MessageDeletedNotification>, MessageDeletedNotificationHandler>();
+    services.AddScoped<IEventHandler<UserLeftNotification>, UserLeftNotificationHandler>();
+    services.AddScoped<IEventHandler<UserBannedNotification>, UserBannedNotificationHandler>();
+    services.AddScoped<IEventHandler<UserUnbannedNotification>, UserUnbannedNotificationHandler>();
+    services.AddScoped<IEventHandler<ChannelUpdatedNotification>, ChannelUpdatedNotificationHandler>();
+    services.AddScoped<IEventHandler<ReactionAddedNotification>, ReactionAddedNotificationHandler>();
+    
     services.AddHostedService<DiscordBot>();
 
     services.AddHttpClient(HttpClients.HowLongToBeat.ToString(), config =>

@@ -1,12 +1,12 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class LeftGuildNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer)
-    : INotificationHandler<LeftGuildNotification>
+    : IEventHandler<LeftGuildNotification>
 {
-    public Task Handle(LeftGuildNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(LeftGuildNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {

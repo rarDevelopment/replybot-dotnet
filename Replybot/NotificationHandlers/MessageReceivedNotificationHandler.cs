@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
@@ -25,11 +25,11 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
         SiteIgnoreService siteIgnoreService,
         IDiscordFormatter discordFormatter,
         ILogger<DiscordBot> logger)
-    : INotificationHandler<MessageReceivedNotification>
+    : IEventHandler<MessageReceivedNotification>
 {
     private readonly TimeSpan _matchTimeout = new(botSettings.RegexTimeoutTicks);
 
-    public Task Handle(MessageReceivedNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(MessageReceivedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {
