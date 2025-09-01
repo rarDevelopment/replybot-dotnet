@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using Discord.Net;
-using MediatR;
+using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
@@ -11,9 +11,9 @@ namespace Replybot.NotificationHandlers;
 public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer configurationBusinessLayer,
         IEnumerable<IReactionCommand> reactionCommands,
         ILogger<DiscordBot> logger)
-    : InteractionModuleBase<SocketInteractionContext>, INotificationHandler<ReactionAddedNotification>
+    : InteractionModuleBase<SocketInteractionContext>, IEventHandler<ReactionAddedNotification>
 {
-    public Task Handle(ReactionAddedNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(ReactionAddedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {

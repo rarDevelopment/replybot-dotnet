@@ -1,11 +1,11 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
-public class UserBannedNotificationHandler(LogChannelPoster logChannelPoster, IGuildConfigurationBusinessLayer configurationBusinessLayer) : INotificationHandler<UserBannedNotification>
+public class UserBannedNotificationHandler(LogChannelPoster logChannelPoster, IGuildConfigurationBusinessLayer configurationBusinessLayer) : IEventHandler<UserBannedNotification>
 {
-    public Task Handle(UserBannedNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(UserBannedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {

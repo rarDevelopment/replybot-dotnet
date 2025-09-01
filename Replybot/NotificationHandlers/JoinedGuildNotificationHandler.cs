@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
@@ -7,9 +7,9 @@ public class JoinedGuildNotificationHandler(
     IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
     SystemChannelPoster systemChannelPoster,
     ILogger<DiscordBot> logger)
-    : INotificationHandler<JoinedGuildNotification>
+    : IEventHandler<JoinedGuildNotification>
 {
-    public Task Handle(JoinedGuildNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(JoinedGuildNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {

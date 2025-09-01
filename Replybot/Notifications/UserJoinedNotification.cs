@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿
 
 namespace Replybot.Notifications;
 
-public class UserJoinedNotification(SocketGuildUser userWhoJoined) : INotification
+public class UserJoinedNotification(SocketGuildUser userWhoJoined)
 {
     public SocketGuildUser UserWhoJoined { get; } = userWhoJoined;
 }

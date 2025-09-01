@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities;
+using DiscordDotNetUtilities.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Replybot.Models;
@@ -18,12 +19,12 @@ public class DiscordBot(DiscordSocketClient client,
     private readonly TimeSpan _loopWaitTime = TimeSpan.FromSeconds(15);
     private readonly CancellationToken _cancellationToken = new CancellationTokenSource().Token;
 
-    private IMediator Mediator
+    private IEventBus EventBus
     {
         get
         {
             var scope = serviceScopeFactory.CreateScope();
-            return scope.ServiceProvider.GetRequiredService<IMediator>();
+            return scope.ServiceProvider.GetRequiredService<IEventBus>();
         }
     }
 
@@ -87,13 +88,13 @@ public class DiscordBot(DiscordSocketClient client,
         client.ChannelUpdated += (oldChannel, newChannel) => Publish(new ChannelUpdatedNotification(oldChannel, newChannel));
     }
 
-    private Task Publish<TEvent>(TEvent @event) where TEvent : INotification
+    private Task Publish<TEvent>(TEvent @event) where TEvent : class
     {
         _ = Task.Run(async () =>
         {
             try
             {
-                await Mediator.Publish(@event, _cancellationToken);
+                await EventBus.PublishAsync(@event, _cancellationToken);
             }
             catch (Exception ex)
             {

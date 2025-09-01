@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
@@ -6,9 +6,9 @@ namespace Replybot.NotificationHandlers;
 public class UserJoinedNotificationHandler(
     LogChannelPoster logChannelPoster,
     SystemChannelPoster systemChannelPoster,
-    IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer) : INotificationHandler<UserJoinedNotification>
+    IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer) : IEventHandler<UserJoinedNotification>
 {
-    public Task Handle(UserJoinedNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(UserJoinedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {

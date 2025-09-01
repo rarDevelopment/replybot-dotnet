@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Replybot.BusinessLayer;
 using Replybot.Notifications;
 
 namespace Replybot.NotificationHandlers;
 public class ChannelUpdatedNotificationHandler(IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer, ILogger<DiscordBot> logger)
-    : INotificationHandler<ChannelUpdatedNotification>
+    : IEventHandler<ChannelUpdatedNotification>
 {
     private const string NoTopicText = "[no topic]";
 
-    public Task Handle(ChannelUpdatedNotification notification, CancellationToken cancellationToken)
+    public Task HandleAsync(ChannelUpdatedNotification notification, CancellationToken cancellationToken)
     {
         _ = Task.Run(async () =>
         {
