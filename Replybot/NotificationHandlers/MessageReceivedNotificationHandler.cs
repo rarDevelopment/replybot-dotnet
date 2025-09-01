@@ -1,5 +1,4 @@
-﻿
-using Replybot.BusinessLayer;
+﻿using Replybot.BusinessLayer;
 using Replybot.Models;
 using Replybot.Notifications;
 using System.Text.RegularExpressions;
