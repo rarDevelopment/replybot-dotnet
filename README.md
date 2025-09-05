@@ -83,9 +83,9 @@ Instagram links posted in Discord sometimes don't preview at all! Similar to the
 
 Similar to the above, Toby will add a reaction emoji to any post that includes a Threads link. If someone taps that reaction emoji, Toby will reply with that same link at fixthreads.net, which is a site that fixes video and image preview embeds in Discord's Instagram previews. This works with all Threads posts in the message. If someone has posted a fixthreads.net link directly and you'd like the original link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original Threads link. Admins can use the `/set-fix-threads-reactions` command to turn this on or off.
 
-## Fix Bluesky Previews
+## Fix Bluesky Previews (uses [VixBluesky](https://github.com/Lexedia/VixBluesky))
 
-Similar to the above, Toby will add a reaction emoji to any post that includes a Bluesky post link. If someone taps that reaction emoji, Toby will reply with the text and images (including alt text) from that post, as well as a note if there's a quoted post. This works with all Bluesky posts in the message. Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
+Similar to the above, Toby will add a reaction emoji to any post that includes a Bluesky post link. If someone taps that reaction emoji, Toby will reply with that same link at bskx.app, which is a site that fixes video and image preview embeds in Discord's Bluesky previews. This works with all Bluesky posts in the message. Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
 
 ## Fix Reddit Previews (uses [vxReddit](https://github.com/dylanpdx/vxReddit))
 
