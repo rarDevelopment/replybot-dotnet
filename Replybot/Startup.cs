@@ -87,7 +87,6 @@ builder.ConfigureServices((host, services) =>
     var theMovieDbSettings = new TheMovieDbSettings(host.Configuration["TheMovieDB:ImdbBaseUrl"]!);
 
     var dictionarySettings = new DictionarySettings(host.Configuration["FreeDictionary:BaseUrl"]!);
-    var blueskySettings = new BlueskySettings(host.Configuration["Bluesky:BaseUrl"]!);
     var siteIgnoreListSettings = new SiteIgnoreListSettings(host.Configuration["SiteIgnoreList:Url"]!);
     var countryConfigListSettings = new CountryConfigListSettings(host.Configuration["CountryConfigList:Url"]!);
     var defaultRepliesSettings = new DefaultRepliesSettings(host.Configuration["DefaultReplies:Url"]!);
@@ -113,7 +112,6 @@ builder.ConfigureServices((host, services) =>
     services.AddSingleton(databaseSettings);
     services.AddSingleton(howLongToBeatSettings);
     services.AddSingleton(theMovieDbSettings);
-    services.AddSingleton(blueskySettings);
     services.AddSingleton(siteIgnoreListSettings);
     services.AddSingleton(internetGameDatabaseSettings);
     services.AddSingleton(countryConfigListSettings);
@@ -169,7 +167,6 @@ builder.ConfigureServices((host, services) =>
 
     services.AddSingleton<HowLongToBeatApi>();
     services.AddSingleton<FreeDictionaryApi>();
-    services.AddSingleton<BlueskyApi>();
     services.AddSingleton<SiteIgnoreService>();
     services.AddSingleton<DefaultRepliesService>();
     services.AddSingleton<CountryConfigService>();
@@ -218,11 +215,6 @@ builder.ConfigureServices((host, services) =>
     services.AddHttpClient(HttpClients.Dictionary.ToString(), config =>
     {
         config.BaseAddress = new Uri(dictionarySettings.BaseUrl);
-    });
-
-    services.AddHttpClient(HttpClients.Bluesky.ToString(), config =>
-    {
-        config.BaseAddress = new Uri(blueskySettings.BaseUrl);
     });
 
     services.AddHttpClient(HttpClients.SiteIgnoreList.ToString(), config =>
