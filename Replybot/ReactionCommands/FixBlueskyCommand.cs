@@ -14,7 +14,7 @@ public class FixBlueskyCommand(
     private const string BlueskyUrlRegexPattern = $"https?:\\/\\/(?<{MatchedDomainKey}>(bsky.app))\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
 
     private const string VxBlueskyUrlRegexPattern =
-        $"https?:\\/\\/(?<{MatchedDomainKey}>(vxbsky.app|bskyx.app|bskx.app|fbsky.app))\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
+        $"https?:\\/\\/(?<{MatchedDomainKey}>(vxbsky.app|bskyx.app|bskx.app|fxbsky.app))\\/profile\\/[a-z0-9_.]+\\/post\\/[a-z0-9]+";
 
     private const string OriginalBlueskyBaseUrl = "bsky.app";
     private const string FixedBlueskyBaseUrl = "bskx.app";
