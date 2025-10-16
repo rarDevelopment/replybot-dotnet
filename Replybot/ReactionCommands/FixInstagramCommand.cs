@@ -8,9 +8,9 @@ public class FixInstagramCommand(BotSettings botSettings, ApplicationEmojiSettin
 {
     public readonly string NoLinkMessage = "I don't think there's an Instagram link there.";
     private const string InstagramUrlRegexPattern = "https?:\\/\\/(www.)?(instagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
-    private const string DdInstagramUrlRegexPattern = "https?:\\/\\/(www.)?(ddinstagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
+    private const string DdInstagramUrlRegexPattern = "https?:\\/\\/(www.)?(kkinstagram.com)\\/(p|reel|reels)\\/[a-z0-9-_]+";
     private const string OriginalInstagramBaseUrl = "instagram.com";
-    private const string FixedInstagramBaseUrl = "ddinstagram.com";
+    private const string FixedInstagramBaseUrl = "kkinstagram.com";
 
     private static readonly FixLinkConfig FixLinkConfig = new(InstagramUrlRegexPattern,
         DdInstagramUrlRegexPattern,
