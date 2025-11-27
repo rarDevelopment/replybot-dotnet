@@ -4,5 +4,6 @@ namespace Replybot.Models.HowLongToBeat;
 
 public class HowLongToBeatAuthResponse
 {
-    [JsonPropertyName("token")] public string Token { get; set; }
+    [JsonPropertyName("token")] 
+    public string? Token { get; set; }
 }

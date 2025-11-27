@@ -28,12 +28,10 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
 
         var jsonAuthResponse = await authResponse.Content.ReadFromJsonAsync<HowLongToBeatAuthResponse>();
 
-        if (jsonAuthResponse == null)
+        if (jsonAuthResponse?.Token == null)
         {
             return null;
         }
-
-        var authToken = jsonAuthResponse.Token;
 
         var request = new HowLongToBeatRequest
         {
@@ -85,7 +83,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
             {
                 Content = content,
             };
-        httpRequest.Headers.Add("x-auth-token", authToken);
+        httpRequest.Headers.Add("x-auth-token", jsonAuthResponse.Token);
 
         var response = await client.SendAsync(httpRequest);
         if (!response.IsSuccessStatusCode)
