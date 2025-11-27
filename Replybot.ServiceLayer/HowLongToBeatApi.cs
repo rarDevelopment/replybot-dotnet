@@ -81,7 +81,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
         var httpRequest =
-            new HttpRequestMessage(HttpMethod.Post, $"api/{hltbApiInfo.urlPath}/{hltbApiInfo.apiSearchKey}")
+            new HttpRequestMessage(HttpMethod.Post, $"api/{hltbApiInfo.urlPath}")
             {
                 Content = content,
             };
