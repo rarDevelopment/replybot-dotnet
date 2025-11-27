@@ -203,7 +203,7 @@ builder.ConfigureServices((host, services) =>
     
     services.AddHostedService<DiscordBot>();
 
-    services.AddHttpClient(HttpClients.HowLongToBeat.ToString(), config =>
+    services.AddHttpClient(nameof(HttpClients.HowLongToBeat), config =>
     {
         config.BaseAddress = new Uri(howLongToBeatSettings.BaseUrl);
         config.DefaultRequestHeaders.Add("Referer", howLongToBeatSettings.Referer);
@@ -212,27 +212,27 @@ builder.ConfigureServices((host, services) =>
         config.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0");
     });
 
-    services.AddHttpClient(HttpClients.Dictionary.ToString(), config =>
+    services.AddHttpClient(nameof(HttpClients.Dictionary), config =>
     {
         config.BaseAddress = new Uri(dictionarySettings.BaseUrl);
     });
 
-    services.AddHttpClient(HttpClients.SiteIgnoreList.ToString(), config =>
+    services.AddHttpClient(nameof(HttpClients.SiteIgnoreList), config =>
     {
         config.BaseAddress = new Uri(siteIgnoreListSettings.Url);
     });
 
-    services.AddHttpClient(HttpClients.CountryConfigList.ToString(), config =>
+    services.AddHttpClient(nameof(HttpClients.CountryConfigList), config =>
     {
         config.BaseAddress = new Uri(countryConfigListSettings.Url);
     });
 
-    services.AddHttpClient(HttpClients.DefaultReplies.ToString(), config =>
+    services.AddHttpClient(nameof(HttpClients.DefaultReplies), config =>
     {
         config.BaseAddress = new Uri(defaultRepliesSettings.Url);
     });
 
-    services.AddHttpClient(HttpClients.WebsiteApi.ToString(), config =>
+    services.AddHttpClient(nameof(HttpClients.WebsiteApi), config =>
     {
         config.BaseAddress = new Uri(websiteApiSettings.BaseUrl);
     });
