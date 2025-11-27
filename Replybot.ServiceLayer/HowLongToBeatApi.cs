@@ -13,12 +13,28 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
     {
         var hltbApiInfo = await GetHltbApiInfo();
 
-        if (hltbApiInfo.apiSearchKey == null || hltbApiInfo.urlPath == null)
+        if (string.IsNullOrEmpty(hltbApiInfo.urlPath))
         {
             return null;
         }
 
-        var client = httpClientFactory.CreateClient(HttpClients.HowLongToBeat.ToString());
+        var client = httpClientFactory.CreateClient(nameof(HttpClients.HowLongToBeat));
+
+        var authResponse = await client.GetAsync($"/api/{hltbApiInfo.urlPath}/init?t={DateTime.Now.Date:yyyy-M-d}");
+        if (!authResponse.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var jsonAuthResponse = await authResponse.Content.ReadFromJsonAsync<HowLongToBeatAuthResponse>();
+
+        if (jsonAuthResponse == null)
+        {
+            return null;
+        }
+
+        var authToken = jsonAuthResponse.Token;
+
         var request = new HowLongToBeatRequest
         {
             SearchType = "games",
@@ -64,10 +80,12 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
         var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"api/{hltbApiInfo.urlPath}/{hltbApiInfo.apiSearchKey}")
-        {
-            Content = content
-        };
+        var httpRequest =
+            new HttpRequestMessage(HttpMethod.Post, $"api/{hltbApiInfo.urlPath}/{hltbApiInfo.apiSearchKey}")
+            {
+                Content = content,
+            };
+        httpRequest.Headers.Add("x-auth-token", authToken);
 
         var response = await client.SendAsync(httpRequest);
         if (!response.IsSuccessStatusCode)
@@ -77,14 +95,13 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
 
         var hltbResponse = await response.Content.ReadFromJsonAsync<HowLongToBeatResponse>();
         return hltbResponse;
-
     }
 
     private async Task<(string? apiSearchKey, string? urlPath)> GetHltbApiInfo()
     {
         try
         {
-            var client = httpClientFactory.CreateClient(HttpClients.WebsiteApi.ToString());
+            var client = httpClientFactory.CreateClient(nameof(HttpClients.WebsiteApi));
             var response = await client.GetAsync("now/json/hltb");
             if (!response.IsSuccessStatusCode)
             {
