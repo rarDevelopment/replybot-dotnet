@@ -20,7 +20,7 @@ public class HowLongToBeatApi(IHttpClientFactory httpClientFactory)
 
         var client = httpClientFactory.CreateClient(nameof(HttpClients.HowLongToBeat));
 
-        var authResponse = await client.GetAsync($"/api/{hltbApiInfo.urlPath}/init?t={DateTime.Now.Date:yyyy-M-d}");
+        var authResponse = await client.GetAsync($"/api/{hltbApiInfo.urlPath}/init?t={DateTime.Now.Date:yyyy-M-dd}");
         if (!authResponse.IsSuccessStatusCode)
         {
             return null;
