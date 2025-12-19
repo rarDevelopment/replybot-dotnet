@@ -28,7 +28,7 @@ public class GetStickerCommand(
         if (message.Reference?.MessageId != null)
         {
             var repliedMessage = await message.Channel.GetMessageAsync(message.Reference.MessageId.Value);
-            if (repliedMessage.Stickers.Any())
+            if (repliedMessage.Stickers.Count > 0)
             {
                 sticker = repliedMessage.Stickers.First();
             }
@@ -46,7 +46,7 @@ public class GetStickerCommand(
             };
         }
 
-        var isAddingSticker = _addStickerTriggers.Any(t => message.Content.ToLower().Contains(t));
+        var isAddingSticker = _addStickerTriggers.Any(t => message.Content.Contains(t, StringComparison.CurrentCultureIgnoreCase));
 
         var isGif = sticker.Format is StickerFormatType.Gif;
         var stickerUrl = DiscordStickerUrlTemplate

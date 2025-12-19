@@ -131,7 +131,7 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             .Where(a => _validImageFileTypes.Contains(a.ContentType.ToLower()))
             .ToList();
 
-        if (emoteMatches.Count <= 0 && !validImages.Any())
+        if (emoteMatches.Count <= 0 && validImages.Count == 0)
         {
             return new CommandResponse
             {
@@ -146,7 +146,7 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
         var emoteCount = 0;
         var addingEmotesTrigger = _addEmoteTriggers.FirstOrDefault(t => message.Content.ToLower().Contains(t));
         var isAddingEmotes = addingEmotesTrigger != null;
-        var isEmoteFromImage = validImages.Any();
+        var isEmoteFromImage = validImages.Count != 0;
 
         if (isEmoteFromImage)
         {

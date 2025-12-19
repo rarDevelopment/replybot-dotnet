@@ -56,7 +56,7 @@ public class ChooseCommand(
 
         List<string> itemsToChooseFrom = [];
 
-        if (message.MentionedChannelIds.Any() && message.Channel is IGuildChannel guildChannel)
+        if (message.MentionedChannelIds.Count != 0 && message.Channel is IGuildChannel guildChannel)
         {
             foreach (var mentionedChannelId in message.MentionedChannelIds)
             {
@@ -67,13 +67,13 @@ public class ChooseCommand(
                 }
 
                 var usersInChat = mentionedVoiceChannel.ConnectedUsers;
-                if (usersInChat != null && usersInChat.Any())
+                if (usersInChat != null && usersInChat.Count != 0)
                 {
                     itemsToChooseFrom.AddRange(usersInChat.Select(u => u.Mention).ToList());
                 }
             }
 
-            if (!itemsToChooseFrom.Any())
+            if (itemsToChooseFrom.Count == 0)
             {
                 return "No users were found to add in the provided channel(s). You must provide valid voice channels with users connected.";
             }

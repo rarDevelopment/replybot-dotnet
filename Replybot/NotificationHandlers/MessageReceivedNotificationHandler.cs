@@ -150,7 +150,7 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
             };
 
             RestUserMessage? messageSent;
-            if (commandResponse.FileAttachments.Any())
+            if (commandResponse.FileAttachments.Count != 0)
             {
                 messageSent = await message.Channel.SendFilesAsync(
                     commandResponse.FileAttachments,
@@ -192,7 +192,7 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
         const string pattern = @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)";
 
         var linkMatches = Matches(messageWithLinks.Content, pattern, RegexOptions.IgnoreCase, _matchTimeout);
-        if (linkMatches.Any())
+        if (linkMatches.Count != 0)
         {
             var links = linkMatches.Select(lm => lm.Value).ToList();
             var discordLinks = links.Where(l => l.Contains(discordSettings.BaseUrl));
@@ -213,7 +213,7 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
 
         var messages = (await textChannel.GetMessagesAsync(messageWithLinks, Direction.Before, 150).FlattenAsync()).ToList();
 
-        if (!messages.Any())
+        if (messages.Count == 0)
         {
             return;
         }

@@ -86,22 +86,22 @@ public class AllowRoleToAdminSlashCommand(IGuildConfigurationBusinessLayer confi
 
             var embedFieldBuilders = new List<EmbedFieldBuilder>();
 
-            if (usersProcessed.Any())
+            if (usersProcessed.Count != 0)
             {
                 embedFieldBuilders.Add(new EmbedFieldBuilder
                 {
                     Name = $"Users {(setAllowed ? "Allowed" : "Removed")}",
-                    Value = usersProcessed.Any() ? string.Join(", ", usersProcessed.Select(u => u.Mention)) : "None",
+                    Value = usersProcessed.Count != 0 ? string.Join(", ", usersProcessed.Select(u => u.Mention)) : "None",
                     IsInline = false
                 });
             }
 
-            if (usersNotProcessed.Any())
+            if (usersNotProcessed.Count != 0)
             {
                 embedFieldBuilders.Add(new EmbedFieldBuilder
                 {
                     Name = $"Users Not Processed (possibly were already {(setAllowed ? "Allowed" : "Removed")})",
-                    Value = usersNotProcessed.Any() ? string.Join(", ", usersNotProcessed.Select(u => u.Mention)) : "None",
+                    Value = usersNotProcessed.Count != 0 ? string.Join(", ", usersNotProcessed.Select(u => u.Mention)) : "None",
                     IsInline = false
                 });
             }

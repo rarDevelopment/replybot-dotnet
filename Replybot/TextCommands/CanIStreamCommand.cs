@@ -61,7 +61,7 @@ public class CanIStreamCommand(CountryConfigService countryConfigService,
             }
 
             var countryToUse =
-                countryConfigs.FirstOrDefault(c => c.TriggerNames != null && c.TriggerNames.Any() && c.TriggerNames.Contains(searchAndCountry.Country, StringComparer.InvariantCultureIgnoreCase));
+                countryConfigs.FirstOrDefault(c => c.TriggerNames != null && c.TriggerNames.Count != 0 && c.TriggerNames.Contains(searchAndCountry.Country, StringComparer.InvariantCultureIgnoreCase));
 
             if (countryToUse == null)
             {

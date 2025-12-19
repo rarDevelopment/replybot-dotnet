@@ -13,7 +13,7 @@ public class ExistingMessageEmbedBuilder(DiscordSettings discordSettings)
 
         var embedDescription = "";
 
-        if (message.Embeds.Any())
+        if (message.Embeds.Count != 0)
         {
             var embed = message.Embeds.First();
             if (embed.Image.HasValue)
@@ -24,7 +24,7 @@ public class ExistingMessageEmbedBuilder(DiscordSettings discordSettings)
             embedDescription = embed.Description;
         }
 
-        if (message.Attachments.Any())
+        if (message.Attachments.Count != 0)
         {
             embedBuilder.AddField("Attachments",
                 string.Join(", ",

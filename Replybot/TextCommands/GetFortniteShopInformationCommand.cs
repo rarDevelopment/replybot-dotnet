@@ -64,7 +64,7 @@ public class GetFortniteShopInformationCommand(FortniteApi fortniteApi,
             BuildShopSection(shopInfo.Daily, "Daily");
         }
 
-        if (!shopItems.Any())
+        if (shopItems.Count == 0)
         {
             return discordFormatter.BuildRegularEmbedWithUserFooter(
                 $"Fortnite Shop Information - {date.ToShortDateString()}",
