@@ -114,7 +114,7 @@ public class DefineWordCommand(BotSettings botSettings,
     private static string BuildDefinitionString(int index, Definition def)
     {
         var exampleUsage = !string.IsNullOrEmpty(def.Example) ? $"\n_ex: {def.Example}_" : "";
-        var synonyms = def.Synonyms.Any() ? $"\nSynonyms: {string.Join(",", def.Synonyms)}" : "";
+        var synonyms = def.Synonyms.Count != 0 ? $"\nSynonyms: {string.Join(",", def.Synonyms)}" : "";
         return $"{index + 1}. {def.DefinitionText}{exampleUsage}{synonyms}";
     }
 }

@@ -75,7 +75,7 @@ public class ReactionAddedNotificationHandler(IGuildConfigurationBusinessLayer c
                 ? new ComponentBuilder().WithButton("Delete This", "deleteFixedItem", emote: new Emoji("❌"))
                 : null;
 
-            if (commandResponse.FileAttachments.Any())
+            if (commandResponse.FileAttachments.Count != 0)
             {
                 try
                 {

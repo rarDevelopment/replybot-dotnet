@@ -29,7 +29,7 @@ public class GetAvatarCommand(IReplyBusinessLayer replyBusinessLayer,
             });
         }
 
-        var userAvatars = message.MentionedUsers.Any()
+        var userAvatars = message.MentionedUsers.Count != 0
             ? message.MentionedUsers.Select(u => GetUserAvatarUrl(u, message.Content))
             : new List<string>
             {
