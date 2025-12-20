@@ -144,7 +144,7 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
         }
 
         var emoteCount = 0;
-        var addingEmotesTrigger = _addEmoteTriggers.FirstOrDefault(t => message.Content.ToLower().Contains(t));
+        var addingEmotesTrigger = _addEmoteTriggers.FirstOrDefault(t => message.Content.Contains(t, StringComparison.CurrentCultureIgnoreCase));
         var isAddingEmotes = addingEmotesTrigger != null;
         var isEmoteFromImage = validImages.Count != 0;
 
