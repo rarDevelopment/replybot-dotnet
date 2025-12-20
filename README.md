@@ -129,7 +129,7 @@ If you want to download all of the emotes from a server, you can use `Toby downl
 
 ## Stickers (Add to your Server or Get a Link to the Image)
 
-If you have a sticker you like, you can reply to a message with a sticker and say `Toby sticker` and Toby will give you a link to that sticker as an image, which you can then save. If you have permission to manage stickers in the server, you can also reply and say `Toby add sticker` and it will also be added to the server.
+If you have a sticker you like, you can reply to a message with a sticker and say `Toby sticker` and Toby will give you a link to that sticker as an image, which you can then save. If you have permission to manage stickers in the server, you can also reply and say `Toby add sticker` and it will also be added to the server. You can also upload an image or reply to a message with an image and say `Toby add sticker` and it will add the sticker to the server if able. Also if you say `Toby add sticker WORDS_HERE` it will use the `WORDS_HERE` value for the name of the sticker.
 
 ## Fortnite Map Location (using [Fortnite API](https://fortnite-api.com/))
 
