@@ -34,7 +34,7 @@ public class UserUpdatedNotificationHandler(IGuildConfigurationBusinessLayer gui
                 {
                     await systemChannelPoster.PostMessageToGuildSystemChannel(
                         guild,
-                        $"WOWIE! For your awareness, {oldUser.Username} is now {newUser.Username}! {newUser.Mention}",
+                        $"## Username Change\nWOWIE! For your awareness, {oldUser.Username} is now {newUser.Username}! {newUser.Mention}",
                         $"Guild: {guild.Name} ({guild.Id}) - User: {newUser.Username} ({newUser.Id})",
                         typeof(UserUpdatedNotificationHandler));
                 }
