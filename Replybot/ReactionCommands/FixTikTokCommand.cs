@@ -1,4 +1,4 @@
-﻿using Replybot.Models;
+using Replybot.Models;
 using Replybot.TextCommands.Models;
 
 namespace Replybot.ReactionCommands;
@@ -8,7 +8,7 @@ public class FixTikTokCommand(BotSettings botSettings, ApplicationEmojiSettings 
 {
     public readonly string NoLinkMessage = "I don't think there's a TikTok link there.";
     private const string TikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(tiktok.com)/[\\@a-z0-9-_//]+";
-    private const string VxTikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(vxtiktok.com)/[\\@a-z0-9-_//]+";
+    private const string VxTikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(tnktok.com)/[\\@a-z0-9-_//]+";
     private const string OriginalTikTokBaseUrl = "tiktok.com";
     private const string FixedTikTokBaseUrl = "vxtiktok.com";
 
