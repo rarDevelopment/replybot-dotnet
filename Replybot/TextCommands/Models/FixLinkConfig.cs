@@ -1,16 +1,16 @@
 ﻿namespace Replybot.TextCommands.Models;
 
-public class FixLinkConfig(string originalUrlRegexPattern,
-    string fixedUrlRegexPattern,
-    string originalBaseUrl,
-    string fixedBaseUrl,
-    string? matchedDomainKey = null,
-    string? additionalMessage = null)
+public record FixLinkConfig(string OriginalUrlRegexPattern,
+    string FixedUrlRegexPattern,
+    string OriginalBaseUrl,
+    string FixedBaseUrl,
+    string? MatchedDomainKey = null,
+    string? AdditionalMessage = null)
 {
-    public string OriginalUrlRegexPattern { get; } = originalUrlRegexPattern;
-    public string FixedUrlRegexPattern { get; } = fixedUrlRegexPattern;
-    public string OriginalBaseUrl { get; } = originalBaseUrl;
-    public string FixedBaseUrl { get; } = fixedBaseUrl;
-    public string? MatchedDomainKey { get; } = matchedDomainKey;
-    public string? AdditionalMessage { get; set; } = additionalMessage;
+    public string OriginalUrlRegexPattern { get; } = OriginalUrlRegexPattern;
+    public string FixedUrlRegexPattern { get; } = FixedUrlRegexPattern;
+    public string OriginalBaseUrl { get; } = OriginalBaseUrl;
+    public string FixedBaseUrl { get; } = FixedBaseUrl;
+    public string? MatchedDomainKey { get; } = MatchedDomainKey;
+    public string? AdditionalMessage { get; set; } = AdditionalMessage;
 }
