@@ -7,15 +7,18 @@ public class FixTikTokCommand(BotSettings botSettings, ApplicationEmojiSettings 
     : FixUrlCommandBase(FixLinkConfig, botSettings, applicationEmojiSettings.FixTikTok, client), IReactionCommand
 {
     public readonly string NoLinkMessage = "I don't think there's a TikTok link there.";
-    private const string TikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(tiktok.com)/[\\@a-z0-9-_//]+";
-    private const string VxTikTokUrlRegexPattern = "https?:\\/\\/(vm.|www.)?(tnktok.com)/[\\@a-z0-9-_//]+";
+    private const string MatchedDomainKey = "domain_key";
+    private const string TikTokUrlRegexPattern = $"https?:\\/\\/(?<{MatchedDomainKey}>(vm.|www.)?(tiktok.com))/[\\@a-z0-9-_//]+";
+    private const string VxTikTokUrlRegexPattern = $"https?:\\/\\/(?<{MatchedDomainKey}>(d.)?(tnktok.com))/[\\@a-z0-9-_//]+";
     private const string OriginalTikTokBaseUrl = "tiktok.com";
-    private const string FixedTikTokBaseUrl = "vxtiktok.com";
+    private const string FixedTikTokBaseUrl = "d.tnktok.com";
 
     private static readonly FixLinkConfig FixLinkConfig = new(TikTokUrlRegexPattern,
         VxTikTokUrlRegexPattern,
         OriginalTikTokBaseUrl,
-        FixedTikTokBaseUrl);
+        FixedTikTokBaseUrl,
+        MatchedDomainKey
+    );
 
     public bool CanHandle(string message, GuildConfiguration configuration)
     {

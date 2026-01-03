@@ -71,29 +71,33 @@ If you post a link to that has already been posted recently in the same channel,
 
 You can say `Toby define [word here]` and he'll try to find a dictionary definition for that word.
 
-## Fix Tweet Previews (uses [BetterTwitFix](https://github.com/ryuuzake/BetterTwitFix))
+## Fixing Social Media Embed Previews
 
-Tweets posted in Discord will include a preview embed of that tweet. But if there's a video, that video preview might not play properly. Or if there is more than 1 image, those other images won't show on mobile devices. To help with this, Toby will add a reaction emoji to any post that includes a Twitter link. If someone taps on that reaction emoji, Toby will reply with that same link at fxtwitter.com, which is a site that fixes video and image preview embeds in Discord's tweet previews. This works with all tweets in the message. If someone has posted an vxtwitter.com link directly and you'd like the original tweet link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original tweet link. Admins can use the `/set-fix-tweet-reactions` command to turn this on or off.
+Social media links posted in Discord should include a preview embed of the post. Sometimes those previews don't work, which is particularly unhelpful if there are images or videos in those links. To help with this, Toby will add a reaction emoji to any post that includes social media links from the following platforms. If someone taps on that reaction emoji, Toby will reply with that same link with a "fixed" URL (using adjusted links via services provided by those at the links below for each platform), which will provide working embedded previews of all of the links in the message. This works in both directions as well, in case you need the original link to open in the respective app for that platform.
 
-## Fix Instagram Previews (uses [InstaFix](https://github.com/Wikidepia/InstaFix))
+### Bluesky (uses [VixBluesky](https://github.com/Lexedia/VixBluesky))
 
-Instagram links posted in Discord sometimes don't preview at all! Similar to the above, Toby will add a reaction emoji to any post that includes an Instagram link. If someone taps that reaction emoji, Toby will reply with that same link at ddinstagram.com, which is a site that fixes video and image preview embeds in Discord's Instagram previews. This works with all Instagram posts in the message. If someone has posted a ddinstagram.com link directly and you'd like the original link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original Instagram link. Admins can use the `/set-fix-instagram-reactions` command to turn this on or off.
+Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
 
-## Fix Threads Previews (uses [fixthreads](https://github.com/milanmdev/fixthreads))
+### Instagram (uses [InstaFix](https://github.com/Wikidepia/InstaFix))
 
-Similar to the above, Toby will add a reaction emoji to any post that includes a Threads link. If someone taps that reaction emoji, Toby will reply with that same link at fixthreads.net, which is a site that fixes video and image preview embeds in Discord's Instagram previews. This works with all Threads posts in the message. If someone has posted a fixthreads.net link directly and you'd like the original link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original Threads link. Admins can use the `/set-fix-threads-reactions` command to turn this on or off.
+Admins can use the `/set-fix-instagram-reactions` command to turn this on or off.
 
-## Fix Bluesky Previews (uses [VixBluesky](https://github.com/Lexedia/VixBluesky))
+### Threads (uses [fixthreads](https://github.com/milanmdev/fixthreads))
 
-Similar to the above, Toby will add a reaction emoji to any post that includes a Bluesky post link. If someone taps that reaction emoji, Toby will reply with that same link at bskx.app, which is a site that fixes video and image preview embeds in Discord's Bluesky previews. This works with all Bluesky posts in the message. Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
+Admins can use the `/set-fix-threads-reactions` command to turn this on or off.
 
-## Fix Reddit Previews (uses [vxReddit](https://github.com/dylanpdx/vxReddit))
+### Reddit (uses [vxReddit](https://github.com/dylanpdx/vxReddit))
 
-Similar to the above, Toby will add a reaction emoji to any post that includes a Reddit link. If someone taps that reaction emoji, Toby will reply with that same link at ddinstagram.com, which is a site that fixes video and image preview embeds in Discord's Instagram previews. This works with all Instagram posts in the message. If someone has posted a vxreddit.com link directly and you'd like the original link, this will work the same way - a reaction will appear and tapping the reaction will lead Toby to reply with the original Reddit link. Admins can use the `/set-fix-instagram-reactions` command to turn this on or off.
+Admins can use the `/set-fix-instagram-reactions` command to turn this on or off.
 
-## Fix TikTok Previews
+### TikTok (uses [fxTikTok](https://github.com/okdargy/fxTikTok/tree/hono-rewrite))
 
-Similar to the above, Toby will add a reaction emoji to any post that includes a TikTok post link. If someone taps that reaction emoji, Toby will reply with an updated link that should include a functioning preview for the linked TikTok video. This works with all TikTok links in the message. Admins can use the `/set-fix-tiktok-reactions` command to turn this on or off.
+Admins can use the `/set-fix-tiktok-reactions` command to turn this on or off.
+
+### Tweets (uses [BetterTwitFix](https://github.com/dylanpdx/BetterTwitFix))
+
+Admins can use the `/set-fix-tweet-reactions` command to turn this on or off.
 
 ## Video Game Length Estimates (using [HowLongToBeat](https://howlongtobeat.com/))
 
