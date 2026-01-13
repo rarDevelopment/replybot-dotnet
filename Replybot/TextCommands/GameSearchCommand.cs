@@ -16,6 +16,7 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
     private const string SearchTermKey = "searchTerm";
     private const string TriggerRegexPattern = $"when +(does|did|will|is) +(?<{SearchTermKey}>(.*)) +(come out|release|drop|releasing|dropping|coming out)\\??";
     private const int MaxGamesToShow = 3;
+    private const int MaxFieldLength = 1024;
     private readonly TimeSpan _matchTimeout = TimeSpan.FromMilliseconds(100);
 
     public bool CanHandle(TextCommandReplyCriteria replyCriteria)
@@ -117,12 +118,28 @@ public class GameSearchCommand(InternetGameDatabaseApi internetGameDatabaseApi,
 
                     var statusDisplay = game.GameStatus != null ? $"Release Status: **{game.GameStatus.Value}**\n" : "";
 
-                    var releaseDates = string.Join("\n", releaseDateDisplayStrings.OrderBy(s => s));
+                    var orderedReleaseDates = releaseDateDisplayStrings.OrderBy(s => s).ToList();
+                    var fieldValue = statusDisplay;
+                    
+                    foreach (var releaseDate in orderedReleaseDates)
+                    {
+                        var potentialValue = string.IsNullOrEmpty(fieldValue) 
+                            ? releaseDate 
+                            : $"{fieldValue}\n{releaseDate}";
+                            
+                        if (potentialValue.Length > MaxFieldLength)
+                        {
+                            fieldValue += "\n_...and more_";
+                            break;
+                        }
+                        
+                        fieldValue = potentialValue;
+                    }
 
                     embedFieldBuilders.Add(new EmbedFieldBuilder
                     {
                         Name = game.Name,
-                        Value = $"{statusDisplay}{releaseDates}",
+                        Value = fieldValue,
                         IsInline = false
                     });
                 }
