@@ -8,7 +8,7 @@ public class FixTikTokCommand(BotSettings botSettings, ApplicationEmojiSettings 
 {
     public readonly string NoLinkMessage = "I don't think there's a TikTok link there.";
     private const string MatchedDomainKey = "domain_key";
-    private const string TikTokUrlRegexPattern = $"https?:\\/\\/(?<{MatchedDomainKey}>(vm.|www.)?(tiktok.com))/[\\@a-z0-9-_//]+";
+    private const string TikTokUrlRegexPattern = $"https?:\\/\\/(?<{MatchedDomainKey}>(vm.|www.|vt.)?(tiktok.com))/[\\@a-z0-9-_//]+";
     private const string VxTikTokUrlRegexPattern = $"https?:\\/\\/(?<{MatchedDomainKey}>(d.)?(tnktok.com))/[\\@a-z0-9-_//]+";
     private const string OriginalTikTokBaseUrl = "tiktok.com";
     private const string FixedTikTokBaseUrl = "d.tnktok.com";
