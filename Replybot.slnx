@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Replybot.BusinessLayer/Replybot.BusinessLayer.csproj" />
+  <Project Path="Replybot.DataLayer/Replybot.DataLayer.csproj" />
+  <Project Path="Replybot.Models/Replybot.Models.csproj" />
+  <Project Path="Replybot.ServiceLayer/Replybot.ServiceLayer.csproj" />
+  <Project Path="Replybot/Replybot.csproj" />
+</Solution>
