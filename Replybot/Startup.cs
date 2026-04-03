@@ -200,13 +200,14 @@ builder.ConfigureServices((host, services) =>
     services.AddScoped<IEventHandler<UserUnbannedNotification>, UserUnbannedNotificationHandler>();
     services.AddScoped<IEventHandler<ChannelUpdatedNotification>, ChannelUpdatedNotificationHandler>();
     services.AddScoped<IEventHandler<ReactionAddedNotification>, ReactionAddedNotificationHandler>();
-    
+
     services.AddHostedService<DiscordBot>();
 
     services.AddHttpClient(nameof(HttpClients.HowLongToBeat), config =>
     {
         config.BaseAddress = new Uri(howLongToBeatSettings.BaseUrl);
         config.DefaultRequestHeaders.Add("Referer", howLongToBeatSettings.Referer);
+        config.DefaultRequestHeaders.Add("Origin", howLongToBeatSettings.Referer);
         config.DefaultRequestHeaders.Add("Connection", "keep-alive");
         config.DefaultRequestHeaders.Add("Accept", "*/*");
         config.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0");

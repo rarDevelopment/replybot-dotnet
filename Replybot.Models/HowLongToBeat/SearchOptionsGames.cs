@@ -16,6 +16,8 @@ public class SearchOptionsGames
     public SearchOptionsGamesRangeTime RangeTime { get; set; }
     [JsonPropertyName("gameplay")]
     public SearchOptionsGamesGameplay Gameplay { get; set; }
+    [JsonPropertyName("rangeYear")]
+    public SearchOptionsGamesRangeYear RangeYear { get; set; }
     [JsonPropertyName("modifier")]
     public string Modifier { get; set; }
 }
