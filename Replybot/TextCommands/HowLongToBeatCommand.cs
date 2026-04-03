@@ -71,7 +71,7 @@ public class HowLongToBeatCommand(HowLongToBeatSettings howLongToBeatSettings,
                     };
 
                     return discordFormatter.BuildErrorEmbedWithUserFooter("No Response from How Long To Beat",
-                        "I couldn't get a response from How Long To Beat, maybe they changed their URL again.",
+                        "I couldn't get a response from How Long To Beat, probably because they have continued their efforts to thwart anyone to use their API while refusing to provide one. Still working on this.",
                         message.Author,
                         embedFieldBuilder,
                         searchUrl);

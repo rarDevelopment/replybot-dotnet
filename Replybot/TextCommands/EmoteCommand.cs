@@ -81,17 +81,16 @@ public class EmoteCommand(BotSettings botSettings, IReplyBusinessLayer replyBusi
             }
             if (emotes != null)
             {
-                var urls = emotes.Select(e => e.Url).ToList();
-
                 var zipStream = new MemoryStream();
-                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+                await using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
                 {
-                    foreach (var url in urls)
+                    foreach (var emote in emotes)
                     {
-                        var imageData = await httpClient.GetByteArrayAsync(url);
-                        var fileName = Path.GetFileName(new Uri(url).AbsolutePath);
-                        var entry = archive.CreateEntry(fileName, CompressionLevel.Fastest);
-                        await using var entryStream = entry.Open();
+                        var imageData = await httpClient.GetByteArrayAsync(emote.Url);
+                        var extension = Path.GetExtension(Path.GetFileName(new Uri(emote.Url).AbsolutePath));
+                        var fileName = $"{emote.Name}{extension}";
+                        var entry =  archive.CreateEntry(fileName, CompressionLevel.Fastest);
+                        await using var entryStream = await entry.OpenAsync();
                         await entryStream.WriteAsync(imageData);
                     }
                 }
