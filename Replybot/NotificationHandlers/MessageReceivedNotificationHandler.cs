@@ -11,6 +11,7 @@ using Replybot.TextCommands.Models;
 using static System.Text.RegularExpressions.Regex;
 
 namespace Replybot.NotificationHandlers;
+
 public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusinessLayer,
         IGuildConfigurationBusinessLayer guildConfigurationBusinessLayer,
         IEnumerable<ITextCommand> textCommands,
@@ -235,6 +236,11 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
             var relevantMessage =
                 messages.OrderByDescending(m => m.Timestamp).FirstOrDefault(m => m.Content.Contains(link, StringComparison.InvariantCultureIgnoreCase));
             if (relevantMessage == null)
+            {
+                continue;
+            }
+            if (messageWithLinks.Author.Id == relevantMessage.Author.Id &&
+                messageWithLinks.Timestamp - relevantMessage.Timestamp < TimeSpan.FromMinutes(5))
             {
                 continue;
             }
