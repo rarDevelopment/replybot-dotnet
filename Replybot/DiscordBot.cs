@@ -1,5 +1,4 @@
-﻿using DiscordDotNetUtilities;
-using DiscordDotNetUtilities.Interfaces;
+﻿using DiscordDotNetUtilities.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Replybot.Models;
