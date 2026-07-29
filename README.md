@@ -79,7 +79,7 @@ Social media links posted in Discord should include a preview embed of the post.
 
 Admins can use the `/set-fix-bluesky-reactions` command to turn this on or off.
 
-### Instagram (uses kkinstagram, can't find a source code repository for this one)
+### Instagram (uses kkclip, can't find a source code repository for this one)
 
 Admins can use the `/set-fix-instagram-reactions` command to turn this on or off.
 
