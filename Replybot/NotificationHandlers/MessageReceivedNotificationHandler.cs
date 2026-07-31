@@ -240,8 +240,12 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
                 continue;
             }
             if (messageWithLinks.Author.Id == relevantMessage.Author.Id &&
-                (messageWithLinks.Timestamp - relevantMessage.Timestamp < TimeSpan.FromMinutes(5)
-                || messageWithLinks.Timestamp - relevantMessage.Timestamp > TimeSpan.FromDays(5)))
+                messageWithLinks.Timestamp - relevantMessage.Timestamp < TimeSpan.FromMinutes(5))
+            {
+                continue;
+            }
+            if(messageWithLinks.Author.Id != relevantMessage.Author.Id
+               && messageWithLinks.Timestamp - relevantMessage.Timestamp > TimeSpan.FromDays(5))
             {
                 continue;
             }
