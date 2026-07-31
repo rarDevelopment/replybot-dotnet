@@ -244,6 +244,11 @@ public class MessageReceivedNotificationHandler(IReplyBusinessLayer replyBusines
             {
                 continue;
             }
+            if(messageWithLinks.Author.Id != relevantMessage.Author.Id
+               && messageWithLinks.Timestamp - relevantMessage.Timestamp > TimeSpan.FromDays(5))
+            {
+                continue;
+            }
 
             var previouslyPostedEmote = await client.GetApplicationEmoteAsync(Convert.ToUInt64(applicationEmojiSettings.Slowpoke));
 
