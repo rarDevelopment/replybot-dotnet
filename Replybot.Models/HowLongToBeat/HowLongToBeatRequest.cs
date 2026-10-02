@@ -14,4 +14,6 @@ public class HowLongToBeatRequest
     public int Size { get; set; }
     [JsonPropertyName("searchOptions")]
     public SearchOptions SearchOptions { get; set; }
+    [JsonPropertyName("useCache")]
+    public bool UseCache { get; set; }
 }
